@@ -17,6 +17,9 @@ import AstrologyReadingScreen from './screens/AstrologyReadingScreen';
 import PalmCameraScreen from './screens/PalmCameraScreen';
 import PremiumPaymentScreen from './screens/PremiumPaymentScreen';
 
+// Import Compatibility Analysis screen
+import CompatibilityAnalysisScreen from './screens/CompatibilityAnalysisScreen';
+
 // Import the test component
 import ZodiacCalculatorTest from './components/ZodiacCalculatorTest';
 
@@ -105,6 +108,32 @@ export default function App() {
             headerTintColor: '#FFFFFF',
             headerTitleStyle: {
               fontWeight: 'bold',
+            },
+          }}
+        />
+        
+        {/* Compatibility Analysis Screen */}
+        <Stack.Screen 
+          name="CompatibilityAnalysis" 
+          component={CompatibilityAnalysisScreen}
+          options={{ 
+            title: 'Zodiac Compatibility',
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: '#1a1a2e',
+              elevation: 0,
+              shadowOpacity: 0,
+              borderBottomWidth: 0,
+            },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+              fontFamily: 'Cinzel-SemiBold', // If you have this font installed
+              fontSize: 18,
+            },
+            headerBackTitleVisible: false,
+            headerLeftContainerStyle: {
+              paddingLeft: 10,
             },
           }}
         />
