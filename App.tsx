@@ -10,12 +10,14 @@ import DashboardScreen from './screens/DashboardScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import AstrologyScreen from './screens/AstrologyScreen';
+import CompatibilityScreen from './screens/CompatibilityScreen'; // ADD THIS LINE
 
 // Import new Reading screens
 import ReadingRequestScreen from './screens/ReadingRequestScreen';
 import AstrologyReadingScreen from './screens/AstrologyReadingScreen';
 import PalmCameraScreen from './screens/PalmCameraScreen';
 import PremiumPaymentScreen from './screens/PremiumPaymentScreen';
+import ReadingQueueScreen from './screens/ReadingQueueScreen';
 
 // Import the test component
 import ZodiacCalculatorTest from './components/ZodiacCalculatorTest';
@@ -41,6 +43,23 @@ export default function App() {
           component={AstrologyScreen}
           options={{
             headerShown: false,
+          }}
+        />
+        
+        {/* Compatibility Feature Screen - ADD THIS SECTION */}
+        <Stack.Screen 
+          name="Compatibility" 
+          component={CompatibilityScreen}
+          options={{
+            headerShown: true,
+            title: 'Zodiac Compatibility',
+            headerStyle: {
+              backgroundColor: '#1a1a2e',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
           }}
         />
         
@@ -106,6 +125,15 @@ export default function App() {
             headerTitleStyle: {
               fontWeight: 'bold',
             },
+          }}
+        />
+        
+        {/* Reading Queue Screen */}
+        <Stack.Screen 
+          name="ReadingQueue" 
+          component={ReadingQueueScreen}
+          options={{ 
+            headerShown: false 
           }}
         />
         

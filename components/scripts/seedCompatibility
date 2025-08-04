@@ -1,0 +1,168 @@
+const { createClient } = require('@supabase/supabase-js');
+
+// Replace with your Supabase credentials
+const supabaseUrl = 'https://uasglfqvvktstzmhbmas.supabase.co';
+const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhYWdsZnF2dmt0c3R6bWhibWFzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MzgyODYyMCwiZXhwIjoyMDY5NDA0NjIwfQ.YEtkuQtSfidF2f9JuK2QitYi3ZubenPtlizWbHoI8Us'; // Use service key for seeding
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+const ZODIAC_SIGNS = [
+  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+];
+
+// Compatibility data generator
+function generateCompatibilityData(sign1, sign2) {
+  // This is a simplified example. In production, you'd want more sophisticated logic
+  // or pre-calculated values based on astrological principles
+  
+  const elements = {
+    'Aries': 'Fire', 'Leo': 'Fire', 'Sagittarius': 'Fire',
+    'Taurus': 'Earth', 'Virgo': 'Earth', 'Capricorn': 'Earth',
+    'Gemini': 'Air', 'Libra': 'Air', 'Aquarius': 'Air',
+    'Cancer': 'Water', 'Scorpio': 'Water', 'Pisces': 'Water'
+  };
+
+  const element1 = elements[sign1];
+  const element2 = elements[sign2];
+
+  // Base compatibility scores
+  let baseScore = 50;
+  let loveScore = 50;
+  let friendshipScore = 50;
+  let workScore = 50;
+
+  // Same element = high compatibility
+  if (element1 === element2) {
+    baseScore += 30;
+    loveScore += 25;
+    friendshipScore += 35;
+    workScore += 30;
+  }
+  // Compatible elements
+  else if (
+    (element1 === 'Fire' && element2 === 'Air') ||
+    (element1 === 'Air' && element2 === 'Fire') ||
+    (element1 === 'Earth' && element2 === 'Water') ||
+    (element1 === 'Water' && element2 === 'Earth')
+  ) {
+    baseScore += 20;
+    loveScore += 20;
+    friendshipScore += 25;
+    workScore += 15;
+  }
+  // Challenging elements
+  else if (
+    (element1 === 'Fire' && element2 === 'Water') ||
+    (element1 === 'Water' && element2 === 'Fire') ||
+    (element1 === 'Earth' && element2 === 'Air') ||
+    (element1 === 'Air' && element2 === 'Earth')
+  ) {
+    baseScore -= 10;
+    loveScore -= 15;
+    friendshipScore -= 5;
+    workScore -= 10;
+  }
+
+  // Add some randomization for variety
+  const randomFactor = () => Math.floor(Math.random() * 10) - 5;
+  baseScore += randomFactor();
+  loveScore += randomFactor();
+  friendshipScore += randomFactor();
+  workScore += randomFactor();
+
+  // Ensure scores are within bounds
+  const clamp = (value) => Math.max(10, Math.min(95, value));
+  baseScore = clamp(baseScore);
+  loveScore = clamp(loveScore);
+  friendshipScore = clamp(friendshipScore);
+  workScore = clamp(workScore);
+
+  // Generate description based on compatibility
+  let description = '';
+  if (baseScore >= 80) {
+    description = `${sign1} and ${sign2} share an exceptional cosmic connection. Their ${element1} and ${element2} energies create a powerful synergy that enhances both partners' strengths.`;
+  } else if (baseScore >= 60) {
+    description = `${sign1} and ${sign2} have good compatibility potential. While their ${element1} and ${element2} natures may differ, they complement each other in meaningful ways.`;
+  } else if (baseScore >= 40) {
+    description = `${sign1} and ${sign2} face some challenges due to their ${element1} and ${element2} elements, but with effort and understanding, they can build a solid relationship.`;
+  } else {
+    description = `${sign1} and ${sign2} have contrasting ${element1} and ${element2} energies that require significant compromise and patience to harmonize.`;
+  }
+
+  // Generate strengths
+  const strengths = [];
+  if (loveScore >= 70) strengths.push('Strong romantic chemistry and mutual attraction');
+  if (friendshipScore >= 70) strengths.push('Natural understanding and easy communication');
+  if (workScore >= 70) strengths.push('Complementary skills in professional settings');
+  if (baseScore >= 60) strengths.push('Shared values and life goals');
+  if (strengths.length === 0) strengths.push('Opportunity for personal growth through differences');
+
+  // Generate challenges
+  const challenges = [];
+  if (loveScore < 50) challenges.push('Different emotional needs and expressions');
+  if (friendshipScore < 50) challenges.push('Communication styles may clash');
+  if (workScore < 50) challenges.push('Conflicting work approaches and priorities');
+  if (baseScore < 60) challenges.push('Fundamental differences in worldview');
+  if (challenges.length === 0) challenges.push('May become too comfortable and lack growth');
+
+  // Generate advice
+  let advice = '';
+  if (baseScore >= 70) {
+    advice = 'This pairing has natural harmony. Focus on maintaining open communication and celebrating your differences as well as your similarities.';
+  } else if (baseScore >= 50) {
+    advice = 'Success in this relationship comes from patience and understanding. Take time to learn each other\'s communication styles and emotional needs.';
+  } else {
+    advice = 'This combination requires extra effort, but can be rewarding. Focus on finding common ground and respecting each other\'s unique perspectives.';
+  }
+
+  return {
+    sign1,
+    sign2,
+    compatibility_score: baseScore,
+    love_compatibility: loveScore,
+    friendship_compatibility: friendshipScore,
+    work_compatibility: workScore,
+    description,
+    strengths,
+    challenges,
+    advice
+  };
+}
+
+async function seedCompatibilityData() {
+  console.log('Starting compatibility data seed...');
+
+  const compatibilityData = [];
+
+  // Generate data for all unique pairs
+  for (let i = 0; i < ZODIAC_SIGNS.length; i++) {
+    for (let j = i; j < ZODIAC_SIGNS.length; j++) {
+      const data = generateCompatibilityData(ZODIAC_SIGNS[i], ZODIAC_SIGNS[j]);
+      compatibilityData.push(data);
+    }
+  }
+
+  console.log(`Generated ${compatibilityData.length} compatibility combinations`);
+
+  // Insert in batches
+  const batchSize = 20;
+  for (let i = 0; i < compatibilityData.length; i += batchSize) {
+    const batch = compatibilityData.slice(i, i + batchSize);
+    
+    const { error } = await supabase
+      .from('compatibility_results')
+      .upsert(batch, { onConflict: 'sign1,sign2' });
+
+    if (error) {
+      console.error('Error inserting batch:', error);
+    } else {
+      console.log(`Inserted batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(compatibilityData.length / batchSize)}`);
+    }
+  }
+
+  console.log('Compatibility data seed completed!');
+}
+
+// Run the seed
+seedCompatibilityData().catch(console.error);

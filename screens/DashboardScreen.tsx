@@ -145,10 +145,24 @@ const DashboardScreen = ({ navigation, route }: any) => {
 
   const handleFeaturePress = (feature: any) => {
     if (!feature.disabled) {
-      if (feature.id === 'astrology') {
-        navigation.navigate('Astrology', { userData });
-      } else {
-        alert(`${feature.title} feature coming soon!`);
+      switch (feature.id) {
+        case 'astrology':
+          navigation.navigate('Astrology', { userData });
+          break;
+        case 'compatibility':
+          navigation.navigate('Compatibility');
+          break;
+        case 'palm':
+          navigation.navigate('PalmIntro', { userData });
+          break;
+        case 'dream':
+          navigation.navigate('DreamInterpreter');
+          break;
+        case 'education':
+          navigation.navigate('Education');
+          break;
+        default:
+          alert(`${feature.title} feature coming soon!`);
       }
     }
   };

@@ -1,380 +1,534 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '../App';
-import { FullScreenLoader } from '../components/FullScreenLoader';
+import React, { useState, useEffect } from 'react';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  SafeAreaView,
+  Alert,
+  Platform,
+  KeyboardAvoidingView,
+  ScrollView,
+  ActivityIndicator
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { supabase } from '../lib/supabase';
+import { calculateZodiacSign } from '../utils/zodiacCalculator';
+import { FullScreenLoader } from '../components/FullScreenLoader';
 
-type OnboardingScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Onboarding'>;
-
-interface Props {
-  navigation: OnboardingScreenNavigationProp;
+interface UserData {
+  name: string;
+  birthDate: Date;
+  birthTime: string;
+  birthPlace: {
+    city: string;
+    state: string;
+    country: string;
+  };
+  gender: string;
+  relationshipStatus: string;
+  zodiacSign?: string;
 }
 
-export default function OnboardingScreen({ navigation }: Props) {
+const OnboardingScreen = ({ navigation }: any) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [name, setName] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [gender, setGender] = useState('');
-  const [birthCity, setBirthCity] = useState('');
-  const [relationshipStatus, setRelationshipStatus] = useState('');
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState<UserData>({
+    name: '',
+    birthDate: new Date(),
+    birthTime: '',
+    birthPlace: {
+      city: '',
+      state: '',
+      country: ''
+    },
+    gender: '',
+    relationshipStatus: ''
+  });
 
-  // Calculate zodiac sign based on birth date
-  const calculateZodiacSign = (dateStr: string): string => {
-    const date = new Date(dateStr);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
+  // Initialize anonymous auth when component mounts
+  useEffect(() => {
+    initializeAnonymousAuth();
+  }, []);
 
-    const zodiacDates = [
-      { sign: 'Capricorn', startMonth: 12, startDay: 22, endMonth: 1, endDay: 19 },
-      { sign: 'Aquarius', startMonth: 1, startDay: 20, endMonth: 2, endDay: 18 },
-      { sign: 'Pisces', startMonth: 2, startDay: 19, endMonth: 3, endDay: 20 },
-      { sign: 'Aries', startMonth: 3, startDay: 21, endMonth: 4, endDay: 19 },
-      { sign: 'Taurus', startMonth: 4, startDay: 20, endMonth: 5, endDay: 20 },
-      { sign: 'Gemini', startMonth: 5, startDay: 21, endMonth: 6, endDay: 20 },
-      { sign: 'Cancer', startMonth: 6, startDay: 21, endMonth: 7, endDay: 22 },
-      { sign: 'Leo', startMonth: 7, startDay: 23, endMonth: 8, endDay: 22 },
-      { sign: 'Virgo', startMonth: 8, startDay: 23, endMonth: 9, endDay: 22 },
-      { sign: 'Libra', startMonth: 9, startDay: 23, endMonth: 10, endDay: 22 },
-      { sign: 'Scorpio', startMonth: 10, startDay: 23, endMonth: 11, endDay: 21 },
-      { sign: 'Sagittarius', startMonth: 11, startDay: 22, endMonth: 12, endDay: 21 }
-    ];
-
-    for (const zodiac of zodiacDates) {
-      if (
-        (month === zodiac.startMonth && day >= zodiac.startDay) ||
-        (month === zodiac.endMonth && day <= zodiac.endDay)
-      ) {
-        return zodiac.sign;
-      }
-    }
-
-    return 'Capricorn'; // Default for edge case
-  };
-
-  const saveUserData = async () => {
-    setIsLoading(true);
-    
+  const initializeAnonymousAuth = async () => {
     try {
-      // Get the current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      // Check if user is already authenticated
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (userError || !user) {
-        throw new Error('No authenticated user found');
+      if (!user) {
+        // Sign in anonymously
+        const { data, error } = await supabase.auth.signInAnonymously();
+        if (error) {
+          console.error('Anonymous auth error:', error);
+          Alert.alert(
+            'Connection Error',
+            'Unable to connect to the server. Please check your internet connection and try again.',
+            [{ text: 'Retry', onPress: initializeAnonymousAuth }]
+          );
+          return;
+        }
+        console.log('Anonymous user created:', data.user?.id);
+      } else {
+        console.log('User already authenticated:', user.id);
       }
-
-      // Calculate zodiac sign
-      const zodiacSign = calculateZodiacSign(birthDate);
-
-      // Save user profile data
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          name,
-          birth_date: birthDate,
-          gender,
-          birth_city: birthCity,
-          relationship_status: relationshipStatus,
-          zodiac_sign: zodiacSign,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (profileError) {
-        throw profileError;
-      }
-
-      // Navigate to Dashboard with user data
-      const userData = {
-        name,
-        birthDate,
-        gender,
-        birthCity,
-        relationshipStatus,
-        zodiacSign
-      };
-      
-      navigation.navigate('Dashboard', { userData });
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Auth initialization error:', error);
       Alert.alert(
-        'Error',
-        error.message || 'Failed to save profile. Please try again.',
-        [{ text: 'OK' }]
+        'Connection Error',
+        'Unable to initialize the app. Please try again.',
+        [{ text: 'Retry', onPress: initializeAnonymousAuth }]
       );
     } finally {
-      setIsLoading(false);
+      setIsInitializing(false);
     }
   };
 
-  const nextStep = () => {
-    // Validation for required fields
-    if (currentStep === 1 && !name.trim()) {
-      Alert.alert('Required', 'Please enter your name');
-      return;
-    }
-    if (currentStep === 2 && !birthDate) {
-      Alert.alert('Required', 'Please enter your birth date');
-      return;
-    }
-
-    if (currentStep < 5) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      // Save data and navigate
-      saveUserData();
+  const handleNext = () => {
+    if (validateCurrentStep()) {
+      if (currentStep < 5) {
+        setCurrentStep(currentStep + 1);
+      } else {
+        handleComplete();
+      }
     }
   };
 
-  const prevStep = () => {
+  const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
 
+  const validateCurrentStep = () => {
+    switch (currentStep) {
+      case 1:
+        if (!userData.name.trim()) {
+          Alert.alert('Name Required', 'Please enter your name');
+          return false;
+        }
+        break;
+      case 3:
+        if (!userData.birthPlace.city.trim()) {
+          Alert.alert('Birth City Required', 'Please enter your birth city');
+          return false;
+        }
+        break;
+      case 4:
+        if (!userData.gender) {
+          Alert.alert('Gender Required', 'Please select your gender');
+          return false;
+        }
+        break;
+      case 5:
+        if (!userData.relationshipStatus) {
+          Alert.alert('Relationship Status Required', 'Please select your relationship status');
+          return false;
+        }
+        break;
+    }
+    return true;
+  };
+
+  const handleComplete = async () => {
+    setIsLoading(true);
+    
+    try {
+      // Get current user
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.error('Auth error:', authError);
+        Alert.alert('Error', 'Authentication failed. Please try again.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Calculate zodiac sign
+      const zodiacSign = calculateZodiacSign(userData.birthDate);
+      const profileData = {
+        ...userData,
+        zodiacSign,
+        id: user.id
+      };
+
+      // Save to Supabase
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          full_name: userData.name,
+          birth_date: userData.birthDate.toISOString().split('T')[0],
+          birth_time: userData.birthTime || null,
+          birth_place_city: userData.birthPlace.city,
+          birth_place_state: userData.birthPlace.state || null,
+          birth_place_country: userData.birthPlace.country || null,
+          gender: userData.gender,
+          relationship_status: userData.relationshipStatus,
+          zodiac_sign: zodiacSign,
+          is_anonymous: true,
+          updated_at: new Date().toISOString()
+        });
+
+      if (profileError) {
+        console.error('Profile save error:', profileError);
+        Alert.alert('Error', 'Failed to save profile. Please try again.');
+      } else {
+        // Navigate to Dashboard with user data
+        navigation.replace('Dashboard', { userData: profileData });
+      }
+    } catch (error) {
+      console.error('Onboarding error:', error);
+      Alert.alert('Error', 'Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderStepIndicator = () => (
+    <View style={styles.progressContainer}>
+      <View style={styles.progressBar}>
+        <View 
+          style={[
+            styles.progressFill, 
+            { width: `${(currentStep / 5) * 100}%` }
+          ]} 
+        />
+      </View>
+      <Text style={styles.stepText}>Step {currentStep} of 5</Text>
+    </View>
+  );
+
   const renderStep = () => {
     switch (currentStep) {
       case 1:
         return (
-          <View style={styles.stepContainer}>
-            <Text style={styles.title}>What is your name?</Text>
+          <View style={styles.stepContent}>
+            <Text style={styles.question}>What is your name?</Text>
             <TextInput
               style={styles.input}
               placeholder="Enter your name"
-              placeholderTextColor="#888"
-              value={name}
-              onChangeText={setName}
+              placeholderTextColor="#666"
+              value={userData.name}
+              onChangeText={(text) => setUserData({...userData, name: text})}
+              autoFocus
             />
           </View>
         );
 
       case 2:
         return (
-          <View style={styles.stepContainer}>
-            <Text style={styles.title}>Date of Birth</Text>
+          <View style={styles.stepContent}>
+            <Text style={styles.question}>Date & Time of Birth</Text>
+            <TouchableOpacity 
+              style={styles.dateButton}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Ionicons name="calendar" size={24} color="#9d4edd" />
+              <Text style={styles.dateButtonText}>
+                {userData.birthDate.toLocaleDateString()}
+              </Text>
+            </TouchableOpacity>
+            
             <TextInput
               style={styles.input}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor="#888"
-              value={birthDate}
-              onChangeText={setBirthDate}
+              placeholder="Time of birth (optional) e.g., 14:30"
+              placeholderTextColor="#666"
+              value={userData.birthTime}
+              onChangeText={(text) => setUserData({...userData, birthTime: text})}
             />
-            <Text style={styles.hint}>
-              This helps us calculate your zodiac sign
-            </Text>
+            
+            {showDatePicker && (
+              <DateTimePicker
+                value={userData.birthDate}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(Platform.OS === 'ios');
+                  if (selectedDate) {
+                    setUserData({...userData, birthDate: selectedDate});
+                  }
+                }}
+                maximumDate={new Date()}
+              />
+            )}
           </View>
         );
 
       case 3:
         return (
-          <View style={styles.stepContainer}>
-            <Text style={styles.title}>Gender</Text>
-            {['Male', 'Female', 'Non-binary', 'Prefer not to say'].map((option) => (
-              <TouchableOpacity
-                key={option}
-                style={[
-                  styles.optionButton,
-                  gender === option && styles.selectedOption
-                ]}
-                onPress={() => setGender(option)}
-              >
-                <Text style={[
-                  styles.optionText,
-                  gender === option && styles.selectedOptionText
-                ]}>{option}</Text>
-              </TouchableOpacity>
-            ))}
+          <View style={styles.stepContent}>
+            <Text style={styles.question}>Place of Birth</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="City"
+              placeholderTextColor="#666"
+              value={userData.birthPlace.city}
+              onChangeText={(text) => setUserData({
+                ...userData, 
+                birthPlace: {...userData.birthPlace, city: text}
+              })}
+              autoFocus
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="State/Province (optional)"
+              placeholderTextColor="#666"
+              value={userData.birthPlace.state}
+              onChangeText={(text) => setUserData({
+                ...userData, 
+                birthPlace: {...userData.birthPlace, state: text}
+              })}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Country (optional)"
+              placeholderTextColor="#666"
+              value={userData.birthPlace.country}
+              onChangeText={(text) => setUserData({
+                ...userData, 
+                birthPlace: {...userData.birthPlace, country: text}
+              })}
+            />
           </View>
         );
 
       case 4:
         return (
-          <View style={styles.stepContainer}>
-            <Text style={styles.title}>Place of Birth</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="City, Country"
-              placeholderTextColor="#888"
-              value={birthCity}
-              onChangeText={setBirthCity}
-            />
-            <Text style={styles.hint}>
-              This helps with astrological calculations
-            </Text>
-          </View>
-        );
-
-      case 5:
-        return (
-          <View style={styles.stepContainer}>
-            <Text style={styles.title}>Relationship Status</Text>
-            {['Single', 'In a relationship', 'Married', 'It\'s complicated'].map((option) => (
+          <View style={styles.stepContent}>
+            <Text style={styles.question}>Gender</Text>
+            {['Male', 'Female', 'Other'].map((gender) => (
               <TouchableOpacity
-                key={option}
+                key={gender}
                 style={[
                   styles.optionButton,
-                  relationshipStatus === option && styles.selectedOption
+                  userData.gender === gender && styles.optionButtonSelected
                 ]}
-                onPress={() => setRelationshipStatus(option)}
+                onPress={() => setUserData({...userData, gender})}
               >
                 <Text style={[
                   styles.optionText,
-                  relationshipStatus === option && styles.selectedOptionText
-                ]}>{option}</Text>
+                  userData.gender === gender && styles.optionTextSelected
+                ]}>
+                  {gender}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
         );
 
-      default:
-        return null;
+      case 5:
+        return (
+          <View style={styles.stepContent}>
+            <Text style={styles.question}>Relationship Status</Text>
+            {['Single', 'In a relationship', 'Married', "It's complicated"].map((status) => (
+              <TouchableOpacity
+                key={status}
+                style={[
+                  styles.optionButton,
+                  userData.relationshipStatus === status && styles.optionButtonSelected
+                ]}
+                onPress={() => setUserData({...userData, relationshipStatus: status})}
+              >
+                <Text style={[
+                  styles.optionText,
+                  userData.relationshipStatus === status && styles.optionTextSelected
+                ]}>
+                  {status}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        );
     }
   };
 
+  if (isInitializing) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.centerContent}>
+          <ActivityIndicator size="large" color="#9d4edd" />
+          <Text style={styles.loadingText}>Initializing...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Set Up Your Profile</Text>
-        <Text style={styles.stepIndicator}>Step {currentStep} of 5</Text>
-      </View>
-
-      <View style={styles.progressBar}>
-        <View style={[styles.progress, { width: `${(currentStep / 5) * 100}%` }]} />
-      </View>
-
-      {renderStep()}
-
-      <View style={styles.buttonContainer}>
-        {currentStep > 1 && (
-          <TouchableOpacity style={styles.backButton} onPress={prevStep}>
-            <Text style={styles.buttonText}>Back</Text>
-          </TouchableOpacity>
-        )}
-
-        <TouchableOpacity 
-          style={styles.nextButton} 
-          onPress={nextStep}
-          disabled={isLoading}
+      {isLoading && <FullScreenLoader message="Creating your cosmic profile..." />}
+      
+      <KeyboardAvoidingView 
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.buttonText}>
-            {currentStep === 5 ? 'Complete' : 'Next'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <FullScreenLoader 
-        visible={isLoading} 
-        message="Creating your cosmic profile..." 
-      />
+          <Text style={styles.title}>Set Up Your Profile</Text>
+          {renderStepIndicator()}
+          {renderStep()}
+        </ScrollView>
+        
+        <View style={styles.buttonContainer}>
+          {currentStep > 1 && (
+            <TouchableOpacity 
+              style={styles.backButton} 
+              onPress={handleBack}
+            >
+              <Text style={styles.backButtonText}>Back</Text>
+            </TouchableOpacity>
+          )}
+          
+          <TouchableOpacity 
+            style={styles.nextButton} 
+            onPress={handleNext}
+          >
+            <Text style={styles.nextButtonText}>
+              {currentStep === 5 ? 'Complete' : 'Next'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#1a1a2e',
   },
-  header: {
-    paddingTop: 60,
-    paddingBottom: 20,
-    alignItems: 'center',
+  keyboardView: {
+    flex: 1,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 8,
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingTop: 40,
   },
-  stepIndicator: {
-    fontSize: 16,
-    color: '#9d4edd',
-  },
-  progressBar: {
-    height: 4,
-    backgroundColor: '#2d2d44',
-    marginHorizontal: 24,
-    marginBottom: 30,
-    borderRadius: 2,
-  },
-  progress: {
-    height: '100%',
-    backgroundColor: '#9d4edd',
-    borderRadius: 2,
-  },
-  stepContainer: {
-    paddingHorizontal: 24,
+  centerContent: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#9d4edd',
+    fontSize: 16,
+    marginTop: 20,
   },
   title: {
-    fontSize: 20,
+    fontSize: 32,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  progressContainer: {
+    marginBottom: 40,
+    alignItems: 'center',
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: '#2a2a3e',
+    borderRadius: 4,
+    width: '100%',
+    marginBottom: 10,
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#9d4edd',
+    borderRadius: 4,
+  },
+  stepText: {
+    color: '#9d4edd',
+    fontSize: 16,
+  },
+  stepContent: {
+    flex: 1,
+    marginBottom: 30,
+  },
+  question: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#FFFFFF',
     marginBottom: 30,
     textAlign: 'center',
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#444',
+    backgroundColor: '#2a2a3e',
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
-    color: '#ffffff',
-    backgroundColor: '#2d2d44',
+    color: '#FFFFFF',
     marginBottom: 16,
   },
-  hint: {
-    fontSize: 14,
-    color: '#888',
-    textAlign: 'center',
-    marginTop: -8,
-  },
-  optionButton: {
-    borderWidth: 1,
-    borderColor: '#444',
+  dateButton: {
+    backgroundColor: '#2a2a3e',
     borderRadius: 12,
     padding: 16,
-    backgroundColor: '#2d2d44',
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
-  selectedOption: {
+  dateButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    marginLeft: 12,
+  },
+  optionButton: {
+    backgroundColor: '#2a2a3e',
+    borderRadius: 12,
+    padding: 18,
+    marginBottom: 12,
+    alignItems: 'center',
+  },
+  optionButtonSelected: {
     backgroundColor: '#9d4edd',
-    borderColor: '#9d4edd',
   },
   optionText: {
-    fontSize: 16,
-    color: '#ffffff',
+    color: '#FFFFFF',
+    fontSize: 18,
   },
-  selectedOptionText: {
-    color: '#ffffff',
-    fontWeight: '600',
+  optionTextSelected: {
+    fontWeight: 'bold',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 24,
-    paddingBottom: 40,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+    gap: 12,
   },
   backButton: {
     flex: 1,
-    marginRight: 12,
-    backgroundColor: '#444',
+    backgroundColor: '#2a2a3e',
     borderRadius: 12,
-    padding: 16,
+    padding: 18,
     alignItems: 'center',
+  },
+  backButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
   },
   nextButton: {
     flex: 2,
     backgroundColor: '#9d4edd',
     borderRadius: 12,
-    padding: 16,
+    padding: 18,
     alignItems: 'center',
   },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
+  nextButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
+
+export default OnboardingScreen;

@@ -11,6 +11,15 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
 
+// Helper function to generate a valid UUID v4
+function generateUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 // Helper function to queue a reading (placeholder for now)
 const queueReading = async (
   userId: string, 
@@ -18,9 +27,14 @@ const queueReading = async (
   userZodiacSign?: string
 ) => {
   try {
+    // Ensure userId is a valid UUID
+    const validUserId = userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i) 
+      ? userId 
+      : generateUUID();
+
     // TODO: Implement actual Supabase integration
     console.log('Queueing reading:', {
-      user_id: userId,
+      user_id: validUserId,
       reading_type: readingType,
       zodiac_sign: userZodiacSign,
       status: 'pending',
@@ -32,7 +46,7 @@ const queueReading = async (
     const { data, error } = await supabase
       .from('readings')
       .insert({
-        user_id: userId,
+        user_id: validUserId,
         reading_type: readingType,
         zodiac_sign: userZodiacSign,
         status: 'pending',
@@ -48,9 +62,9 @@ const queueReading = async (
     return data;
     */
     
-    // For now, return mock data
+    // For now, return mock data with proper UUID
     return {
-      id: 'mock-reading-id-' + Date.now(),
+      id: generateUUID(),
       reading_type: readingType,
       status: 'pending',
       estimated_completion: new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString(),
@@ -64,12 +78,17 @@ const queueReading = async (
 // Helper function to check if user can request a free reading
 const canUserGetFreeReading = async (userId: string) => {
   try {
+    // Ensure userId is a valid UUID
+    const validUserId = userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i) 
+      ? userId 
+      : generateUUID();
+
     // TODO: Implement actual check with Supabase
     /*
     const { data, error } = await supabase
       .from('readings')
       .select('id')
-      .eq('user_id', userId)
+      .eq('user_id', validUserId)
       .eq('is_paid', false)
       .limit(1);
     
@@ -92,10 +111,18 @@ const ReadingRequestScreen = ({ route }: any) => {
   const [selectedReading, setSelectedReading] = useState<string | null>(null);
   
   // Get user data from navigation params (if available)
-  const userData = route?.params?.userData || { 
+  // Generate proper UUID for test users
+  const routeUserData = route?.params?.userData;
+  const userData = routeUserData || { 
+    id: generateUUID(), // Generate proper UUID for test user
     name: 'Test User', 
     zodiacSign: 'Aries' 
   };
+
+  // Ensure existing userData has valid UUID
+  if (userData && userData.id && !userData.id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+    userData.id = generateUUID();
+  }
 
   // Reading types configuration
   const readingTypes = [
@@ -149,7 +176,7 @@ const ReadingRequestScreen = ({ route }: any) => {
     
     try {
       // Use actual user data if available
-      const userId = userData.id || 'mock-user-id';
+      const userId = userData.id;
       const userZodiacSign = userData.zodiacSign || 'Aries';
       
       // Check if this is a premium reading
@@ -158,6 +185,7 @@ const ReadingRequestScreen = ({ route }: any) => {
         navigation.navigate('PremiumPayment' as never, { 
           readingType: 'clairvoyance',
           price: 34.99,
+          userData: userData,
           onSuccess: async () => {
             // Queue reading after successful payment
             await queueReading(userId, readingType, userZodiacSign);
@@ -195,6 +223,7 @@ const ReadingRequestScreen = ({ route }: any) => {
         navigation.navigate('PremiumPayment' as never, { 
           readingType,
           price: 4.99,
+          userData: userData,
           onSuccess: async () => {
             // Queue reading after successful payment
             await queueReading(userId, readingType, userZodiacSign);

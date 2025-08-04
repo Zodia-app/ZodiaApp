@@ -1,0 +1,413 @@
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+
+const ZODIAC_SIGNS = [
+  'Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo',
+  'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+];
+
+interface CompatibilityResult {
+  compatibility_score: number;
+  love_compatibility: number;
+  friendship_compatibility: number;
+  work_compatibility: number;
+  description: string;
+  strengths: string[];
+  challenges: string[];
+  advice: string;
+}
+
+export default function CompatibilityScreen() {
+  const { user } = useAuth();
+  const [sign1, setSign1] = useState<string>('');
+  const [sign2, setSign2] = useState<string>('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<CompatibilityResult | null>(null);
+  const [showResult, setShowResult] = useState(false);
+
+  const checkCompatibility = async () => {
+    if (!sign1 || !sign2) {
+      Alert.alert('Please select both zodiac signs');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Get compatibility result
+      const { data, error } = await supabase
+        .from('compatibility_results')
+        .select('*')
+        .or(`and(sign1.eq.${sign1},sign2.eq.${sign2}),and(sign1.eq.${sign2},sign2.eq.${sign1})`)
+        .single();
+
+      if (error) throw error;
+
+      setResult(data);
+      setShowResult(true);
+
+      // Track user check if logged in
+      if (user) {
+        await supabase
+          .from('user_compatibility_checks')
+          .insert({
+            user_id: user.id,
+            sign1,
+            sign2,
+          });
+      }
+    } catch (error) {
+      console.error('Error checking compatibility:', error);
+      Alert.alert('Error', 'Failed to check compatibility. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetCheck = () => {
+    setShowResult(false);
+    setResult(null);
+    setSign1('');
+    setSign2('');
+  };
+
+  const renderSignSelector = (selectedSign: string, onSelect: (sign: string) => void, label: string) => (
+    <View style={styles.selectorContainer}>
+      <Text style={styles.selectorLabel}>{label}</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.signScroll}>
+        {ZODIAC_SIGNS.map((sign) => (
+          <TouchableOpacity
+            key={sign}
+            style={[
+              styles.signButton,
+              selectedSign === sign && styles.signButtonSelected,
+            ]}
+            onPress={() => onSelect(sign)}
+          >
+            <Text
+              style={[
+                styles.signButtonText,
+                selectedSign === sign && styles.signButtonTextSelected,
+              ]}
+            >
+              {sign}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
+  );
+
+  const renderCompatibilityBar = (value: number, label: string, color: string) => (
+    <View style={styles.compatibilityBar}>
+      <View style={styles.barHeader}>
+        <Text style={styles.barLabel}>{label}</Text>
+        <Text style={styles.barValue}>{value}%</Text>
+      </View>
+      <View style={styles.barBackground}>
+        <View
+          style={[
+            styles.barFill,
+            {
+              width: `${value}%`,
+              backgroundColor: color,
+            },
+          ]}
+        />
+      </View>
+    </View>
+  );
+
+  if (showResult && result) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <LinearGradient
+          colors={['#1a1a2e', '#16213e', '#0f3460']}
+          style={styles.gradient}
+        >
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            <View style={styles.resultHeader}>
+              <Text style={styles.resultTitle}>
+                {sign1} & {sign2}
+              </Text>
+              <Text style={styles.compatibilityScore}>
+                {result.compatibility_score}% Compatible
+              </Text>
+            </View>
+
+            <View style={styles.resultContent}>
+              {renderCompatibilityBar(result.love_compatibility, 'Love', '#e74c3c')}
+              {renderCompatibilityBar(result.friendship_compatibility, 'Friendship', '#3498db')}
+              {renderCompatibilityBar(result.work_compatibility, 'Work', '#2ecc71')}
+
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Overview</Text>
+                <Text style={styles.sectionText}>{result.description}</Text>
+              </View>
+
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Strengths</Text>
+                {result.strengths.map((strength, index) => (
+                  <View key={index} style={styles.listItem}>
+                    <Text style={styles.listBullet}>✦</Text>
+                    <Text style={styles.listText}>{strength}</Text>
+                  </View>
+                ))}
+              </View>
+
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Challenges</Text>
+                {result.challenges.map((challenge, index) => (
+                  <View key={index} style={styles.listItem}>
+                    <Text style={styles.listBullet}>◆</Text>
+                    <Text style={styles.listText}>{challenge}</Text>
+                  </View>
+                ))}
+              </View>
+
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Advice</Text>
+                <Text style={styles.sectionText}>{result.advice}</Text>
+              </View>
+            </View>
+
+            <TouchableOpacity style={styles.checkAgainButton} onPress={resetCheck}>
+              <Text style={styles.checkAgainButtonText}>Check Another Pair</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </LinearGradient>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <LinearGradient
+        colors={['#1a1a2e', '#16213e', '#0f3460']}
+        style={styles.gradient}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Zodiac Compatibility</Text>
+            <Text style={styles.subtitle}>
+              Discover how well two signs match in love, friendship, and work
+            </Text>
+          </View>
+
+          {renderSignSelector(sign1, setSign1, 'Select First Sign')}
+          
+          {sign1 && sign2 && (
+            <View style={styles.vsContainer}>
+              <Text style={styles.vsText}>VS</Text>
+            </View>
+          )}
+          
+          {renderSignSelector(sign2, setSign2, 'Select Second Sign')}
+
+          <TouchableOpacity
+            style={[
+              styles.checkButton,
+              (!sign1 || !sign2 || loading) && styles.checkButtonDisabled,
+            ]}
+            onPress={checkCompatibility}
+            disabled={!sign1 || !sign2 || loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.checkButtonText}>Check Compatibility</Text>
+            )}
+          </TouchableOpacity>
+        </ScrollView>
+      </LinearGradient>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  gradient: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 30,
+  },
+  header: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#a0a0a0',
+    textAlign: 'center',
+  },
+  selectorContainer: {
+    marginVertical: 20,
+    paddingHorizontal: 20,
+  },
+  selectorLabel: {
+    fontSize: 18,
+    color: '#fff',
+    marginBottom: 15,
+    fontWeight: '600',
+  },
+  signScroll: {
+    flexDirection: 'row',
+  },
+  signButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  signButtonSelected: {
+    backgroundColor: '#e94560',
+    borderColor: '#e94560',
+  },
+  signButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  signButtonTextSelected: {
+    fontWeight: 'bold',
+  },
+  vsContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  vsText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#e94560',
+  },
+  checkButton: {
+    backgroundColor: '#e94560',
+    marginHorizontal: 20,
+    marginTop: 30,
+    paddingVertical: 18,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  checkButtonDisabled: {
+    opacity: 0.5,
+  },
+  checkButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  resultHeader: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  resultTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 10,
+  },
+  compatibilityScore: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#e94560',
+  },
+  resultContent: {
+    padding: 20,
+  },
+  compatibilityBar: {
+    marginBottom: 25,
+  },
+  barHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  barLabel: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '600',
+  },
+  barValue: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  barBackground: {
+    height: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  barFill: {
+    height: '100%',
+    borderRadius: 10,
+  },
+  section: {
+    marginTop: 30,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 15,
+  },
+  sectionText: {
+    fontSize: 16,
+    color: '#e0e0e0',
+    lineHeight: 24,
+  },
+  listItem: {
+    flexDirection: 'row',
+    marginBottom: 10,
+  },
+  listBullet: {
+    color: '#e94560',
+    marginRight: 10,
+    fontSize: 16,
+  },
+  listText: {
+    flex: 1,
+    fontSize: 16,
+    color: '#e0e0e0',
+    lineHeight: 24,
+  },
+  checkAgainButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginHorizontal: 20,
+    marginTop: 30,
+    paddingVertical: 18,
+    borderRadius: 30,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  checkAgainButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+});
