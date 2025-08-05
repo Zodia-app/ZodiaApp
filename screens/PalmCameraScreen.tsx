@@ -24,36 +24,24 @@ interface CapturedHand {
   type: HandType;
 }
 
-// Make the component defensive against missing props
 const PalmCameraScreen = (props?: any) => {
-  // Safely handle props that might be undefined
   const navigation = props?.navigation;
   const route = props?.route;
-  
-  // Log what we're receiving
-  console.log('PalmCameraScreen props:', {
-    hasProps: !!props,
-    hasNavigation: !!navigation,
-    hasRoute: !!route,
-    propsType: typeof props,
-  });
   
   const cameraRef = useRef<Camera>(null);
   
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
-  const [type, setType] = useState<CameraType>(CameraType.back);
-  const [flash, setFlash] = useState<FlashMode>(FlashMode.off);
+  const [type, setType] = useState(CameraType.back);
+  const [flash, setFlash] = useState(FlashMode.off);
   const [capturedHands, setCapturedHands] = useState<CapturedHand[]>([]);
   const [currentHand, setCurrentHand] = useState<HandType>('left');
   const [isCapturing, setIsCapturing] = useState(false);
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Get userData from route params
   const userData = route?.params?.userData || {};
 
-  // Request camera permissions on mount
   useEffect(() => {
     requestCameraPermissions();
   }, []);
@@ -62,7 +50,6 @@ const PalmCameraScreen = (props?: any) => {
     try {
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
-      // Add a small delay to ensure Camera constants are loaded
       setTimeout(() => setIsCameraReady(true), 100);
     } catch (error) {
       console.error('Permission error:', error);
@@ -73,8 +60,6 @@ const PalmCameraScreen = (props?: any) => {
   const handleGoBack = () => {
     if (navigation && typeof navigation.goBack === 'function') {
       navigation.goBack();
-    } else {
-      console.warn('Navigation not available for goBack');
     }
   };
 
@@ -159,12 +144,13 @@ const PalmCameraScreen = (props?: any) => {
   };
 
   const toggleFlash = () => {
-    setFlash(current => 
-      current === FlashMode.off ? FlashMode.on : FlashMode.off
-    );
+    setFlash(current => {
+      if (current === FlashMode.off) return FlashMode.on;
+      if (current === FlashMode.on) return FlashMode.auto;
+      return FlashMode.off;
+    });
   };
 
-  // Show error if navigation is not available
   if (!navigation) {
     return (
       <View style={styles.centerContainer}>
@@ -250,7 +236,7 @@ const PalmCameraScreen = (props?: any) => {
         type={type}
         flashMode={flash}
         onCameraReady={() => console.log('Camera is ready')}
-        onMountError={(error) => console.error('Camera mount error:', error)}
+        onMountError={(error: any) => console.error('Camera mount error:', error)}
       >
         <SafeAreaView style={styles.header}>
           <TouchableOpacity 
