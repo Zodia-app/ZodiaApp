@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
 
-// Import all your actual screens
+// Import all screens
 import WelcomeScreen from './screens/WelcomeScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import DashboardScreen from './screens/DashboardScreen';
@@ -23,13 +23,20 @@ import ReadingRequestScreen from './screens/ReadingRequestScreen';
 import PremiumPaymentScreen from './screens/PremiumPaymentScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 
+// Import new screens
+import ReadingChoiceScreen from './screens/ReadingChoiceScreen';
+import PalmIntroScreen from './screens/PalmIntroScreen';
+import DreamInterpreterScreen from './screens/DreamInterpreterScreen';
+import DailyReportDetailScreen from './screens/DailyReportDetailScreen';
+import EducationalLibraryScreen from './screens/EducationalLibraryScreen';
+
 // Import ErrorBoundary
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Placeholder for missing screens
+// Placeholder for any still missing screens
 const PlaceholderScreen = ({ route }: any) => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1a1a2e' }}>
     <Text style={{ color: '#fff', fontSize: 18 }}>{route.name} - Coming Soon</Text>
@@ -46,8 +53,8 @@ function MainTabs() {
 
           if (route.name === 'Dashboard') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Reports') {
-            iconName = focused ? 'document-text' : 'document-text-outline';
+          } else if (route.name === 'Library') {
+            iconName = focused ? 'book' : 'book-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           } else if (route.name === 'More') {
@@ -74,7 +81,7 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
-      <Tab.Screen name="Reports" component={ProfileScreen} /> 
+      <Tab.Screen name="Library" component={EducationalLibraryScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="More" component={ProfileScreen} />
     </Tab.Navigator>
@@ -108,6 +115,13 @@ export default function App() {
             component={OnboardingScreen}
             options={{ headerShown: false }}
           />
+          
+          {/* Reading Choice (After Onboarding) */}
+          <Stack.Screen 
+            name="ReadingChoice" 
+            component={ReadingChoiceScreen}
+            options={{ headerShown: false }}
+          />
 
           {/* Main App */}
           <Stack.Screen 
@@ -124,21 +138,39 @@ export default function App() {
           />
           
           <Stack.Screen 
+            name="PalmIntroScreen" 
+            component={PalmIntroScreen}
+            options={{ title: 'Palm Reading Intro', headerShown: false }}
+          />
+          
+          <Stack.Screen 
             name="PalmCamera" 
             component={PalmCameraScreen}
             options={{ headerShown: false }}
           />
 
           <Stack.Screen 
-            name="PalmIntro" 
-            component={PlaceholderScreen}  // Using placeholder since it doesn't exist
-            options={{ title: 'Palm Reading', headerShown: false }}
-          />
-
-          <Stack.Screen 
             name="PalmReadingResult" 
             component={PalmReadingResultScreen}
             options={{ title: 'Your Palm Reading', headerShown: false }}
+          />
+          
+          <Stack.Screen 
+            name="DreamInterpreter" 
+            component={DreamInterpreterScreen}
+            options={{ title: 'Dream Interpreter', headerShown: false }}
+          />
+          
+          <Stack.Screen 
+            name="DailyReportDetail" 
+            component={DailyReportDetailScreen}
+            options={{ title: 'Daily Report', headerShown: false }}
+          />
+          
+          <Stack.Screen 
+            name="EducationalLibrary" 
+            component={EducationalLibraryScreen}
+            options={{ title: 'Educational Library', headerShown: false }}
           />
 
           <Stack.Screen 
@@ -183,10 +215,11 @@ export default function App() {
             options={{ title: 'Edit Profile', headerShown: false }}
           />
           
+          {/* Placeholder for Article Detail */}
           <Stack.Screen 
-            name="DreamInterpreter" 
+            name="ArticleDetail" 
             component={PlaceholderScreen}
-            options={{ title: 'Dream Interpreter', headerShown: false }}
+            options={{ title: 'Article', headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>

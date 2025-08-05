@@ -1,5 +1,3 @@
-import { ErrorService, ErrorType } from '../services/errorService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -14,12 +12,10 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { useScreenTracking, useAnalytics } from '../hooks/useAnalytics';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DashboardScreen = () => {
   const navigation = useNavigation();
-  useScreenTracking();
-  const analytics = useAnalytics();
 
   // Add state for error handling and data
   const [isLoading, setIsLoading] = useState(false);
@@ -57,15 +53,15 @@ const DashboardScreen = () => {
       setError(null);
       setShowRetry(false);
       
-      // Simulate fetching daily horoscope (replace with your actual API call)
-      // const horoscope = await generateDailyHoroscope(userData?.zodiacSign);
-      
       // For now, using mock data - replace with actual API call
       const mockHoroscope = {
         date: new Date().toDateString(),
-        content: "Today brings new opportunities for growth and discovery.",
+        content: "Today brings new opportunities for growth and discovery. The alignment of the stars suggests a favorable time for new beginnings and creative pursuits. Trust your intuition.",
         luckyNumber: 7,
-        color: "Purple"
+        color: "Purple",
+        moonPhase: "Waxing Crescent",
+        ritual: "Light a white candle and set your intentions for the day",
+        tarotCard: "The Star - Hope and renewal are on the horizon"
       };
       
       setDailyHoroscope(mockHoroscope);
@@ -82,43 +78,27 @@ const DashboardScreen = () => {
       
       setIsOffline(false);
       
-    } catch (error) {
-      const handledError = ErrorService.handle(error);
+    } catch (error: any) {
+      // Simple error handling without ErrorService
+      console.error('Failed to fetch daily content:', error);
       
-      // If network error, try to load cached content
-      if (handledError.type === ErrorType.NETWORK_ERROR) {
-        try {
-          const cached = await AsyncStorage.getItem('cachedDailyHoroscope');
-          if (cached) {
-            const { data, date } = JSON.parse(cached);
-            // Check if cache is from today
-            if (date === new Date().toDateString()) {
-              setDailyHoroscope(data);
-              setIsOffline(true); // Show offline indicator
-              setError(null); // Clear error since we have cached data
-              return;
-            } else {
-              // Cache is old
-              setError('Unable to fetch new content. Showing yesterday\'s reading.');
-              setDailyHoroscope(data);
-              setIsOffline(true);
-            }
-          } else {
-            // No cache available
-            setError('No internet connection. Please connect to load your daily reading.');
-            setIsOffline(true);
+      // Try to load cached content
+      try {
+        const cached = await AsyncStorage.getItem('cachedDailyHoroscope');
+        if (cached) {
+          const { data, date } = JSON.parse(cached);
+          setDailyHoroscope(data);
+          setIsOffline(true);
+          if (date !== new Date().toDateString()) {
+            setError('Showing cached content from previous day');
           }
-        } catch (cacheError) {
-          console.error('Failed to load cache:', cacheError);
-          setError(handledError.message);
+        } else {
+          setError('Unable to load daily content. Please check your connection.');
+          setShowRetry(true);
         }
-      } else {
-        // Non-network error
-        setError(handledError.message);
-      }
-      
-      // Show retry for recoverable errors
-      if (handledError.isRecoverable) {
+      } catch (cacheError) {
+        console.error('Failed to load cache:', cacheError);
+        setError('Unable to load content. Please try again.');
         setShowRetry(true);
       }
       
@@ -140,12 +120,9 @@ const DashboardScreen = () => {
     fetchDailyContent();
   };
 
-  // Feature press with error handling
+  // Feature press handler
   const handleFeaturePress = async (feature: string, screen: string) => {
     try {
-      // Track analytics
-      analytics.trackFeatureUsed(feature);
-      
       // Check if feature requires internet
       const onlineRequiredFeatures = ['astrology', 'compatibility', 'dream-interpreter'];
       
@@ -173,16 +150,12 @@ const DashboardScreen = () => {
       navigation.navigate(screen as never);
       
     } catch (error) {
-      const handledError = ErrorService.handle(error);
-      Alert.alert('Navigation Error', handledError.message);
+      Alert.alert('Navigation Error', 'Unable to open this feature. Please try again.');
     }
   };
 
   const handleZodiacCalculator = () => {
     try {
-      analytics.trackEvent('Zodiac Calculator Clicked');
-      // Navigate to calculator or show modal
-      // navigation.navigate('ZodiacCalculator' as never);
       Alert.alert('Coming Soon', 'Zodiac Calculator will be available soon!');
     } catch (error) {
       console.error('Failed to open zodiac calculator:', error);
@@ -191,8 +164,6 @@ const DashboardScreen = () => {
 
   const handleRequestReading = () => {
     try {
-      analytics.trackEvent('Request Reading Clicked');
-      
       if (isOffline) {
         Alert.alert(
           'Offline Mode',
@@ -204,9 +175,22 @@ const DashboardScreen = () => {
       
       navigation.navigate('ReadingRequest' as never);
     } catch (error) {
-      const handledError = ErrorService.handle(error);
-      Alert.alert('Error', handledError.message);
+      Alert.alert('Error', 'Unable to request reading. Please try again.');
     }
+  };
+
+  const handleDailyReportPress = () => {
+    // Show expanded daily report
+    if (!dailyHoroscope) {
+      handleRetry();
+      return;
+    }
+
+    Alert.alert(
+      'Daily Report',
+      `${dailyHoroscope.content}\n\n🌙 Moon Phase: ${dailyHoroscope.moonPhase}\n🎴 Tarot: ${dailyHoroscope.tarotCard}\n✨ Ritual: ${dailyHoroscope.ritual}\n🎨 Color: ${dailyHoroscope.color}\n🔢 Lucky Number: ${dailyHoroscope.luckyNumber}`,
+      [{ text: 'OK' }]
+    );
   };
 
   // Error banner component
@@ -289,6 +273,41 @@ const DashboardScreen = () => {
           </View>
         )}
 
+        {/* Daily Report Card - Enhanced */}
+        <TouchableOpacity 
+          style={styles.dailyReportCard}
+          onPress={handleDailyReportPress}
+        >
+          <View style={styles.dailyReportHeader}>
+            <Text style={styles.dailyReportTitle}>✨ Daily Report</Text>
+            <Ionicons name="chevron-forward" size={24} color="#8B5CF6" />
+          </View>
+          <Text style={styles.dailyReportDate}>Tuesday, August 5, 2025</Text>
+          
+          {dailyHoroscope && (
+            <>
+              <Text style={styles.horoscopePreview} numberOfLines={3}>
+                {dailyHoroscope.content}
+              </Text>
+              
+              <View style={styles.dailyHighlights}>
+                <View style={styles.highlightItem}>
+                  <Text style={styles.highlightIcon}>🌙</Text>
+                  <Text style={styles.highlightText}>{dailyHoroscope.moonPhase}</Text>
+                </View>
+                <View style={styles.highlightItem}>
+                  <Text style={styles.highlightIcon}>🎴</Text>
+                  <Text style={styles.highlightText}>Daily Card</Text>
+                </View>
+                <View style={styles.highlightItem}>
+                  <Text style={styles.highlightIcon}>✨</Text>
+                  <Text style={styles.highlightText}>Ritual</Text>
+                </View>
+              </View>
+            </>
+          )}
+        </TouchableOpacity>
+
         {/* Action Buttons */}
         <View style={styles.actionSection}>
           <TouchableOpacity 
@@ -296,7 +315,7 @@ const DashboardScreen = () => {
             onPress={handleZodiacCalculator}
           >
             <Ionicons name="calculator" size={24} color="white" />
-            <Text style={styles.zodiacButtonText}>Test Zodiac Calculator</Text>
+            <Text style={styles.zodiacButtonText}>Zodiac Calculator</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -309,30 +328,6 @@ const DashboardScreen = () => {
             <Ionicons name="chevron-forward" size={24} color="white" />
           </TouchableOpacity>
         </View>
-
-        {/* Daily Report Card */}
-        <TouchableOpacity 
-          style={styles.dailyReportCard}
-          onPress={() => {
-            if (dailyHoroscope) {
-              // Navigate to daily report details
-              analytics.trackEvent('Daily Report Clicked');
-            } else {
-              handleRetry();
-            }
-          }}
-        >
-          <View style={styles.dailyReportHeader}>
-            <Text style={styles.dailyReportTitle}>Daily Report</Text>
-            <Ionicons name="chevron-forward" size={24} color="#8B5CF6" />
-          </View>
-          <Text style={styles.dailyReportDate}>Tuesday, August 5, 2025</Text>
-          {dailyHoroscope && (
-            <Text style={styles.horoscopePreview} numberOfLines={2}>
-              {dailyHoroscope.content}
-            </Text>
-          )}
-        </TouchableOpacity>
 
         {/* Feature Grid */}
         <View style={styles.featureGrid}>
@@ -373,7 +368,26 @@ const DashboardScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Add some bottom padding so content doesn't hide behind tab bar */}
+        {/* Educational Section */}
+        <View style={styles.educationalSection}>
+          <Text style={styles.sectionTitle}>📚 Learn & Explore</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <TouchableOpacity style={styles.educationalCard}>
+              <Text style={styles.educationalEmoji}>♈</Text>
+              <Text style={styles.educationalTitle}>Zodiac Signs</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.educationalCard}>
+              <Text style={styles.educationalEmoji}>🔮</Text>
+              <Text style={styles.educationalTitle}>Palmistry 101</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.educationalCard}>
+              <Text style={styles.educationalEmoji}>🌙</Text>
+              <Text style={styles.educationalTitle}>Moon Phases</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+
+        {/* Add some bottom padding */}
         <View style={{ height: 20 }} />
       </ScrollView>
     </SafeAreaView>
@@ -456,6 +470,7 @@ const styles = StyleSheet.create({
   dailyReportCard: {
     backgroundColor: 'white',
     marginHorizontal: 20,
+    marginTop: 20,
     padding: 20,
     borderRadius: 15,
     shadowColor: '#000',
@@ -482,8 +497,27 @@ const styles = StyleSheet.create({
   horoscopePreview: {
     fontSize: 14,
     color: '#666',
-    marginTop: 8,
+    marginTop: 12,
     lineHeight: 20,
+  },
+  dailyHighlights: {
+    flexDirection: 'row',
+    marginTop: 15,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F0F0',
+  },
+  highlightItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  highlightIcon: {
+    fontSize: 20,
+    marginBottom: 4,
+  },
+  highlightText: {
+    fontSize: 11,
+    color: '#666',
   },
   featureGrid: {
     flexDirection: 'row',
@@ -522,7 +556,39 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
-  // New styles for error handling
+  educationalSection: {
+    paddingHorizontal: 20,
+    marginTop: 10,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 15,
+  },
+  educationalCard: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    marginRight: 12,
+    width: 120,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  educationalEmoji: {
+    fontSize: 30,
+    marginBottom: 8,
+  },
+  educationalTitle: {
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'center',
+  },
+  // Error handling styles
   errorBanner: {
     paddingHorizontal: 20,
     paddingTop: 10,
