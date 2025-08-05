@@ -32,7 +32,6 @@ const DashboardScreen = ({ navigation, route }: any) => {
     return new Date().toLocaleDateString(undefined, options);
   };
 
-  // Fetch user data from Supabase
   const fetchUserData = async () => {
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -54,7 +53,7 @@ const DashboardScreen = ({ navigation, route }: any) => {
       setUserData({
         name: profile.name,
         zodiacSign: profile.zodiac_sign,
-        birthDate: profile.birth_date,
+        birthDate: profile.birth_date ? new Date(profile.birth_date).toISOString() : null,
         gender: profile.gender,
         birthCity: profile.birth_city,
         relationshipStatus: profile.relationship_status,
@@ -163,6 +162,7 @@ const DashboardScreen = ({ navigation, route }: any) => {
         break;
       default:
         alert(`${feature.title} feature coming soon!`);
+
     }
   }
 };
@@ -196,7 +196,12 @@ const DashboardScreen = ({ navigation, route }: any) => {
           <Text style={styles.greeting}>Welcome, {userData?.name || 'Cosmic Traveler'}!</Text>
           <Text style={styles.date}>{getCurrentDate()}</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile', { userData })}>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile', { 
+          userData: {
+            ...userData,
+            birthDate: userData?.birthDate?.toString() || null
+          }
+        })}>
           <Ionicons name="person-circle" size={40} color="#6c5ce7" />
         </TouchableOpacity>
       </View>
@@ -295,7 +300,12 @@ const DashboardScreen = ({ navigation, route }: any) => {
         <BottomNavItem 
           icon="person" 
           label="Profile" 
-          onPress={() => navigation.navigate('Profile', { userData })} 
+          onPress={() => navigation.navigate('Profile', { 
+            userData: {
+              ...userData,
+              birthDate: userData?.birthDate?.toString() || null
+            }
+          })} 
         />
         <BottomNavItem 
           icon="menu" 

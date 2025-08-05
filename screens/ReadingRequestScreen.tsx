@@ -211,6 +211,7 @@ const ReadingRequestScreen = ({ route }: any) => {
             } as never);
             break;
           case 'palm':
+            // UPDATED: Navigate directly to PalmCamera for palm readings
             navigation.navigate('PalmCamera' as never, {
               readingId: reading.id,
               isFreeReading: true,
@@ -226,7 +227,22 @@ const ReadingRequestScreen = ({ route }: any) => {
           userData: userData,
           onSuccess: async () => {
             // Queue reading after successful payment
-            await queueReading(userId, readingType, userZodiacSign);
+            const reading = await queueReading(userId, readingType, userZodiacSign);
+            
+            // After payment, navigate to appropriate screen
+            if (readingType === 'palm') {
+              navigation.navigate('PalmCamera' as never, {
+                readingId: reading.id,
+                isFreeReading: false,
+                userData: userData,
+              } as never);
+            } else if (readingType === 'astrology') {
+              navigation.navigate('AstrologyReading' as never, {
+                readingId: reading.id,
+                isFreeReading: false,
+                userData: userData,
+              } as never);
+            }
           }
         } as never);
       }

@@ -15,20 +15,30 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.zodiaapp"
+      "bundleIdentifier": "com.yourcompany.zodiaapp",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Zodia needs access to your camera to capture palm photos for readings."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1a1a2e"
       },
-      "package": "com.yourcompany.zodiaapp"
+      "package": "com.yourcompany.zodiaapp",
+      "permissions": ["CAMERA"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Zodia to access your camera for palm reading photos."
+        }
+      ]
     ]
   }
 }

@@ -1,223 +1,160 @@
+// App.tsx
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, Text, StyleSheet } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 
-// Import your screens
+// Import all your screens
 import WelcomeScreen from './screens/WelcomeScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import ProfileScreen from './screens/ProfileScreen';
-import EditProfileScreen from './screens/EditProfileScreen';
 import AstrologyScreen from './screens/AstrologyScreen';
-
-// Import new Reading screens
-import ReadingRequestScreen from './screens/ReadingRequestScreen';
 import AstrologyReadingScreen from './screens/AstrologyReadingScreen';
 import PalmCameraScreen from './screens/PalmCameraScreen';
-import PremiumPaymentScreen from './screens/PremiumPaymentScreen';
-import ReadingQueueScreen from './screens/ReadingQueueScreen';
-
-// Import Compatibility Analysis screen
-import CompatibilityAnalysisScreen from './screens/CompatibilityAnalysisScreen';
-
-// Import new screens from the tasks
+import PalmIntroScreen from './screens/PalmIntroScreen';
 import PalmReadingResultScreen from './screens/PalmReadingResultScreen';
+import CompatibilityAnalysisScreen from './screens/CompatibilityAnalysisScreen';
 import ClairvoyanceReadingScreen from './screens/ClairvoyanceReadingScreen';
+import ReadingQueueScreen from './screens/ReadingQueueScreen';
+import ReadingRequestScreen from './screens/ReadingRequestScreen';
+import PremiumPaymentScreen from './screens/PremiumPaymentScreen';
+import EditProfileScreen from './screens/EditProfileScreen';
+// import ZodiacCalculatorScreen from './screens/ZodiacCalculatorScreen'; // Temporarily comment out
 
-// Import the Compatibility Input screen for Task #23
-import CompatibilityInputScreen from './screens/CompatibilityInputScreen';
 
-// Import the test component
-import ZodiacCalculatorTest from './components/ZodiacCalculatorTest';
+const Stack = createStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator();
 
-const Stack = createStackNavigator();
+// Bottom Tab Navigator
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
 
+          if (route.name === 'Dashboard') {
+            iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline';
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#B19CD9',
+        tabBarInactiveTintColor: 'gray',
+        headerShown: false,
+      })}
+    >
+      <Tab.Screen name="Dashboard" component={DashboardScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
+  );
+}
+
+
+// Main App Component
 export default function App() {
+  // You can add authentication logic here to determine initial route
+  const isAuthenticated = false; // Replace with actual auth check
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Welcome"
-        screenOptions={{ headerShown: false }}
+        initialRouteName={isAuthenticated ? "MainTabs" : "Welcome"}
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#1a0033',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
       >
-        <Stack.Screen name="Welcome" component={WelcomeScreen} />
-        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-        <Stack.Screen name="Dashboard" component={DashboardScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-        
-        {/* Astrology Feature Screen */}
+        {/* Auth Flow */}
         <Stack.Screen 
-          name="Astrology" 
+          name="Welcome" 
+          component={WelcomeScreen} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="Onboarding" 
+          component={OnboardingScreen}
+          options={{ headerShown: false }}
+        />
+
+        {/* Main App */}
+        <Stack.Screen 
+          name="MainTabs" 
+          component={MainTabs}
+          options={{ headerShown: false }}
+        />
+
+        {/* Astrology Flow */}
+        <Stack.Screen 
+          name="AstrologyScreen" 
           component={AstrologyScreen}
-          options={{
-            headerShown: false,
-          }}
+          options={{ title: 'Astrology' }}
         />
-        
-        {/* Reading Request Flow Screens */}
+<Stack.Screen 
+  name="PalmCamera" 
+  component={PalmCameraScreen}
+  options={{ headerShown: false }}
+/>
+
+        {/* Palm Reading Flow */}
         <Stack.Screen 
-          name="ReadingRequest" 
-          component={ReadingRequestScreen}
-          options={{ 
-            title: 'Choose Reading',
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: '#0D0D0D',
-            },
-            headerTintColor: '#FFFFFF',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-          }}
+          name="PalmIntro" 
+          component={PalmIntroScreen}
+          options={{ title: 'Palm Reading' }}
         />
-        
-        <Stack.Screen 
-          name="AstrologyReading" 
-          component={AstrologyReadingScreen}
-          options={{ 
-            title: 'Astrology Reading',
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: '#0D0D0D',
-            },
-            headerTintColor: '#FFFFFF',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-          }}
-        />
-        
-        <Stack.Screen 
-          name="PalmCamera" 
-          component={PalmCameraScreen}
-          options={{ 
-            title: 'Palm Reading',
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: '#0D0D0D',
-            },
-            headerTintColor: '#FFFFFF',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-          }}
-        />
-        
-        <Stack.Screen 
-          name="PremiumPayment" 
-          component={PremiumPaymentScreen}
-          options={{ 
-            title: 'Premium Clairvoyance',
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: '#0D0D0D',
-            },
-            headerTintColor: '#FFFFFF',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-          }}
-        />
-        
-        {/* Reading Queue Screen */}
-        <Stack.Screen 
-          name="ReadingQueue" 
-          component={ReadingQueueScreen}
-          options={{ 
-            headerShown: false 
-          }}
-        />
-        
-        {/* Compatibility Input Screen - Task #23 */}
-        <Stack.Screen 
-          name="CompatibilityInput" 
-          component={CompatibilityInputScreen}
-          options={{ 
-            headerShown: false 
-          }}
-        />
-        
-        {/* Compatibility Analysis Screen */}
-        <Stack.Screen 
-          name="CompatibilityAnalysis" 
-          component={CompatibilityAnalysisScreen}
-          options={{ 
-            title: 'Zodiac Compatibility',
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: '#1a1a2e',
-              elevation: 0,
-              shadowOpacity: 0,
-              borderBottomWidth: 0,
-            },
-            headerTintColor: '#FFFFFF',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-              fontSize: 18,
-            },
-            headerBackTitleVisible: false,
-            headerLeftContainerStyle: {
-              paddingLeft: 10,
-            },
-          }}
-        />
-        
-        {/* Palm Reading Result Screen */}
+
         <Stack.Screen 
           name="PalmReadingResult" 
           component={PalmReadingResultScreen}
-          options={{ 
-            title: 'Palm Reading Results',
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: '#0D0D0D',
-            },
-            headerTintColor: '#FFFFFF',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-          }}
+          options={{ title: 'Your Palm Reading' }}
         />
-        
-        {/* Clairvoyance Reading Screen */}
+
+        {/* Compatibility Flow */}
+        <Stack.Screen 
+          name="CompatibilityAnalysis" 
+          component={CompatibilityAnalysisScreen}
+          options={{ title: 'Compatibility Analysis' }}
+        />
+
+        {/* Clairvoyance Flow */}
         <Stack.Screen 
           name="ClairvoyanceReading" 
           component={ClairvoyanceReadingScreen}
-          options={{ 
-            title: 'Clairvoyance Reading',
-            headerShown: true,
-            headerStyle: {
-              backgroundColor: '#0D0D0D',
-            },
-            headerTintColor: '#FFFFFF',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-          }}
+          options={{ title: 'Clairvoyance Reading' }}
         />
-        
-        {/* Add the Zodiac Calculator Test screen */}
+
+        {/* Other Screens */}
         <Stack.Screen 
-          name="ZodiacTest" 
-          component={ZodiacCalculatorTest}
-          options={{
-            headerShown: true,
-            headerTitle: 'Zodiac Calculator Test',
-            headerStyle: {
-              backgroundColor: '#1a1a2e',
-            },
-            headerTintColor: '#fff',
-          }}
+          name="ReadingQueue" 
+          component={ReadingQueueScreen}
+          options={{ title: 'Processing Your Reading' }}
         />
+        <Stack.Screen 
+          name="PremiumPayment" 
+          component={PremiumPaymentScreen}
+          options={{ title: 'Unlock Premium' }}
+        />
+        <Stack.Screen 
+          name="EditProfile" 
+          component={EditProfileScreen}
+          options={{ title: 'Edit Profile' }}
+        />
+        {/* Temporarily comment out until ZodiacCalculatorScreen is fixed
+        <Stack.Screen 
+          name="ZodiacCalculator" 
+          component={ZodiacCalculatorScreen}
+          options={{ title: 'Zodiac Calculator' }}
+        /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1a1a2e',
-  },
-});
