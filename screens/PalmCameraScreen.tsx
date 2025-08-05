@@ -10,10 +10,18 @@ import {
   Image,
   SafeAreaView,
 } from 'react-native';
-import { Camera } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImageManipulator from 'expo-image-manipulator';
+
+// Import Camera conditionally
+let Camera: any;
+try {
+  const ExpoCamera = require('expo-camera');
+  Camera = ExpoCamera.Camera || ExpoCamera.default;
+} catch (error) {
+  console.error('Failed to import Camera:', error);
+}
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -32,7 +40,6 @@ const PalmCameraScreen = (props?: any) => {
   
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
-  // Use string values directly instead of enums
   const [type, setType] = useState('back');
   const [flash, setFlash] = useState('off');
   const [capturedHands, setCapturedHands] = useState<CapturedHand[]>([]);
@@ -44,11 +51,17 @@ const PalmCameraScreen = (props?: any) => {
   const userData = route?.params?.userData || {};
 
   useEffect(() => {
-    requestCameraPermissions();
+    if (Camera) {
+      requestCameraPermissions();
+    }
   }, []);
 
   const requestCameraPermissions = async () => {
     try {
+      if (!Camera || !Camera.requestCameraPermissionsAsync) {
+        setHasPermission(false);
+        return;
+      }
       const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
       setTimeout(() => setIsCameraReady(true), 100);
@@ -63,6 +76,22 @@ const PalmCameraScreen = (props?: any) => {
       navigation.goBack();
     }
   };
+
+  // If Camera is not available, show error
+  if (!Camera) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>Camera not available</Text>
+        <Text style={styles.errorSubtext}>expo-camera module is not properly installed</Text>
+        <TouchableOpacity 
+          style={[styles.permissionButton, { marginTop: 20 }]}
+          onPress={handleGoBack}
+        >
+          <Text style={styles.permissionButtonText}>Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   const takePicture = async () => {
     if (!cameraRef.current || isCapturing) return;
@@ -235,7 +264,7 @@ const PalmCameraScreen = (props?: any) => {
         type={type}
         flashMode={flash}
         onCameraReady={() => console.log('Camera is ready')}
-        onMountError={(error) => console.error('Camera mount error:', error)}
+        onMountError={(error: any) => console.error('Camera mount error:', error)}
       >
         <SafeAreaView style={styles.header}>
           <TouchableOpacity 
@@ -338,6 +367,8 @@ const styles = StyleSheet.create({
   errorSubtext: {
     color: '#ccc',
     fontSize: 14,
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
   safeArea: {
     flex: 1,
@@ -523,7 +554,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 30,
-    paddingVertical: 15,
+    paddingVertically: 15,
     borderRadius: 25,
   },
   retakeButton: {
