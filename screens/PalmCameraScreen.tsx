@@ -9,19 +9,26 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useScreenTracking, useAnalytics } from '../hooks/useAnalytics';
 
 const PalmCameraScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
+  useScreenTracking(); // Automatically track screen view
+  const analytics = useAnalytics();
   
   const [capturedHands, setCapturedHands] = useState<string[]>([]);
   const [currentHand, setCurrentHand] = useState<'left' | 'right'>('left');
 
   const handleGoBack = () => {
+    analytics.trackEvent('Palm Camera Back Button Pressed');
     navigation.goBack();
   };
 
   const handleCapture = () => {
+    // Track palm capture
+    analytics.trackPalmCaptured(currentHand);
+    
     const mockImageUri = `mock-${currentHand}-hand-${Date.now()}.jpg`;
     const newCapturedHands = [...capturedHands, mockImageUri];
     setCapturedHands(newCapturedHands);
@@ -34,7 +41,11 @@ const PalmCameraScreen = () => {
         [{ text: 'OK' }]
       );
     } else {
-      // Both hands captured
+      // Both hands captured - track completion
+      analytics.trackEvent('Both Palms Captured');
+      analytics.trackPalmReadingCompleted();
+      analytics.trackEvent('Navigating to Palm Results');
+      
       navigation.navigate('PalmReadingResult', {
         images: newCapturedHands
       });
@@ -42,6 +53,7 @@ const PalmCameraScreen = () => {
   };
 
   const handleRetake = () => {
+    analytics.trackEvent('Palm Photos Retake Requested');
     setCapturedHands([]);
     setCurrentHand('left');
   };
