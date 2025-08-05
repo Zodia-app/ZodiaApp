@@ -28,7 +28,7 @@ const PalmCameraScreen = (props?: any) => {
   const navigation = props?.navigation;
   const route = props?.route;
   
-  const cameraRef = useRef<Camera>(null);
+  const cameraRef = useRef<any>(null);
   
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
