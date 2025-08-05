@@ -178,8 +178,24 @@ const OnboardingScreen = ({ navigation }: any) => {
         console.error('Profile save error:', profileError);
         Alert.alert('Error', 'Failed to save profile. Please try again.');
       } else {
-        // Navigate to Dashboard with user data
-        navigation.replace('Dashboard', { userData: profileData });
+        // FIX: Navigate to Dashboard with properly serialized data
+        navigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'MainTabs',
+              params: {
+                screen: 'Dashboard',
+                params: {
+                  userData: {
+                    ...profileData,
+                    birthDate: userData.birthDate.toISOString(), // Serialize the date
+                  }
+                }
+              }
+            }
+          ]
+        });
       }
     } catch (error) {
       console.error('Onboarding error:', error);

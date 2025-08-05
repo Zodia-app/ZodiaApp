@@ -1,55 +1,129 @@
-import React from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  SafeAreaView,
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
   TouchableOpacity,
-  ScrollView 
+  StyleSheet,
+  SafeAreaView,
+  Alert,
 } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useScreenTracking, useAnalytics } from '../hooks/useAnalytics';
 
-const PalmCameraScreen = ({ navigation }: any) => {
+const PalmCameraScreen = () => {
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+  useScreenTracking(); // Automatically track screen view
+  const analytics = useAnalytics();
+  
+  const [capturedHands, setCapturedHands] = useState<string[]>([]);
+  const [currentHand, setCurrentHand] = useState<'left' | 'right'>('left');
+
+  const handleGoBack = () => {
+    analytics.trackEvent('Palm Camera Back Button Pressed');
+    navigation.goBack();
+  };
+
+  const handleCapture = () => {
+    // Track palm capture
+    analytics.trackPalmCaptured(currentHand);
+    
+    const mockImageUri = `mock-${currentHand}-hand-${Date.now()}.jpg`;
+    const newCapturedHands = [...capturedHands, mockImageUri];
+    setCapturedHands(newCapturedHands);
+
+    if (currentHand === 'left') {
+      setCurrentHand('right');
+      Alert.alert(
+        'Left Hand Captured',
+        'Great! Now position your right hand.',
+        [{ text: 'OK' }]
+      );
+    } else {
+      // Both hands captured - track completion
+      analytics.trackEvent('Both Palms Captured');
+      analytics.trackPalmReadingCompleted();
+      analytics.trackEvent('Navigating to Palm Results');
+      
+      navigation.navigate('PalmReadingResult', {
+        images: newCapturedHands
+      });
+    }
+  };
+
+  const handleRetake = () => {
+    analytics.trackEvent('Palm Photos Retake Requested');
+    setCapturedHands([]);
+    setCurrentHand('left');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-        {/* Icon */}
-        <View style={styles.iconContainer}>
-          <Ionicons name="camera" size={80} color="#4169E1" />
-        </View>
-
-        {/* Title */}
-        <Text style={styles.title}>Palm Reading Camera</Text>
-        <Text style={styles.subtitle}>Coming Soon</Text>
-
-        {/* Description */}
-        <View style={styles.descriptionContainer}>
-          <Text style={styles.description}>
-            This feature will allow you to:
-          </Text>
-          <Text style={styles.feature}>• Take a photo of your palm</Text>
-          <Text style={styles.feature}>• Get AI-powered palm analysis</Text>
-          <Text style={styles.feature}>• Discover life, love, and career insights</Text>
-          <Text style={styles.feature}>• Save readings to your profile</Text>
-        </View>
-
-        {/* Placeholder Info */}
-        <View style={styles.infoBox}>
-          <Ionicons name="information-circle" size={24} color="#4169E1" />
-          <Text style={styles.infoText}>
-            Camera functionality will be implemented in Task #27
-          </Text>
-        </View>
-
-        {/* Back Button */}
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
-          <Text style={styles.backButtonText}>Go Back</Text>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color="#8B5CF6" />
         </TouchableOpacity>
-      </ScrollView>
+        <Text style={styles.headerTitle}>Capture Your Palms</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
+      <View style={styles.content}>
+        {/* Progress Indicator */}
+        <View style={styles.progressContainer}>
+          <View style={[styles.progressDot, capturedHands.length > 0 && styles.progressDotActive]} />
+          <View style={styles.progressLine} />
+          <View style={[styles.progressDot, capturedHands.length > 1 && styles.progressDotActive]} />
+        </View>
+        <Text style={styles.progressText}>
+          {capturedHands.length === 0 ? 'Capture left hand' : 
+           capturedHands.length === 1 ? 'Capture right hand' : 
+           'Both hands captured'}
+        </Text>
+
+        {/* Camera Placeholder */}
+        <View style={styles.cameraContainer}>
+          <View style={styles.cameraPlaceholder}>
+            <Ionicons 
+              name={currentHand === 'left' ? 'hand-left' : 'hand-right'} 
+              size={80} 
+              color="#8B5CF6" 
+            />
+            <Text style={styles.handText}>
+              Position your {currentHand} hand
+            </Text>
+          </View>
+
+          {/* Overlay Guide */}
+          <View style={styles.guideOverlay}>
+            <View style={styles.handGuide}>
+              <Text style={styles.guideText}>
+                Place hand within frame
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Instructions */}
+        <Text style={styles.instructionText}>
+          {currentHand === 'left' 
+            ? "Position your left palm flat, fingers spread, in good lighting"
+            : "Now position your right palm the same way"}
+        </Text>
+
+        {/* Capture Button */}
+        {capturedHands.length < 2 ? (
+          <TouchableOpacity style={styles.captureButton} onPress={handleCapture}>
+            <Ionicons name="camera" size={40} color="white" />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.actionButtons}>
+            <TouchableOpacity style={styles.retakeButton} onPress={handleRetake}>
+              <Text style={styles.retakeButtonText}>Retake Photos</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
     </SafeAreaView>
   );
 };
@@ -57,79 +131,133 @@ const PalmCameraScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0D0D0D',
+    backgroundColor: '#0F172A',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1E293B',
+  },
+  backButton: {
+    padding: 5,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#E2E8F0',
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 20,
   },
-  iconContainer: {
-    marginBottom: 30,
-    padding: 30,
-    backgroundColor: '#1A1A1A',
-    borderRadius: 100,
-  },
-  title: {
-    color: '#FFFFFF',
-    fontSize: 28,
-    fontWeight: 'bold',
+  progressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 10,
   },
-  subtitle: {
-    color: '#4169E1',
-    fontSize: 18,
-    marginBottom: 30,
+  progressDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#475569',
   },
-  descriptionContainer: {
-    backgroundColor: '#1A1A1A',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 30,
-    width: '100%',
+  progressDotActive: {
+    backgroundColor: '#8B5CF6',
   },
-  description: {
-    color: '#B8B8B8',
-    fontSize: 16,
-    marginBottom: 15,
+  progressLine: {
+    width: 40,
+    height: 2,
+    backgroundColor: '#475569',
+    marginHorizontal: 5,
+  },
+  progressText: {
+    color: '#94A3B8',
+    fontSize: 14,
     textAlign: 'center',
+    marginBottom: 20,
   },
-  feature: {
-    color: '#E0E0E0',
-    fontSize: 14,
-    marginBottom: 8,
-    paddingLeft: 10,
-  },
-  infoBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1A1A1A',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 30,
-    borderWidth: 1,
-    borderColor: '#4169E1',
-  },
-  infoText: {
-    color: '#B8B8B8',
-    fontSize: 14,
-    marginLeft: 10,
+  cameraContainer: {
     flex: 1,
+    position: 'relative',
+    marginBottom: 20,
   },
-  backButton: {
-    backgroundColor: '#4169E1',
-    flexDirection: 'row',
+  cameraPlaceholder: {
+    flex: 1,
+    backgroundColor: '#1E293B',
+    borderRadius: 20,
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 8,
   },
-  backButtonText: {
-    color: '#FFFFFF',
+  handText: {
+    color: '#E2E8F0',
+    fontSize: 18,
+    marginTop: 20,
+  },
+  guideOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    pointerEvents: 'none',
+  },
+  handGuide: {
+    width: 250,
+    height: 250,
+    borderWidth: 3,
+    borderColor: '#8B5CF6',
+    borderRadius: 20,
+    borderStyle: 'dashed',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.5,
+  },
+  guideText: {
+    color: '#E2E8F0',
+    fontSize: 14,
+    backgroundColor: 'rgba(15, 23, 42, 0.8)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
+  },
+  instructionText: {
+    color: '#CBD5E1',
     fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 8,
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  captureButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#8B5CF6',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    elevation: 5,
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  actionButtons: {
+    alignItems: 'center',
+  },
+  retakeButton: {
+    backgroundColor: '#1E293B',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#8B5CF6',
+  },
+  retakeButtonText: {
+    color: '#8B5CF6',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
