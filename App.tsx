@@ -1,5 +1,6 @@
 // App.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
+import Analytics from './services/analytics';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -23,6 +24,21 @@ import PremiumPaymentScreen from './screens/PremiumPaymentScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 // import ZodiacCalculatorScreen from './screens/ZodiacCalculatorScreen'; // Temporarily comment out
 
+// Add this after your imports in App.tsx
+type RootStackParamList = {
+  Welcome: undefined;
+  Onboarding: undefined;
+  MainTabs: undefined;
+  AstrologyScreen: undefined;
+  PalmCamera: undefined; // Note: NOT PalmCameraScreen
+  PalmIntro: undefined;
+  PalmReadingResult: { images: string[] };
+  CompatibilityAnalysis: undefined;
+  ClairvoyanceReading: undefined;
+  ReadingQueue: undefined;
+  PremiumPayment: undefined;
+  EditProfile: undefined;
+};
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -33,7 +49,7 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+          let iconName: keyof typeof Ionicons.glyphMap = 'home';
 
           if (route.name === 'Dashboard') {
             iconName = focused ? 'home' : 'home-outline';
@@ -54,11 +70,17 @@ function MainTabs() {
   );
 }
 
-
 // Main App Component
 export default function App() {
   // You can add authentication logic here to determine initial route
   const isAuthenticated = false; // Replace with actual auth check
+
+  // Analytics initialization should be inside the component
+  useEffect(() => {
+    // Initialize analytics
+    Analytics.init();
+    Analytics.trackAppOpen();
+  }, []);
 
   return (
     <NavigationContainer>
@@ -99,11 +121,12 @@ export default function App() {
           component={AstrologyScreen}
           options={{ title: 'Astrology' }}
         />
-<Stack.Screen 
-  name="PalmCamera" 
-  component={PalmCameraScreen}
-  options={{ headerShown: false }}
-/>
+        
+        <Stack.Screen 
+          name="PalmCamera" 
+          component={PalmCameraScreen}
+          options={{ headerShown: false }}
+        />
 
         {/* Palm Reading Flow */}
         <Stack.Screen 
