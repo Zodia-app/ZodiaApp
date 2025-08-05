@@ -14,7 +14,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import AstrologyScreen from './screens/AstrologyScreen';
 import AstrologyReadingScreen from './screens/AstrologyReadingScreen';
 import PalmCameraScreen from './screens/PalmCameraScreen';
-import PalmReadingResultScreen from './screens/PalmReadingResultScreen';
+import { PalmReadingResultScreen } from './screens/PalmReadingResultScreen';
 import CompatibilityAnalysisScreen from './screens/CompatibilityAnalysisScreen';
 import CompatibilityInputScreen from './screens/CompatibilityInputScreen';
 import ClairvoyanceReadingScreen from './screens/ClairvoyanceReadingScreen';
