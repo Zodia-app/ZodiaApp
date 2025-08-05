@@ -1,12 +1,12 @@
 // App.tsx
-import React, { useEffect } from 'react';
-import Analytics from './services/analytics';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+import { View, Text } from 'react-native';
 
-// Import all your screens
+// Import all your actual screens
 import WelcomeScreen from './screens/WelcomeScreen';
 import OnboardingScreen from './screens/OnboardingScreen';
 import DashboardScreen from './screens/DashboardScreen';
@@ -14,38 +14,29 @@ import ProfileScreen from './screens/ProfileScreen';
 import AstrologyScreen from './screens/AstrologyScreen';
 import AstrologyReadingScreen from './screens/AstrologyReadingScreen';
 import PalmCameraScreen from './screens/PalmCameraScreen';
-import PalmIntroScreen from './screens/PalmIntroScreen';
 import PalmReadingResultScreen from './screens/PalmReadingResultScreen';
 import CompatibilityAnalysisScreen from './screens/CompatibilityAnalysisScreen';
+import CompatibilityInputScreen from './screens/CompatibilityInputScreen';
 import ClairvoyanceReadingScreen from './screens/ClairvoyanceReadingScreen';
 import ReadingQueueScreen from './screens/ReadingQueueScreen';
 import ReadingRequestScreen from './screens/ReadingRequestScreen';
 import PremiumPaymentScreen from './screens/PremiumPaymentScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
-// import ZodiacCalculatorScreen from './screens/ZodiacCalculatorScreen'; // Temporarily comment out
 
-// Add this after your imports in App.tsx
-type RootStackParamList = {
-  Welcome: undefined;
-  Onboarding: undefined;
-  MainTabs: undefined;
-  AstrologyScreen: undefined;
-  PalmCamera: undefined; // Note: NOT PalmCameraScreen
-  PalmIntro: undefined;
-  PalmReadingResult: { images: string[] };
-  CompatibilityAnalysis: undefined;
-  ClairvoyanceReading: undefined;
-  ReadingQueue: undefined;
-  PremiumPayment: undefined;
-  EditProfile: undefined;
-  DreamInterpreter: undefined; // Add this for the dream interpreter
-  ReadingRequest: undefined; // Add this
-};
+// Import ErrorBoundary
+import { ErrorBoundary } from './components/ErrorBoundary';
 
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Bottom Tab Navigator with proper styling
+// Placeholder for missing screens
+const PlaceholderScreen = ({ route }: any) => (
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1a1a2e' }}>
+    <Text style={{ color: '#fff', fontSize: 18 }}>{route.name} - Coming Soon</Text>
+  </View>
+);
+
+// Bottom Tab Navigator
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -90,124 +81,115 @@ function MainTabs() {
   );
 }
 
-// Main App Component
 export default function App() {
-  // You can add authentication logic here to determine initial route
-  const isAuthenticated = false; // Replace with actual auth check
-
-  // Analytics initialization should be inside the component
-  useEffect(() => {
-    // Initialize analytics
-    Analytics.init();
-    Analytics.trackAppOpen();
-  }, []);
-
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={isAuthenticated ? "MainTabs" : "Welcome"}
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#1a0033',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}
-      >
-        {/* Auth Flow */}
-        <Stack.Screen 
-          name="Welcome" 
-          component={WelcomeScreen} 
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="Onboarding" 
-          component={OnboardingScreen}
-          options={{ headerShown: false }}
-        />
+    <ErrorBoundary>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Welcome"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: '#1a0033',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        >
+          {/* Auth Flow */}
+          <Stack.Screen 
+            name="Welcome" 
+            component={WelcomeScreen} 
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="Onboarding" 
+            component={OnboardingScreen}
+            options={{ headerShown: false }}
+          />
 
-        {/* Main App */}
-        <Stack.Screen 
-          name="MainTabs" 
-          component={MainTabs}
-          options={{ headerShown: false }}
-        />
+          {/* Main App */}
+          <Stack.Screen 
+            name="MainTabs" 
+            component={MainTabs}
+            options={{ headerShown: false }}
+          />
 
-        {/* Astrology Flow */}
-        <Stack.Screen 
-          name="AstrologyScreen" 
-          component={AstrologyScreen}
-          options={{ title: 'Astrology' }}
-        />
-        
-        <Stack.Screen 
-          name="PalmCamera" 
-          component={PalmCameraScreen}
-          options={{ headerShown: false }}
-        />
+          {/* Feature Screens */}
+          <Stack.Screen 
+            name="AstrologyScreen" 
+            component={AstrologyScreen}
+            options={{ title: 'Astrology', headerShown: false }}
+          />
+          
+          <Stack.Screen 
+            name="PalmCamera" 
+            component={PalmCameraScreen}
+            options={{ headerShown: false }}
+          />
 
-        {/* Palm Reading Flow */}
-        <Stack.Screen 
-          name="PalmIntro" 
-          component={PalmIntroScreen}
-          options={{ title: 'Palm Reading', headerShown: false }}
-        />
+          <Stack.Screen 
+            name="PalmIntro" 
+            component={PlaceholderScreen}  // Using placeholder since it doesn't exist
+            options={{ title: 'Palm Reading', headerShown: false }}
+          />
 
-        <Stack.Screen 
-          name="PalmReadingResult" 
-          component={PalmReadingResultScreen}
-          options={{ title: 'Your Palm Reading', headerShown: false }}
-        />
+          <Stack.Screen 
+            name="PalmReadingResult" 
+            component={PalmReadingResultScreen}
+            options={{ title: 'Your Palm Reading', headerShown: false }}
+          />
 
-        {/* Compatibility Flow */}
-        <Stack.Screen 
-          name="CompatibilityAnalysis" 
-          component={CompatibilityAnalysisScreen}
-          options={{ title: 'Compatibility Analysis' }}
-        />
+          <Stack.Screen 
+            name="CompatibilityAnalysis" 
+            component={CompatibilityAnalysisScreen}
+            options={{ title: 'Compatibility Analysis', headerShown: false }}
+          />
 
-        {/* Clairvoyance Flow */}
-        <Stack.Screen 
-          name="ClairvoyanceReading" 
-          component={ClairvoyanceReadingScreen}
-          options={{ title: 'Clairvoyance Reading' }}
-        />
+          <Stack.Screen 
+            name="CompatibilityInput" 
+            component={CompatibilityInputScreen}
+            options={{ title: 'Enter Partner Details', headerShown: false }}
+          />
 
-        {/* Other Screens */}
-        <Stack.Screen 
-          name="ReadingQueue" 
-          component={ReadingQueueScreen}
-          options={{ title: 'Processing Your Reading' }}
-        />
-        <Stack.Screen 
-          name="ReadingRequest" 
-          component={ReadingRequestScreen}
-          options={{ title: 'Request a Reading' }}
-        />
-        <Stack.Screen 
-          name="PremiumPayment" 
-          component={PremiumPaymentScreen}
-          options={{ title: 'Unlock Premium' }}
-        />
-        <Stack.Screen 
-          name="EditProfile" 
-          component={EditProfileScreen}
-          options={{ title: 'Edit Profile' }}
-        />
-        <Stack.Screen 
-          name="DreamInterpreter" 
-          component={ProfileScreen} // Temporary placeholder
-          options={{ title: 'Dream Interpreter' }}
-        />
-        {/* Temporarily comment out until ZodiacCalculatorScreen is fixed
-        <Stack.Screen 
-          name="ZodiacCalculator" 
-          component={ZodiacCalculatorScreen}
-          options={{ title: 'Zodiac Calculator' }}
-        /> */}
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen 
+            name="ClairvoyanceReading" 
+            component={ClairvoyanceReadingScreen}
+            options={{ title: 'Clairvoyance Reading', headerShown: false }}
+          />
+
+          <Stack.Screen 
+            name="ReadingQueue" 
+            component={ReadingQueueScreen}
+            options={{ title: 'Processing Your Reading', headerShown: false }}
+          />
+          
+          <Stack.Screen 
+            name="ReadingRequest" 
+            component={ReadingRequestScreen}
+            options={{ title: 'Request a Reading', headerShown: false }}
+          />
+          
+          <Stack.Screen 
+            name="PremiumPayment" 
+            component={PremiumPaymentScreen}
+            options={{ title: 'Unlock Premium', headerShown: false }}
+          />
+          
+          <Stack.Screen 
+            name="EditProfile" 
+            component={EditProfileScreen}
+            options={{ title: 'Edit Profile', headerShown: false }}
+          />
+          
+          <Stack.Screen 
+            name="DreamInterpreter" 
+            component={PlaceholderScreen}
+            options={{ title: 'Dream Interpreter', headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ErrorBoundary>
   );
 }

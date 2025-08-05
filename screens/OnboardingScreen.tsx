@@ -17,6 +17,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { supabase } from '../lib/supabase';
 import { calculateZodiacSign } from '../utils/zodiacCalculator';
 import { FullScreenLoader } from '../components/FullScreenLoader';
+import { ErrorService, ErrorType } from '../services/errorService'; // ADD THIS IMPORT
 
 interface UserData {
   name: string;
@@ -63,29 +64,36 @@ const OnboardingScreen = ({ navigation }: any) => {
       if (!user) {
         // Sign in anonymously
         const { data, error } = await supabase.auth.signInAnonymously();
-        if (error) {
-          console.error('Anonymous auth error:', error);
-          Alert.alert(
-            'Connection Error',
-            'Unable to connect to the server. Please check your internet connection and try again.',
-            [{ text: 'Retry', onPress: initializeAnonymousAuth }]
-          );
-          return;
-        }
+        if (error) throw error; // CHANGED: Throw error to be caught by handler
+        
         console.log('Anonymous user created:', data.user?.id);
       } else {
         console.log('User already authenticated:', user.id);
       }
     } catch (error) {
-      console.error('Auth initialization error:', error);
+      // CHANGED: Use ErrorService for better error handling
+      const handledError = ErrorService.handle(error);
+      console.error('Auth initialization error:', handledError);
+      
       Alert.alert(
         'Connection Error',
-        'Unable to initialize the app. Please try again.',
-        [{ text: 'Retry', onPress: initializeAnonymousAuth }]
+        handledError.message,
+        [
+          { 
+            text: 'Retry', 
+            onPress: initializeAnonymousAuth 
+          },
+          {
+            text: 'Continue Offline',
+            style: 'cancel',
+            onPress: () => setIsInitializing(false) // Allow offline mode
+          }
+        ]
       );
-    } finally {
-      setIsInitializing(false);
+      return; // Don't set isInitializing to false here
     }
+    
+    setIsInitializing(false);
   };
 
   const handleNext = () => {
@@ -141,65 +149,131 @@ const OnboardingScreen = ({ navigation }: any) => {
       // Get current user
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       
-      if (authError || !user) {
-        console.error('Auth error:', authError);
-        Alert.alert('Error', 'Authentication failed. Please try again.');
-        setIsLoading(false);
-        return;
-      }
-
+      if (authError) throw authError; // CHANGED: Throw to be caught by error handler
+      
       // Calculate zodiac sign
       const zodiacSign = calculateZodiacSign(userData.birthDate);
       const profileData = {
         ...userData,
         zodiacSign,
-        id: user.id
+        id: user?.id || 'offline_user' // CHANGED: Handle offline mode
       };
 
-      // Save to Supabase
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          full_name: userData.name,
-          birth_date: userData.birthDate.toISOString().split('T')[0],
-          birth_time: userData.birthTime || null,
-          birth_place_city: userData.birthPlace.city,
-          birth_place_state: userData.birthPlace.state || null,
-          birth_place_country: userData.birthPlace.country || null,
-          gender: userData.gender,
-          relationship_status: userData.relationshipStatus,
-          zodiac_sign: zodiacSign,
-          is_anonymous: true,
-          updated_at: new Date().toISOString()
-        });
+      // Save to Supabase if we have a user
+      if (user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: user.id,
+            full_name: userData.name,
+            birth_date: userData.birthDate.toISOString().split('T')[0],
+            birth_time: userData.birthTime || null,
+            birth_place_city: userData.birthPlace.city,
+            birth_place_state: userData.birthPlace.state || null,
+            birth_place_country: userData.birthPlace.country || null,
+            gender: userData.gender,
+            relationship_status: userData.relationshipStatus,
+            zodiac_sign: zodiacSign,
+            is_anonymous: true,
+            updated_at: new Date().toISOString()
+          });
 
-      if (profileError) {
-        console.error('Profile save error:', profileError);
-        Alert.alert('Error', 'Failed to save profile. Please try again.');
-      } else {
-        // FIX: Navigate to Dashboard with properly serialized data
-        navigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: 'MainTabs',
+        if (profileError) throw profileError; // CHANGED: Throw to be caught
+      }
+
+      // Navigate to Dashboard with properly serialized data
+      navigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'MainTabs',
+            params: {
+              screen: 'Dashboard',
               params: {
-                screen: 'Dashboard',
-                params: {
-                  userData: {
-                    ...profileData,
-                    birthDate: userData.birthDate.toISOString(), // Serialize the date
-                  }
+                userData: {
+                  ...profileData,
+                  birthDate: userData.birthDate.toISOString(), // Serialize the date
                 }
               }
             }
-          ]
-        });
-      }
+          }
+        ]
+      });
+      
     } catch (error) {
-      console.error('Onboarding error:', error);
-      Alert.alert('Error', 'Something went wrong. Please try again.');
+      // CHANGED: Use ErrorService for comprehensive error handling
+      const handledError = ErrorService.handle(error);
+      console.error('Onboarding error:', handledError);
+      
+      // Check if it's a network error and offer offline mode
+      if (handledError.type === ErrorType.NETWORK_ERROR) {
+        Alert.alert(
+          'Connection Error',
+          'Unable to save your profile online. Would you like to continue in offline mode?',
+          [
+            {
+              text: 'Retry',
+              onPress: handleComplete, // Retry the save
+              style: 'default'
+            },
+            {
+              text: 'Continue Offline',
+              onPress: () => {
+                // Save to local storage and proceed offline
+                const zodiacSign = calculateZodiacSign(userData.birthDate);
+                const profileData = {
+                  ...userData,
+                  zodiacSign,
+                  id: 'offline_user'
+                };
+                
+                // Navigate even in offline mode
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: 'MainTabs',
+                      params: {
+                        screen: 'Dashboard',
+                        params: {
+                          userData: {
+                            ...profileData,
+                            birthDate: userData.birthDate.toISOString(),
+                            isOffline: true // Flag for offline mode
+                          }
+                        }
+                      }
+                    }
+                  ]
+                });
+              }
+            },
+            {
+              text: 'Cancel',
+              style: 'cancel'
+            }
+          ]
+        );
+      } else if (handledError.isRecoverable) {
+        // For recoverable errors, offer retry
+        Alert.alert(
+          'Setup Error',
+          handledError.message,
+          [
+            {
+              text: 'Retry',
+              onPress: handleComplete
+            },
+            {
+              text: 'Cancel',
+              style: 'cancel'
+            }
+          ]
+        );
+      } else {
+        // For non-recoverable errors, just show the message
+        Alert.alert('Setup Error', handledError.message);
+      }
     } finally {
       setIsLoading(false);
     }
