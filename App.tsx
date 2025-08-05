@@ -10,7 +10,6 @@ import DashboardScreen from './screens/DashboardScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 import AstrologyScreen from './screens/AstrologyScreen';
-import CompatibilityScreen from './screens/CompatibilityScreen'; // ADD THIS LINE
 
 // Import new Reading screens
 import ReadingRequestScreen from './screens/ReadingRequestScreen';
@@ -21,6 +20,13 @@ import ReadingQueueScreen from './screens/ReadingQueueScreen';
 
 // Import Compatibility Analysis screen
 import CompatibilityAnalysisScreen from './screens/CompatibilityAnalysisScreen';
+
+// Import new screens from the tasks
+import PalmReadingResultScreen from './screens/PalmReadingResultScreen';
+import ClairvoyanceReadingScreen from './screens/ClairvoyanceReadingScreen';
+
+// Import the Compatibility Input screen for Task #23
+import CompatibilityInputScreen from './screens/CompatibilityInputScreen';
 
 // Import the test component
 import ZodiacCalculatorTest from './components/ZodiacCalculatorTest';
@@ -46,23 +52,6 @@ export default function App() {
           component={AstrologyScreen}
           options={{
             headerShown: false,
-          }}
-        />
-        
-        {/* Compatibility Feature Screen - ADD THIS SECTION */}
-        <Stack.Screen 
-          name="Compatibility" 
-          component={CompatibilityScreen}
-          options={{
-            headerShown: true,
-            title: 'Zodiac Compatibility',
-            headerStyle: {
-              backgroundColor: '#1a1a2e',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
           }}
         />
         
@@ -131,10 +120,19 @@ export default function App() {
           }}
         />
         
-{/* Reading Queue Screen */}
+        {/* Reading Queue Screen */}
         <Stack.Screen 
           name="ReadingQueue" 
           component={ReadingQueueScreen}
+          options={{ 
+            headerShown: false 
+          }}
+        />
+        
+        {/* Compatibility Input Screen - Task #23 */}
+        <Stack.Screen 
+          name="CompatibilityInput" 
+          component={CompatibilityInputScreen}
           options={{ 
             headerShown: false 
           }}
@@ -156,7 +154,6 @@ export default function App() {
             headerTintColor: '#FFFFFF',
             headerTitleStyle: {
               fontWeight: 'bold',
-              fontFamily: 'Cinzel-SemiBold', // If you have this font installed
               fontSize: 18,
             },
             headerBackTitleVisible: false,
@@ -165,6 +162,38 @@ export default function App() {
             },
           }}
         />
+        
+        {/* Palm Reading Result Screen */}
+        <Stack.Screen 
+          name="PalmReadingResult" 
+          component={PalmReadingResultScreen}
+          options={{ 
+            title: 'Palm Reading Results',
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: '#0D0D0D',
+            },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+          }}
+        />
+        
+        {/* Clairvoyance Reading Screen */}
+        <Stack.Screen 
+          name="ClairvoyanceReading" 
+          component={ClairvoyanceReadingScreen}
+          options={{ 
+            title: 'Clairvoyance Reading',
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: '#0D0D0D',
+            },
+            headerTintColor: '#FFFFFF',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
           }}
         />
         

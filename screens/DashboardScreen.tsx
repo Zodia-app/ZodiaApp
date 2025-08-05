@@ -144,28 +144,28 @@ const DashboardScreen = ({ navigation, route }: any) => {
   ];
 
   const handleFeaturePress = (feature: any) => {
-    if (!feature.disabled) {
-      switch (feature.id) {
-        case 'astrology':
-          navigation.navigate('Astrology', { userData });
-          break;
-        case 'compatibility':
-          navigation.navigate('Compatibility');
-          break;
-        case 'palm':
-          navigation.navigate('PalmIntro', { userData });
-          break;
-        case 'dream':
-          navigation.navigate('DreamInterpreter');
-          break;
-        case 'education':
-          navigation.navigate('Education');
-          break;
-        default:
-          alert(`${feature.title} feature coming soon!`);
-      }
+  if (!feature.disabled) {
+    switch (feature.id) {
+      case 'astrology':
+        navigation.navigate('Astrology', { userData });
+        break;
+      case 'compatibility':
+        navigation.navigate('CompatibilityInput'); // Changed from 'Compatibility'
+        break;
+      case 'palm':
+        navigation.navigate('PalmIntro', { userData });
+        break;
+      case 'dream':
+        navigation.navigate('DreamInterpreter');
+        break;
+      case 'education':
+        navigation.navigate('Education');
+        break;
+      default:
+        alert(`${feature.title} feature coming soon!`);
     }
-  };
+  }
+};
 
   // Show loading state
   if (isLoading) {

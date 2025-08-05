@@ -26,24 +26,38 @@ import { AILoadingIndicator } from '../components/AILoadingIndicator';
 // Import services and types
 import { generateCompatibilityAnalysis } from '../services/compatibilityService';
 import { CompatibilityAnalysis } from '../types/compatibility';
-import { useAuth } from '../hooks/useAuth'; // Assuming you have auth context
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export const CompatibilityAnalysisScreen: React.FC = () => {
+const CompatibilityAnalysisScreen: React.FC = () => {
   const navigation = useNavigation();
-  const { user } = useAuth(); // Get current user for saving
   
   // State management
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<CompatibilityAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
   
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const starsOpacity = useRef(new Animated.Value(0)).current;
+  
+  // Load user data from AsyncStorage
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const data = await AsyncStorage.getItem('userData');
+        if (data) {
+          setUserData(JSON.parse(data));
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      }
+    };
+    loadUserData();
+  }, []);
   
   // Floating stars background animation
   useEffect(() => {
@@ -150,14 +164,14 @@ export const CompatibilityAnalysisScreen: React.FC = () => {
   
   // Handle saving compatibility report
   const handleSave = async () => {
-    if (!analysis || !user) {
-      Alert.alert('Unable to Save', 'Please log in to save compatibility reports.');
+    if (!analysis || !userData) {
+      Alert.alert('Unable to Save', 'Please complete your profile to save compatibility reports.');
       return;
     }
     
     try {
       // Get existing saved reports
-      const savedReportsJson = await AsyncStorage.getItem(`@compatibility_reports_${user.id}`);
+      const savedReportsJson = await AsyncStorage.getItem(`@compatibility_reports_${userData.name}`);
       const savedReports = savedReportsJson ? JSON.parse(savedReportsJson) : [];
       
       // Add new report
@@ -173,7 +187,7 @@ export const CompatibilityAnalysisScreen: React.FC = () => {
       const reportsToSave = savedReports.slice(0, 10);
       
       await AsyncStorage.setItem(
-        `@compatibility_reports_${user.id}`,
+        `@compatibility_reports_${userData.name}`,
         JSON.stringify(reportsToSave)
       );
       
@@ -377,7 +391,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: '#fff',
-    fontFamily: 'Cinzel-Bold',
     marginTop: 12,
     textAlign: 'center',
   },
@@ -420,3 +433,5 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
 });
+
+export default CompatibilityAnalysisScreen;
