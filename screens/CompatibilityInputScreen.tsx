@@ -73,85 +73,85 @@ export default function CompatibilityInputScreen() {
   };
 
   const handleSubmit = async () => {
-  if (!validateForm()) return;
+    if (!validateForm()) return;
 
-  setIsLoading(true);
-  try {
-    // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
-    if (userError || !user) {
-      throw new Error('Please sign in to use this feature');
-    }
+    setIsLoading(true);
+    try {
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        throw new Error('Please sign in to use this feature');
+      }
 
-    console.log('User found:', user.id);
+      console.log('User found:', user.id);
 
-    // Save partner data
-    const { data: partnerData, error: partnerError } = await supabase
-      .from('compatibility_partners')
-      .insert({
-        user_id: user.id,
-        partner_name: partnerName,
-        birth_date: partnerBirthDate.toISOString().split('T')[0],
-        birth_time: includeAdvanced ? partnerBirthTime : null,
-        birth_place: includeAdvanced ? partnerBirthPlace : null,
-      })
-      .select()
-      .single();
-
-    if (partnerError) {
-      console.error('Partner save error:', partnerError);
-      throw partnerError;
-    }
-
-    console.log('Partner saved:', partnerData);
-
-    // Create compatibility reading request
-    const { data: reading, error: readingError } = await supabase
-      .from('readings')
-      .insert({
-        user_id: user.id,
-        reading_type: 'compatibility',
-        status: 'pending',
-        input_data: {
+      // Save partner data - FIXED THIS SECTION
+      const { data: partnerData, error: partnerError } = await supabase
+        .from('compatibility_partners')
+        .insert({
+          user_id: user.id,
           partner_name: partnerName,
-          partner_birth_date: partnerBirthDate.toISOString().split('T')[0],
-          partner_birth_time: includeAdvanced ? partnerBirthTime : null,
-          partner_birth_place: includeAdvanced ? partnerBirthPlace : null,
-        },
-        metadata: {
-          partner_id: partnerData.id,
-          partner_name: partnerName,
-          include_advanced: includeAdvanced,
-        },
-      })
-      .select()
-      .single();
+          birth_date: partnerBirthDate.toISOString().split('T')[0],
+          birth_time: partnerBirthTime || null,  // Use null instead of empty string
+          birth_place: partnerBirthPlace || null,
+        })
+        .select()
+        .single();
 
-    if (readingError) {
-      console.error('Reading creation error:', readingError);
-      throw readingError;
+      if (partnerError) {
+        console.error('Partner save error:', partnerError);
+        throw partnerError;
+      }
+
+      console.log('Partner saved:', partnerData);
+
+      // Create compatibility reading request
+      const { data: reading, error: readingError } = await supabase
+        .from('readings')
+        .insert({
+          user_id: user.id,
+          reading_type: 'compatibility',
+          status: 'pending',
+          input_data: {
+            partner_name: partnerName,
+            partner_birth_date: partnerBirthDate.toISOString().split('T')[0],
+            partner_birth_time: includeAdvanced ? partnerBirthTime : null,
+            partner_birth_place: includeAdvanced ? partnerBirthPlace : null,
+          },
+          metadata: {
+            partner_id: partnerData.id,
+            partner_name: partnerName,
+            include_advanced: includeAdvanced,
+          },
+        })
+        .select()
+        .single();
+
+      if (readingError) {
+        console.error('Reading creation error:', readingError);
+        throw readingError;
+      }
+
+      console.log('Reading created:', reading);
+      console.log('Navigating to CompatibilityAnalysis...');
+
+      // Navigate to loading/results screen
+      navigation.navigate('CompatibilityAnalysis' as never, { 
+        readingId: reading.id,
+        partnerName: partnerName 
+      } as never);
+
+    } catch (error: any) {
+      console.error('Error creating compatibility reading:', error);
+      Alert.alert(
+        'Error',
+        error.message || 'Failed to create compatibility reading. Please try again.'
+      );
+    } finally {
+      setIsLoading(false);
     }
-
-    console.log('Reading created:', reading);
-    console.log('Navigating to CompatibilityAnalysis...');
-
-    // Navigate to loading/results screen
-    navigation.navigate('CompatibilityAnalysis' as never, { 
-      readingId: reading.id,
-      partnerName: partnerName 
-    } as never);
-
-  } catch (error: any) {
-    console.error('Error creating compatibility reading:', error);
-    Alert.alert(
-      'Error',
-      error.message || 'Failed to create compatibility reading. Please try again.'
-    );
-  } finally {
-    setIsLoading(false);
-  }
-};
+  };
 
   return (
     <LinearGradient

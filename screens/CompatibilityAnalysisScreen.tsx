@@ -1,5 +1,4 @@
 // src/screens/CompatibilityAnalysisScreen.tsx
-
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
@@ -12,18 +11,18 @@ import {
   Alert,
   StatusBar,
   Dimensions,
+  ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Import your components
+// Import components - let's add these back one by one
 import { CompatibilityInput } from '../components/compatibility/CompatibilityInput';
-import { AIReadingDisplay } from '../components/AIReadingDisplay';
 import { AILoadingIndicator } from '../components/AILoadingIndicator';
-
-// Import services and types
+import { supabase } from '../lib/supabase';
 import { generateCompatibilityAnalysis } from '../services/compatibilityService';
 import { CompatibilityAnalysis } from '../types/compatibility';
 
@@ -31,6 +30,8 @@ const { width: screenWidth } = Dimensions.get('window');
 
 const CompatibilityAnalysisScreen: React.FC = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const routeParams = route.params as any;
   
   // State management
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -43,7 +44,7 @@ const CompatibilityAnalysisScreen: React.FC = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const starsOpacity = useRef(new Animated.Value(0)).current;
-  
+
   // Load user data from AsyncStorage
   useEffect(() => {
     const loadUserData = async () => {
@@ -58,6 +59,62 @@ const CompatibilityAnalysisScreen: React.FC = () => {
     };
     loadUserData();
   }, []);
+
+  // Handle navigation params - automatically start analysis when coming from input screen
+  useEffect(() => {
+    if (routeParams?.readingId && routeParams?.partnerName) {
+      const startAnalysisFromParams = async () => {
+        try {
+          setIsAnalyzing(true);
+          
+          // Get user data from Supabase
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) {
+            throw new Error('User not authenticated');
+          }
+
+          // Get user profile
+          const { data: userProfile } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+          // Get the reading data to get partner details
+          const { data: reading } = await supabase
+            .from('readings')
+            .select('*')
+            .eq('id', routeParams.readingId)
+            .single();
+
+          if (!reading) {
+            throw new Error('Reading not found');
+          }
+
+          // Create user objects for analysis
+          const user1 = {
+            name: userProfile?.name || 'You',
+            birthDate: userProfile?.birth_date ? new Date(userProfile.birth_date) : new Date(),
+          };
+
+          const user2 = {
+            name: reading.input_data?.partner_name || routeParams.partnerName,
+            birthDate: reading.input_data?.partner_birth_date ? 
+              new Date(reading.input_data.partner_birth_date) : new Date(),
+          };
+
+          // Start the analysis
+          await handleAnalyze(user1, user2);
+        } catch (error) {
+          console.error('Error starting analysis from params:', error);
+          setError('Unable to start analysis. Please try again.');
+          setIsAnalyzing(false);
+        }
+      };
+
+      startAnalysisFromParams();
+    }
+  }, [routeParams]);
   
   // Floating stars background animation
   useEffect(() => {
@@ -118,80 +175,41 @@ const CompatibilityAnalysisScreen: React.FC = () => {
     }
   };
   
-  // Format analysis for AIReadingDisplay
-  const formatAnalysisContent = (): string => {
-    if (!analysis) return '';
-    
-    let content = `# Cosmic Compatibility Report\n\n`;
-    content += `## ${analysis.user1.name} & ${analysis.user2.name}\n\n`;
-    content += `### Overall Compatibility: ${analysis.overallScore}%\n\n`;
-    
-    // Add compatibility meter visual
-    const stars = Math.round(analysis.overallScore / 20);
-    content += '⭐'.repeat(stars) + '☆'.repeat(5 - stars) + '\n\n';
-    
-    // Add sections
-    analysis.sections.forEach(section => {
-      content += `## ${section.title}`;
-      if (section.score !== undefined) {
-        content += ` - ${section.score}%`;
-      }
-      content += `\n\n${section.content}\n\n`;
-    });
-    
-    // Add strengths
-    content += `## 💪 Relationship Strengths\n\n`;
-    analysis.strengths.forEach(strength => {
-      content += `- ${strength}\n`;
-    });
-    content += '\n';
-    
-    // Add challenges
-    content += `## 🌊 Potential Challenges\n\n`;
-    analysis.challenges.forEach(challenge => {
-      content += `- ${challenge}\n`;
-    });
-    content += '\n';
-    
-    // Add advice
-    content += `## 💫 Cosmic Advice\n\n`;
-    analysis.advice.forEach(advice => {
-      content += `> ${advice}\n\n`;
-    });
-    
-    return content;
-  };
-  
   // Handle saving compatibility report
   const handleSave = async () => {
-    if (!analysis || !userData) {
-      Alert.alert('Unable to Save', 'Please complete your profile to save compatibility reports.');
+    if (!analysis) {
+      Alert.alert('No Analysis', 'Please complete a compatibility analysis first.');
       return;
     }
-    
+
     try {
-      // Get existing saved reports
-      const savedReportsJson = await AsyncStorage.getItem(`@compatibility_reports_${userData.name}`);
-      const savedReports = savedReportsJson ? JSON.parse(savedReportsJson) : [];
+      // Get current user from Supabase auth
+      const { data: { user } } = await supabase.auth.getUser();
       
-      // Add new report
-      const newReport = {
+      if (!user) {
+        Alert.alert(
+          'Sign In Required',
+          'Please sign in to save compatibility reports.',
+        );
+        return;
+      }
+
+      // Save to AsyncStorage for now
+      const localKey = `@compatibility_offline_${user.id}`;
+      const offlineReports = await AsyncStorage.getItem(localKey);
+      const reports = offlineReports ? JSON.parse(offlineReports) : [];
+      reports.unshift({
         ...analysis,
         id: Date.now().toString(),
         savedAt: new Date().toISOString(),
-      };
+      });
+      await AsyncStorage.setItem(localKey, JSON.stringify(reports.slice(0, 5)));
       
-      savedReports.unshift(newReport);
-      
-      // Keep only last 10 reports
-      const reportsToSave = savedReports.slice(0, 10);
-      
-      await AsyncStorage.setItem(
-        `@compatibility_reports_${userData.name}`,
-        JSON.stringify(reportsToSave)
+      Alert.alert(
+        'Saved!', 
+        'Compatibility report saved to your profile.',
+        [{ text: 'OK', style: 'default' }]
       );
-      
-      Alert.alert('Saved!', 'Compatibility report saved to your profile.');
       
     } catch (err) {
       console.error('Save error:', err);
@@ -222,24 +240,11 @@ const CompatibilityAnalysisScreen: React.FC = () => {
   
   // Handle new analysis
   const handleNewAnalysis = () => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 50,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setShowResults(false);
-      setAnalysis(null);
-      setError(null);
-    });
+    setShowResults(false);
+    setAnalysis(null);
+    setError(null);
   };
-  
+
   // Loading messages for the loading indicator
   const loadingMessages = [
     "Aligning celestial bodies...",
@@ -256,30 +261,12 @@ const CompatibilityAnalysisScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
-      {/* Animated Background */}
-      <Animated.View style={[styles.starsBackground, { opacity: starsOpacity }]}>
-        {[...Array(20)].map((_, i) => (
-          <View
-            key={i}
-            style={[
-              styles.star,
-              {
-                left: Math.random() * screenWidth,
-                top: Math.random() * 600,
-                width: Math.random() * 3 + 1,
-                height: Math.random() * 3 + 1,
-              },
-            ]}
-          />
-        ))}
-      </Animated.View>
-      
       <ScrollView 
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Mystical Header */}
-        {!showResults && (
+        {!showResults && !routeParams?.readingId && (
           <LinearGradient
             colors={['rgba(147, 51, 234, 0.1)', 'transparent']}
             style={styles.headerGradient}
@@ -295,9 +282,9 @@ const CompatibilityAnalysisScreen: React.FC = () => {
         )}
         
         {/* Main Content */}
-        {!showResults ? (
+        {!showResults && !routeParams?.readingId ? (
           <>
-            {/* Input Section */}
+            {/* Input Section - NOW ENABLED */}
             <CompatibilityInput
               onAnalyze={handleAnalyze}
               isLoading={isAnalyzing}
@@ -311,6 +298,15 @@ const CompatibilityAnalysisScreen: React.FC = () => {
               </View>
             )}
           </>
+        ) : !showResults && routeParams?.readingId ? (
+          /* Loading state when we have params but no results yet */
+          <View style={styles.loadingContainer}>
+            <AILoadingIndicator
+              messages={loadingMessages}
+              duration={8000}
+              primaryColor="#9333EA"
+            />
+          </View>
         ) : (
           /* Results Display */
           <Animated.View
@@ -323,21 +319,90 @@ const CompatibilityAnalysisScreen: React.FC = () => {
             ]}
           >
             {analysis && (
-              <AIReadingDisplay
-                title={`${analysis.user1.name} & ${analysis.user2.name}`}
-                subtitle={`${analysis.user1.zodiacSign} + ${analysis.user2.zodiacSign}`}
-                content={formatAnalysisContent()}
-                type="compatibility"
-                primaryColor="#9333EA"
-                onShare={handleShare}
-                onSave={handleSave}
-                onGenerateNew={handleNewAnalysis}
-                metadata={{
-                  overallScore: analysis.overallScore,
-                  user1: analysis.user1,
-                  user2: analysis.user2,
-                }}
-              />
+              <View style={styles.resultsContent}>
+                {/* Main Score Display */}
+                <View style={styles.scoreSection}>
+                  <Text style={styles.scoreTitle}>Compatibility Score</Text>
+                  <View style={styles.scoreCircle}>
+                    <Text style={styles.scoreText}>{analysis.overallScore}%</Text>
+                  </View>
+                  <Text style={styles.namesText}>
+                    {analysis.user1.name} ({analysis.user1.zodiacSign})
+                  </Text>
+                  <Text style={styles.andText}>&</Text>
+                  <Text style={styles.namesText}>
+                    {analysis.user2.name} ({analysis.user2.zodiacSign})
+                  </Text>
+                </View>
+
+                {/* Sections */}
+                <View style={styles.sectionsContainer}>
+                  {analysis.sections.map((section, index) => (
+                    <View key={index} style={styles.sectionContainer}>
+                      <View style={styles.sectionHeader}>
+                        <Text style={styles.sectionTitle}>{section.title}</Text>
+                        {section.score !== undefined && (
+                          <View style={styles.sectionScoreBox}>
+                            <Text style={styles.sectionScore}>{section.score}%</Text>
+                          </View>
+                        )}
+                      </View>
+                      <Text style={styles.sectionContent}>{section.content}</Text>
+                    </View>
+                  ))}
+
+                  {/* Strengths */}
+                  <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>💪 Relationship Strengths</Text>
+                    {analysis.strengths.map((strength, index) => (
+                      <Text key={index} style={styles.listItem}>• {strength}</Text>
+                    ))}
+                  </View>
+
+                  {/* Challenges */}
+                  <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>🌊 Potential Challenges</Text>
+                    {analysis.challenges.map((challenge, index) => (
+                      <Text key={index} style={styles.listItem}>• {challenge}</Text>
+                    ))}
+                  </View>
+
+                  {/* Advice */}
+                  <View style={styles.sectionContainer}>
+                    <Text style={styles.sectionTitle}>💫 Cosmic Advice</Text>
+                    {analysis.advice.map((advice, index) => (
+                      <View key={index} style={styles.adviceBox}>
+                        <Text style={styles.adviceText}>{advice}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                {/* Action Buttons */}
+                <View style={styles.actionButtons}>
+                  <TouchableOpacity 
+                    style={styles.button}
+                    onPress={handleShare}
+                  >
+                    <MaterialCommunityIcons name="share-variant" size={20} color="#fff" />
+                    <Text style={styles.buttonText}>Share</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.button, styles.primaryButton]}
+                    onPress={handleSave}
+                  >
+                    <MaterialCommunityIcons name="content-save" size={20} color="#fff" />
+                    <Text style={styles.buttonText}>Save</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={styles.button}
+                    onPress={handleNewAnalysis}
+                  >
+                    <MaterialCommunityIcons name="refresh" size={20} color="#fff" />
+                    <Text style={styles.buttonText}>New</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             )}
           </Animated.View>
         )}
@@ -365,20 +430,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
   },
-  starsBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 0,
-  },
-  star: {
-    position: 'absolute',
-    backgroundColor: '#fff',
-    borderRadius: 50,
-    opacity: 0.8,
-  },
   headerGradient: {
     paddingTop: 20,
     paddingBottom: 10,
@@ -403,6 +454,126 @@ const styles = StyleSheet.create({
   },
   resultsContainer: {
     flex: 1,
+  },
+  resultsContent: {
+    padding: 20,
+  },
+  scoreSection: {
+    alignItems: 'center',
+    marginBottom: 30,
+    padding: 20,
+  },
+  scoreTitle: {
+    fontSize: 20,
+    color: '#999',
+    marginBottom: 20,
+  },
+  scoreCircle: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: 'rgba(147, 51, 234, 0.1)',
+    borderWidth: 3,
+    borderColor: '#9333EA',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  scoreText: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#9333EA',
+  },
+  namesText: {
+    fontSize: 18,
+    color: '#fff',
+    marginVertical: 5,
+  },
+  andText: {
+    fontSize: 16,
+    color: '#999',
+    marginVertical: 5,
+  },
+  sectionsContainer: {
+    marginBottom: 20,
+  },
+  sectionContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 15,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    flex: 1,
+  },
+  sectionScoreBox: {
+    backgroundColor: 'rgba(147, 51, 234, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+  },
+  sectionScore: {
+    fontSize: 16,
+    color: '#9333EA',
+    fontWeight: '600',
+  },
+  sectionContent: {
+    fontSize: 14,
+    color: '#ccc',
+    lineHeight: 20,
+  },
+  listItem: {
+    fontSize: 14,
+    color: '#ccc',
+    lineHeight: 22,
+    marginTop: 8,
+  },
+  adviceBox: {
+    backgroundColor: 'rgba(147, 51, 234, 0.1)',
+    borderLeftWidth: 3,
+    borderLeftColor: '#9333EA',
+    padding: 12,
+    marginTop: 10,
+  },
+  adviceText: {
+    fontSize: 14,
+    color: '#fff',
+    lineHeight: 20,
+    fontStyle: 'italic',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 30,
+  },
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  primaryButton: {
+    backgroundColor: '#9333EA',
+    borderColor: '#9333EA',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
   },
   errorContainer: {
     flexDirection: 'row',
@@ -431,6 +602,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 100,
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 16,
+    marginTop: 20,
   },
 });
 
