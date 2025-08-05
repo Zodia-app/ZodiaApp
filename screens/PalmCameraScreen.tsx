@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
+  Dimensions,
   Alert,
-  SafeAreaView,
+  ActivityIndicator,
   Image,
+  SafeAreaView,
 } from 'react-native';
+import * as ExpoCamera from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as ImageManipulator from 'expo-image-manipulator';
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 type HandType = 'left' | 'right';
 
@@ -22,11 +28,28 @@ const PalmCameraScreen = (props?: any) => {
   const navigation = props?.navigation;
   const route = props?.route;
   
+  const cameraRef = useRef<ExpoCamera.Camera>(null);
+  
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const [type, setType] = useState(ExpoCamera.CameraType.back);
   const [capturedHands, setCapturedHands] = useState<CapturedHand[]>([]);
   const [currentHand, setCurrentHand] = useState<HandType>('left');
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const userData = route?.params?.userData || {};
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await ExpoCamera.Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === 'granted');
+      if (status === 'granted') {
+        setIsCameraReady(true);
+      }
+    })();
+  }, []);
 
   const handleGoBack = () => {
     if (navigation && typeof navigation.goBack === 'function') {
@@ -34,13 +57,38 @@ const PalmCameraScreen = (props?: any) => {
     }
   };
 
-  // Mock photo capture
-  const takePicture = () => {
-    // Simulate taking a photo with a placeholder
-    const mockPhotoUri = `mock-photo-${currentHand}-${Date.now()}`;
-    
+  const takePicture = async () => {
+    if (!cameraRef.current || isCapturing) return;
+
+    try {
+      setIsCapturing(true);
+      
+      const photo = await cameraRef.current.takePictureAsync({
+        quality: 0.8,
+        base64: false,
+        skipProcessing: true,
+      });
+
+      const manipulatedImage = await ImageManipulator.manipulateAsync(
+        photo.uri,
+        [{ resize: { width: 1080 } }],
+        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+      );
+
+      setPreviewUri(manipulatedImage.uri);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to capture photo. Please try again.');
+      console.error('Camera capture error:', error);
+    } finally {
+      setIsCapturing(false);
+    }
+  };
+
+  const acceptPhoto = () => {
+    if (!previewUri) return;
+
     const newCapture: CapturedHand = {
-      uri: mockPhotoUri,
+      uri: previewUri,
       type: currentHand,
     };
 
@@ -51,6 +99,7 @@ const PalmCameraScreen = (props?: any) => {
       navigateToResult(updatedHands);
     } else {
       setCurrentHand('right');
+      setPreviewUri(null);
       Alert.alert(
         'Great!',
         'Now please capture your right hand.',
@@ -59,13 +108,16 @@ const PalmCameraScreen = (props?: any) => {
     }
   };
 
+  const retakePhoto = () => {
+    setPreviewUri(null);
+  };
+
   const navigateToResult = async (hands: CapturedHand[]) => {
     setIsProcessing(true);
     
     const leftHand = hands.find(h => h.type === 'left');
     const rightHand = hands.find(h => h.type === 'right');
 
-    // Navigate to ReadingQueue with mock data
     if (navigation && typeof navigation.navigate === 'function') {
       navigation.navigate('ReadingQueue', {
         readingType: 'palm',
@@ -79,6 +131,14 @@ const PalmCameraScreen = (props?: any) => {
     }
   };
 
+  const toggleCameraType = () => {
+    setType(current => 
+      current === ExpoCamera.CameraType.back 
+        ? ExpoCamera.CameraType.front 
+        : ExpoCamera.CameraType.back
+    );
+  };
+
   if (!navigation) {
     return (
       <View style={styles.centerContainer}>
@@ -88,10 +148,87 @@ const PalmCameraScreen = (props?: any) => {
     );
   }
 
+  if (hasPermission === null) {
+    return (
+      <View style={styles.centerContainer}>
+        <ActivityIndicator size="large" color="#B19CD9" />
+      </View>
+    );
+  }
+
+  if (hasPermission === false) {
+    return (
+      <LinearGradient colors={['#1a0033', '#000']} style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={styles.permissionContainer}>
+            <Ionicons name="camera-off" size={80} color="#666" />
+            <Text style={styles.permissionTitle}>Camera Access Required</Text>
+            <Text style={styles.permissionText}>
+              To provide palm readings, Zodia needs access to your camera.
+            </Text>
+            <TouchableOpacity 
+              style={styles.permissionButton}
+              onPress={() => {
+                ExpoCamera.Camera.requestCameraPermissionsAsync().then(({ status }) => {
+                  setHasPermission(status === 'granted');
+                });
+              }}
+            >
+              <Text style={styles.permissionButtonText}>Enable Camera</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.permissionButton, { marginTop: 15, backgroundColor: '#666' }]}
+              onPress={handleGoBack}
+            >
+              <Text style={styles.permissionButtonText}>Go Back</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+    );
+  }
+
+  if (previewUri) {
+    return (
+      <View style={styles.container}>
+        <Image source={{ uri: previewUri }} style={styles.preview} />
+        <View style={styles.previewOverlay}>
+          <Text style={styles.previewTitle}>
+            {currentHand === 'left' ? 'Left' : 'Right'} Hand Captured
+          </Text>
+          <Text style={styles.previewSubtitle}>
+            Is this photo clear enough?
+          </Text>
+        </View>
+        <View style={styles.previewActions}>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.retakeButton]}
+            onPress={retakePhoto}
+          >
+            <Ionicons name="close" size={24} color="#fff" />
+            <Text style={styles.actionButtonText}>Retake</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.acceptButton]}
+            onPress={acceptPhoto}
+          >
+            <Ionicons name="checkmark" size={24} color="#fff" />
+            <Text style={styles.actionButtonText}>Accept</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <LinearGradient colors={['#1a0033', '#000']} style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
+    <View style={styles.container}>
+      <ExpoCamera.Camera 
+        ref={cameraRef}
+        style={styles.camera} 
+        type={type}
+        onCameraReady={() => setIsCameraReady(true)}
+      >
+        <SafeAreaView style={styles.header}>
           <TouchableOpacity 
             style={styles.backButton}
             onPress={handleGoBack}
@@ -99,57 +236,75 @@ const PalmCameraScreen = (props?: any) => {
           >
             <Ionicons name="arrow-back" size={24} color="#fff" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Palm Reading (Mock)</Text>
+          <Text style={styles.headerTitle}>Palm Reading</Text>
           <View style={styles.headerSpacer} />
-        </View>
+        </SafeAreaView>
 
-        <View style={styles.content}>
-          <View style={styles.mockCameraView}>
-            <Ionicons name="camera" size={100} color="#666" />
-            <Text style={styles.mockText}>Camera Preview</Text>
-            <Text style={styles.mockSubtext}>(Mock Mode - No actual camera)</Text>
-          </View>
-
-          <View style={styles.guideContainer}>
+        <View style={styles.guideContainer}>
+          <View style={styles.handGuide}>
+            <View style={styles.handOutline} />
             <Text style={styles.guideText}>
-              Capturing {currentHand} hand
+              Place your {currentHand} hand here
             </Text>
             <Text style={styles.guideTip}>
-              This is a mock camera screen for testing
+              Ensure good lighting and spread your fingers
             </Text>
           </View>
+        </View>
+
+        <View style={styles.controls}>
+          <TouchableOpacity 
+            style={styles.controlButton}
+            onPress={toggleCameraType}
+          >
+            <Ionicons name="camera-reverse" size={30} color="#fff" />
+          </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.captureButton}
             onPress={takePicture}
+            disabled={isCapturing}
           >
-            <View style={styles.captureButtonInner} />
+            <View style={styles.captureButtonInner}>
+              {isCapturing && (
+                <ActivityIndicator size="small" color="#B19CD9" />
+              )}
+            </View>
           </TouchableOpacity>
 
-          <View style={styles.progressContainer}>
-            <View style={styles.progressDots}>
-              <View style={[styles.progressDot, styles.progressDotActive]} />
-              <View style={[
-                styles.progressDot, 
-                capturedHands.length > 0 && styles.progressDotActive
-              ]} />
-            </View>
-            <Text style={styles.progressText}>
-              {capturedHands.length}/2 hands captured
-            </Text>
-          </View>
+          <View style={styles.controlButton} />
         </View>
-      </SafeAreaView>
-    </LinearGradient>
+
+        <View style={styles.progressContainer}>
+          <View style={styles.progressDots}>
+            <View style={[styles.progressDot, styles.progressDotActive]} />
+            <View style={[
+              styles.progressDot, 
+              capturedHands.length > 0 && styles.progressDotActive
+            ]} />
+          </View>
+          <Text style={styles.progressText}>
+            {capturedHands.length}/2 hands captured
+          </Text>
+        </View>
+      </ExpoCamera.Camera>
+
+      {isProcessing && (
+        <View style={styles.processingOverlay}>
+          <ActivityIndicator size="large" color="#B19CD9" />
+          <Text style={styles.processingText}>
+            Preparing your palm reading...
+          </Text>
+        </View>
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  safeArea: {
-    flex: 1,
+    backgroundColor: '#000',
   },
   centerContainer: {
     flex: 1,
@@ -166,12 +321,22 @@ const styles = StyleSheet.create({
     color: '#ccc',
     fontSize: 14,
   },
+  safeArea: {
+    flex: 1,
+  },
   header: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingTop: 10,
+    paddingBottom: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    zIndex: 1,
   },
   backButton: {
     width: 40,
@@ -187,34 +352,25 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 40,
   },
-  content: {
+  camera: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  mockCameraView: {
-    width: 300,
-    height: 300,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  mockText: {
-    color: '#fff',
-    fontSize: 18,
-    marginTop: 20,
-  },
-  mockSubtext: {
-    color: '#999',
-    fontSize: 14,
-    marginTop: 5,
   },
   guideContainer: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 40,
+  },
+  handGuide: {
+    alignItems: 'center',
+  },
+  handOutline: {
+    width: 250,
+    height: 250,
+    borderRadius: 125,
+    borderWidth: 3,
+    borderColor: '#B19CD9',
+    borderStyle: 'dashed',
+    marginBottom: 20,
   },
   guideText: {
     fontSize: 18,
@@ -226,13 +382,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#ccc',
   },
+  controls: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingBottom: 50,
+    paddingHorizontal: 50,
+  },
+  controlButton: {
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   captureButton: {
     width: 80,
     height: 80,
     borderRadius: 40,
     backgroundColor: '#fff',
     padding: 3,
-    marginBottom: 40,
   },
   captureButtonInner: {
     flex: 1,
@@ -240,8 +408,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderWidth: 5,
     borderColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   progressContainer: {
+    position: 'absolute',
+    bottom: 150,
+    left: 0,
+    right: 0,
     alignItems: 'center',
   },
   progressDots: {
@@ -261,6 +435,101 @@ const styles = StyleSheet.create({
   progressText: {
     color: '#ccc',
     fontSize: 12,
+  },
+  permissionContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  permissionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  permissionText: {
+    fontSize: 16,
+    color: '#ccc',
+    textAlign: 'center',
+    marginBottom: 30,
+  },
+  permissionButton: {
+    backgroundColor: '#B19CD9',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 25,
+  },
+  permissionButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  preview: {
+    flex: 1,
+  },
+  previewOverlay: {
+    position: 'absolute',
+    top: 100,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  previewTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  previewSubtitle: {
+    fontSize: 16,
+    color: '#fff',
+    textShadowColor: 'rgba(0, 0, 0, 0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  previewActions: {
+    position: 'absolute',
+    bottom: 50,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 40,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 25,
+  },
+  retakeButton: {
+    backgroundColor: '#666',
+  },
+  acceptButton: {
+    backgroundColor: '#4CAF50',
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  processingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  processingText: {
+    color: '#fff',
+    fontSize: 16,
+    marginTop: 20,
   },
 });
 
