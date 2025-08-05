@@ -38,12 +38,14 @@ type RootStackParamList = {
   ReadingQueue: undefined;
   PremiumPayment: undefined;
   EditProfile: undefined;
+  DreamInterpreter: undefined; // Add this for the dream interpreter
+  ReadingRequest: undefined; // Add this
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
-// Bottom Tab Navigator
+// Bottom Tab Navigator with proper styling
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -53,19 +55,37 @@ function MainTabs() {
 
           if (route.name === 'Dashboard') {
             iconName = focused ? 'home' : 'home-outline';
+          } else if (route.name === 'Reports') {
+            iconName = focused ? 'document-text' : 'document-text-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
+          } else if (route.name === 'More') {
+            iconName = focused ? 'menu' : 'menu-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#B19CD9',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: '#8B5CF6',
+        tabBarInactiveTintColor: '#9CA3AF',
         headerShown: false,
+        tabBarStyle: {
+          backgroundColor: 'white',
+          borderTopWidth: 1,
+          borderTopColor: '#E5E7EB',
+          paddingBottom: 5,
+          paddingTop: 5,
+          height: 60,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+        },
       })}
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
+      <Tab.Screen name="Reports" component={ProfileScreen} /> 
       <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="More" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
@@ -132,13 +152,13 @@ export default function App() {
         <Stack.Screen 
           name="PalmIntro" 
           component={PalmIntroScreen}
-          options={{ title: 'Palm Reading' }}
+          options={{ title: 'Palm Reading', headerShown: false }}
         />
 
         <Stack.Screen 
           name="PalmReadingResult" 
           component={PalmReadingResultScreen}
-          options={{ title: 'Your Palm Reading' }}
+          options={{ title: 'Your Palm Reading', headerShown: false }}
         />
 
         {/* Compatibility Flow */}
@@ -162,6 +182,11 @@ export default function App() {
           options={{ title: 'Processing Your Reading' }}
         />
         <Stack.Screen 
+          name="ReadingRequest" 
+          component={ReadingRequestScreen}
+          options={{ title: 'Request a Reading' }}
+        />
+        <Stack.Screen 
           name="PremiumPayment" 
           component={PremiumPaymentScreen}
           options={{ title: 'Unlock Premium' }}
@@ -170,6 +195,11 @@ export default function App() {
           name="EditProfile" 
           component={EditProfileScreen}
           options={{ title: 'Edit Profile' }}
+        />
+        <Stack.Screen 
+          name="DreamInterpreter" 
+          component={ProfileScreen} // Temporary placeholder
+          options={{ title: 'Dream Interpreter' }}
         />
         {/* Temporarily comment out until ZodiacCalculatorScreen is fixed
         <Stack.Screen 
