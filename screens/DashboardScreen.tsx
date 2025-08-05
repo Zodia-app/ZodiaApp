@@ -347,7 +347,7 @@ const DashboardScreen = () => {
 
           <TouchableOpacity 
             style={[styles.featureCard, styles.palmCard]}
-            onPress={() => handleFeaturePress('palm-reading', 'PalmIntro')}
+            onPress={() => handleFeaturePress('palm-reading', 'PalmCamera')}
           >
             <Ionicons name="hand-left" size={40} color="white" />
             <Text style={styles.featureTitle}>Palm Reading</Text>
