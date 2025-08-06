@@ -13,6 +13,7 @@ import DashboardScreen from './screens/DashboardScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import AstrologyScreen from './screens/AstrologyScreen';
 import AstrologyReadingScreen from './screens/AstrologyReadingScreen';
+import MonthlyAstrologyReport from './screens/MonthlyAstrologyReport';
 import PalmCameraScreen from './screens/PalmCameraScreen';
 import { PalmReadingResultScreen } from './screens/PalmReadingResultScreen';
 import CompatibilityAnalysisScreen from './screens/CompatibilityAnalysisScreen';
@@ -118,9 +119,25 @@ export default function App() {
 
           {/* Feature Screens */}
           <Stack.Screen 
-            name="AstrologyScreen" 
+            name="Astrology" 
             component={AstrologyScreen}
             options={{ title: 'Astrology', headerShown: false }}
+          />
+
+          <Stack.Screen 
+            name="AstrologyReading" 
+            component={AstrologyReadingScreen}
+            options={{ title: 'Astrology Reading', headerShown: false }}
+          />
+
+          <Stack.Screen 
+            name="MonthlyAstrologyReport" 
+            component={MonthlyAstrologyReport}
+            options={{ 
+              title: 'Monthly Report', 
+              headerShown: false,
+              animation: 'slide_from_right'
+            }}
           />
           
           <Stack.Screen 
@@ -187,6 +204,24 @@ export default function App() {
             name="DreamInterpreter" 
             component={PlaceholderScreen}
             options={{ title: 'Dream Interpreter', headerShown: false }}
+          />
+
+          <Stack.Screen 
+            name="Education" 
+            component={PlaceholderScreen}
+            options={{ title: 'Learn', headerShown: false }}
+          />
+
+          <Stack.Screen 
+            name="WeeklyHoroscope" 
+            component={PlaceholderScreen}
+            options={{ title: 'Weekly Forecast', headerShown: false }}
+          />
+
+          <Stack.Screen 
+            name="ZodiacTest" 
+            component={PlaceholderScreen}
+            options={{ title: 'Zodiac Calculator Test', headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>
