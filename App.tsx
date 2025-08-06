@@ -14,6 +14,8 @@ import ProfileScreen from './screens/ProfileScreen';
 import AstrologyScreen from './screens/AstrologyScreen';
 import AstrologyReadingScreen from './screens/AstrologyReadingScreen';
 import MonthlyAstrologyReport from './screens/MonthlyAstrologyReport';
+import AstrologyDetailedFormScreen from './screens/AstrologyDetailedFormScreen';
+import AstrologyReadingResultScreen from './screens/AstrologyReadingResultScreen';
 import PalmCameraScreen from './screens/PalmCameraScreen';
 import { PalmReadingResultScreen } from './screens/PalmReadingResultScreen';
 import CompatibilityAnalysisScreen from './screens/CompatibilityAnalysisScreen';
@@ -131,7 +133,7 @@ export default function App() {
             options={{ headerShown: false }}
           />
 
-          {/* Feature Screens */}
+          {/* Astrology Feature Screens */}
           <Stack.Screen 
             name="Astrology" 
             component={AstrologyScreen}
@@ -153,6 +155,33 @@ export default function App() {
               animation: 'slide_from_right'
             }}
           />
+
+          <Stack.Screen 
+            name="AstrologyDetailedForm" 
+            component={AstrologyDetailedFormScreen}
+            options={{ 
+              title: 'Cosmic Consultation', 
+              headerShown: false,
+              animation: 'slide_from_right'
+            }}
+          />
+
+          <Stack.Screen 
+            name="AstrologyReadingResult" 
+            component={AstrologyReadingResultScreen}
+            options={{ 
+              title: 'Your Reading', 
+              headerShown: false,
+              animation: 'slide_from_bottom'
+            }}
+          />
+          
+          {/* Palm Reading Screens */}
+          <Stack.Screen 
+            name="PalmIntro" 
+            component={PalmIntroScreen}
+            options={{ title: 'Palm Reading Intro', headerShown: false }}
+          />
           
           <Stack.Screen 
             name="PalmIntroScreen" 
@@ -172,24 +201,28 @@ export default function App() {
             options={{ title: 'Your Palm Reading', headerShown: false }}
           />
           
+          {/* Dream Interpreter */}
           <Stack.Screen 
             name="DreamInterpreter" 
             component={DreamInterpreterScreen}
             options={{ title: 'Dream Interpreter', headerShown: false }}
           />
           
+          {/* Daily Report */}
           <Stack.Screen 
             name="DailyReportDetail" 
             component={DailyReportDetailScreen}
             options={{ title: 'Daily Report', headerShown: false }}
           />
           
+          {/* Educational Library */}
           <Stack.Screen 
             name="EducationalLibrary" 
             component={EducationalLibraryScreen}
             options={{ title: 'Educational Library', headerShown: false }}
           />
 
+          {/* Compatibility */}
           <Stack.Screen 
             name="CompatibilityAnalysis" 
             component={CompatibilityAnalysisScreen}
@@ -202,12 +235,14 @@ export default function App() {
             options={{ title: 'Enter Partner Details', headerShown: false }}
           />
 
+          {/* Clairvoyance */}
           <Stack.Screen 
             name="ClairvoyanceReading" 
             component={ClairvoyanceReadingScreen}
             options={{ title: 'Clairvoyance Reading', headerShown: false }}
           />
 
+          {/* Reading Queue & Requests */}
           <Stack.Screen 
             name="ReadingQueue" 
             component={ReadingQueueScreen}
@@ -220,19 +255,21 @@ export default function App() {
             options={{ title: 'Request a Reading', headerShown: false }}
           />
           
+          {/* Premium & Payment */}
           <Stack.Screen 
             name="PremiumPayment" 
             component={PremiumPaymentScreen}
             options={{ title: 'Unlock Premium', headerShown: false }}
           />
           
+          {/* Profile Management */}
           <Stack.Screen 
             name="EditProfile" 
             component={EditProfileScreen}
             options={{ title: 'Edit Profile', headerShown: false }}
           />
           
-          {/* Placeholder for Article Detail */}
+          {/* Placeholder Screens */}
           <Stack.Screen 
             name="ArticleDetail" 
             component={PlaceholderScreen}
