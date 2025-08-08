@@ -2,7 +2,10 @@
   "name": "zodiaapp",
   "private": true,
   "scripts": {
-    "dev": "npm run dev --prefix server",
+<<<<<<< HEAD
+    "dev": "npm run dev --prefix server"
+  }
+=======
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -47,5 +50,7 @@
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
     "typescript": "~5.8.3"
-  }
+  },
+  "private": true
+>>>>>>> origin/main
 }
