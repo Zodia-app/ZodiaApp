@@ -1,0 +1,15 @@
+[INPUT]
+endpoint: /readings/palm
+schema: palm_reading_v1
+image_id: "demo_001"
+preprocess: "cropped, 1024px, exif stripped"
+
+[GOOD_OUTPUT]
+{
+  "image_id": "demo_001",
+  "lines_detected": [
+    { "name": "life_line", "confidence": 0.82 }
+  ],
+  "interpretation": ["...", "..."],
+  "display_text": "..."
+}

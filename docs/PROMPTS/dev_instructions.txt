@@ -1,0 +1,8 @@
+Project: Zodia (React Native + TypeScript). AI layer uses OpenAI Responses API with Structured Outputs.
+
+When writing/refactoring code:
+- Maintain types and schemas in docs/SCHEMAS.md
+- Keep functions small and testable; separate data prep, model call, and parsing
+- For diffs: output unified patch (or full file content) with minimal commentary
+- Handle retries/timeouts; reject non-conforming JSON and retry once with the same schema
+- Never hardcode secrets; use env variables
