@@ -1,0 +1,22 @@
+[INPUT]
+endpoint: /readings/astro/daily
+schema: astro_daily_v1
+profile:
+  date: "2025-08-08"
+  sign: "Capricorn"
+  moon_phase: "Waning Crescent"
+  aspects: ["Sun trine Moon", "Venus sextile Mars"]
+
+[GOOD_OUTPUT]
+{
+  "date": "2025-08-08",
+  "sign": "Capricorn",
+  "sections": [
+    { "title": "Focus", "content": "..." },
+    { "title": "Relationships", "content": "..." },
+    { "title": "Opportunity", "content": "..." }
+  ],
+  "lucky_numbers": [3, 8, 22],
+  "mood": "grounded",
+  "display_text": "..."
+}

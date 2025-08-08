@@ -1,0 +1,20 @@
+[INPUT]
+endpoint: /readings/tarot
+schema: tarot_reading_v1
+spread: "Three Card"
+cards:
+  - { position: "Past", name: "The Sun", upright: true }
+  - { position: "Present", name: "The Moon", upright: false }
+  - { position: "Future", name: "The Star", upright: true }
+
+[GOOD_OUTPUT]
+{
+  "spread": "Three Card",
+  "cards": [
+    { "position": "Past", "name": "The Sun", "upright": true },
+    { "position": "Present", "name": "The Moon", "upright": false },
+    { "position": "Future", "name": "The Star", "upright": true }
+  ],
+  "insights": ["...", "...", "..."],
+  "display_text": "..."
+}

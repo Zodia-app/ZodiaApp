@@ -13,6 +13,7 @@ import { AILoadingIndicator } from '../components/AILoadingIndicator';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { supabase } from '../lib/supabase';
 import { queueReading } from '../services/readingQueueService';
+import { fetchDailyHoroscope } from '../services/horoscope/horoscopeService';
 
 // Helper function to generate a valid UUID v4
 function generateUUID(): string {
@@ -100,43 +101,7 @@ const AstrologyReadingScreen = ({ navigation, route }: any) => {
     }
   };
 
-  // Mock AI horoscope generation function
-  const generateAIHoroscope = async (userData: any) => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Mock horoscope based on zodiac sign
-    const horoscopes: { [key: string]: string } = {
-      'Aries': `Today brings fresh energy and new beginnings, ${userData.name}. As an Aries, your natural leadership qualities will shine brightly. The planetary alignment suggests it's an excellent time to start that project you've been contemplating. Your ruling planet Mars energizes your ambitions, making this a powerful day for taking action. In relationships, be mindful of your fiery nature - channel it into passion rather than impatience. Financial opportunities may present themselves, but careful consideration is advised. Trust your instincts, they're particularly sharp today.`,
-      
-      'Taurus': `Stability and comfort are your themes today, ${userData.name}. Venus, your ruling planet, encourages you to indulge in life's pleasures while maintaining your practical nature. A financial opportunity may arise - your natural prudence will serve you well. In love, express your feelings through actions rather than words. Your steadfast nature is appreciated by those around you. Take time to enjoy nature or artistic pursuits today.`,
-      
-      'Gemini': `Communication is key today, ${userData.name}. Mercury enhances your natural wit and charm, making this an ideal day for important conversations. Your dual nature allows you to see multiple perspectives - use this gift wisely. Social opportunities abound, and networking could lead to exciting prospects. In romance, intellectual connection deepens emotional bonds. Stay curious and open-minded.`,
-      
-      'Cancer': `Emotional wisdom guides you today, ${userData.name}. The Moon, your ruling planet, heightens your intuition and empathy. Trust your gut feelings about people and situations. Family and home matters may require attention - your nurturing nature will resolve any conflicts. Creative pursuits are especially favored. Take time for self-care and emotional replenishment.`,
-      
-      'Leo': `Your charisma is magnetic today, ${userData.name}. The Sun illuminates your natural leadership abilities and creative talents. This is an excellent time to showcase your skills and take center stage. Romance is highlighted - your warmth and generosity attract admirers. Be mindful not to let pride interfere with important relationships. Financial luck may come through creative ventures.`,
-      
-      'Virgo': `Precision and analysis serve you well today, ${userData.name}. Mercury sharpens your already keen eye for detail. Work projects benefit from your methodical approach. Health matters come into focus - consider starting a new wellness routine. In relationships, your practical support is valued more than grand gestures. Financial planning yields long-term benefits.`,
-      
-      'Libra': `Balance and harmony guide your day, ${userData.name}. Venus enhances your natural charm and diplomatic skills. Relationships of all kinds flourish under your thoughtful attention. Creative and artistic pursuits bring joy and possibly recognition. Avoid overthinking decisions - trust your sense of balance. Partnership opportunities may arise in both personal and professional spheres.`,
-      
-      'Scorpio': `Transformation is your theme today, ${userData.name}. Pluto's influence brings hidden truths to light and opportunities for deep change. Your intuitive powers are at their peak - trust what you sense beneath the surface. Intimate relationships deepen through honest communication. Financial investments made now may yield future rewards. Embrace the power of letting go.`,
-      
-      'Sagittarius': `Adventure beckons today, ${userData.name}. Jupiter expands your horizons and brings optimism to all endeavors. Travel, education, or philosophical pursuits satisfy your quest for meaning. Your enthusiasm is contagious - share your vision with others. Love may come through shared adventures or learning experiences. Financial opportunities arise through expansion and risk-taking.`,
-      
-      'Capricorn': `Achievement is within reach today, ${userData.name}. Saturn rewards your hard work and discipline with tangible progress. Career matters are especially favored - your leadership abilities are recognized. Set long-term goals with confidence. In relationships, reliability and commitment strengthen bonds. Financial stability improves through careful planning and patience.`,
-      
-      'Aquarius': `Innovation drives your day, ${userData.name}. Uranus sparks original thinking and unconventional solutions. Your humanitarian instincts guide you toward meaningful contributions. Friendships and group activities bring fulfillment. Technology may play a significant role in achieving your goals. Embrace your uniqueness - it's your greatest asset.`,
-      
-      'Pisces': `Intuition and creativity flow freely today, ${userData.name}. Neptune enhances your natural empathy and artistic abilities. Dreams and meditation provide valuable insights. Your compassionate nature draws others seeking comfort and understanding. Creative projects flourish under this influence. Trust your inner wisdom over logic in making decisions.`,
-      
-      'Default': `The stars align favorably for you today, ${userData.name}. Your ${userData.zodiacSign} nature is enhanced by current planetary positions. This is a time of opportunity and growth. Trust in your abilities and remain open to new experiences. Love, career, and personal development all show positive potential. Remember to stay grounded while reaching for the stars.`
-    };
-    
-    return horoscopes[userData.zodiacSign] || horoscopes['Default'];
-  };
-
+  // New generateHoroscope function fetching real daily horoscope from backend
   const generateHoroscope = async () => {
     if (!userData) {
       setError('User data not found. Please complete your profile first.');
@@ -145,29 +110,32 @@ const AstrologyReadingScreen = ({ navigation, route }: any) => {
 
     setIsGenerating(true);
     setError(null);
-    
+
     try {
-      const horoscope = await generateAIHoroscope(userData);
-      setHoroscopeContent(horoscope);
+      const today = new Date().toISOString().split('T')[0];
+      const result = await fetchDailyHoroscope(userData.zodiacSign, today);
+      setHoroscopeContent(result.reading);
       setHasGenerated(true);
-      
-      // Optionally save to Supabase (only if user has valid UUID)
-      if (supabase && userData.id && userData.id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+
+      if (
+        supabase &&
+        userData.id &&
+        userData.id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+      ) {
         try {
           await supabase
             .from('horoscopes')
             .insert({
               user_id: userData.id,
-              content: horoscope,
+              content: result.reading,
               zodiac_sign: userData.zodiacSign,
-              created_at: new Date().toISOString()
+              created_at: new Date().toISOString(),
             });
         } catch (dbError) {
           console.log('Failed to save horoscope to database:', dbError);
-          // Don't show error to user as horoscope was generated successfully
         }
       }
-    } catch (err: any) {
+    } catch (err) {
       setError('Unable to generate horoscope. Please try again.');
       console.error('Horoscope generation error:', err);
     } finally {

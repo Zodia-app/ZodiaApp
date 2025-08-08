@@ -1,0 +1,7 @@
+{
+  "name": "zodiaapp",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix server"
+  }
+}

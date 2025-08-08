@@ -6,107 +6,85 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  ActivityIndicator,
   TouchableOpacity,
   Share,
   Alert,
-  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { PalmReadingService, PalmReadingResult } from '../services/palmReadingService';
-import { supabase } from '../lib/supabase';
+
+// Mock palm reading data
+const mockPalmReading = {
+  summary: "Your palms reveal a creative and intuitive nature with strong leadership qualities.",
+  sections: [
+    {
+      icon: "❤️",
+      heading: "Heart Line",
+      content: "Your heart line shows deep emotional intelligence and capacity for meaningful connections. You approach relationships with both passion and wisdom, seeking genuine bonds rather than superficial connections. There's an indication of a transformative love experience that will shape your emotional growth."
+    },
+    {
+      icon: "🧠",
+      heading: "Head Line",
+      content: "A well-defined head line indicates sharp analytical abilities combined with creative thinking. You have the rare ability to balance logic with intuition, making you an excellent problem solver. Your mind seeks knowledge and understanding, always questioning and exploring new concepts."
+    },
+    {
+      icon: "⭐",
+      heading: "Life Line",
+      content: "Your life line suggests vitality and resilience. You possess the strength to overcome challenges and the flexibility to adapt to change. Major life transitions are ahead, but you're well-equipped to handle them with grace and determination."
+    },
+    {
+      icon: "✨",
+      heading: "Fate Line",
+      content: "A prominent fate line reveals a strong sense of purpose and destiny. Your career path may involve helping or inspiring others. Success will come through perseverance and staying true to your authentic self. Leadership roles are highly favorable."
+    },
+    {
+      icon: "🏔️",
+      heading: "Mounts Analysis",
+      content: "The Mount of Venus shows warmth and passion for life. Mount of Jupiter indicates ambition and desire for achievement. Your Mount of Saturn suggests wisdom beyond your years, while the Mount of Apollo reveals artistic talents waiting to be expressed."
+    }
+  ],
+  confidence: 0.85
+};
 
 export function PalmReadingResultScreen({ route, navigation }) {
-  const { imageUri, handedness, readingType = 'detailed' } = route.params;
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [reading, setReading] = useState<PalmReadingResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { isMockData = false } = route.params || {};
+  const [loading, setLoading] = useState(!isMockData);
+  const [reading, setReading] = useState(null);
   const [activeSection, setActiveSection] = useState(0);
 
   useEffect(() => {
-    // Get current user
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-    };
-    getUser();
-  }, []);
-
-  useEffect(() => {
-    // Generate the reading once we have the user
-    if (user !== null) {
-      generateReading();
-    }
-  }, [user]);
-
-  const generateReading = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const result = await PalmReadingService.generateReading({
-        userId: user?.id || 'anonymous',
-        userName: user?.user_metadata?.name || 'Seeker',
-        imageUri,
-        handedness,
-        dateOfBirth: user?.user_metadata?.date_of_birth,
-        gender: user?.user_metadata?.gender,
-        relationshipStatus: user?.user_metadata?.relationship_status,
-        readingType,
-      });
-
-      setReading(result);
-      
-      // Commented out analytics - uncomment when you have AnalyticsService
-      // AnalyticsService.track('Palm Reading Completed', {
-      //   readingId: result.id,
-      //   confidence: result.confidence,
-      //   processingTime: result.processingTime,
-      // });
-
-    } catch (err) {
-      console.error('Failed to generate reading:', err);
-      setError('Unable to generate your palm reading. Please try again.');
-      
-      // AnalyticsService.track('Palm Reading Failed', {
-      //   error: err.message,
-      // });
-    } finally {
+    if (isMockData) {
+      // Use mock data immediately
+      setReading(mockPalmReading);
       setLoading(false);
+    } else {
+      // Simulate loading for real implementation
+      setTimeout(() => {
+        setReading(mockPalmReading);
+        setLoading(false);
+      }, 2000);
     }
-  };
+  }, [isMockData]);
 
   const shareReading = async () => {
     try {
       const message = `🔮 My Palm Reading from Zodia:\n\n${
-        reading?.formattedContent?.summary || 'Discover the secrets in your palm!'
+        reading?.summary || 'Discover the secrets in your palm!'
       }\n\nGet your reading at Zodia app!`;
 
       await Share.share({ message });
-      
-      // Commented out analytics - uncomment when you have AnalyticsService
-      // AnalyticsService.track('Palm Reading Shared', {
-//   readingId: reading?.id,
-// });
     } catch (error) {
       console.error('Share failed:', error);
     }
   };
 
-  const saveReading = async () => {
+  const saveReading = () => {
     Alert.alert(
       'Reading Saved',
       'Your palm reading has been saved to your profile.',
       [{ text: 'OK' }]
     );
-    
-    // Commented out analytics - uncomment when you have AnalyticsService
-    // AnalyticsService.track('Palm Reading Saved', {
-    //   readingId: reading?.id,
-    // });
   };
 
   if (loading) {
@@ -114,42 +92,18 @@ export function PalmReadingResultScreen({ route, navigation }) {
       <LinearGradient colors={['#1a1a2e', '#16213e']} style={styles.container}>
         <SafeAreaView style={styles.loadingContainer}>
           <View style={styles.loadingContent}>
-            <Image 
-              source={{ uri: imageUri }} 
-              style={styles.processingImage}
-            />
-            <ActivityIndicator size="large" color="#e94560" style={styles.loader} />
-            <Text style={styles.loadingText}>Analyzing your palm...</Text>
+            <Ionicons name="hand-left" size={60} color="#e94560" />
+            <Text style={styles.loadingText}>Analyzing your palm lines...</Text>
             <Text style={styles.loadingSubtext}>
-              Reading the lines of destiny written in your hand
+              Reading the story written in your hands
             </Text>
-            <View style={styles.loadingSteps}>
-              <LoadingStep label="Capturing palm essence" completed />
-              <LoadingStep label="Analyzing major lines" completed={!loading} />
-              <LoadingStep label="Reading the mounts" completed={false} />
-              <LoadingStep label="Interpreting patterns" completed={false} />
-            </View>
           </View>
         </SafeAreaView>
       </LinearGradient>
     );
   }
 
-  if (error) {
-    return (
-      <LinearGradient colors={['#1a1a2e', '#16213e']} style={styles.container}>
-        <SafeAreaView style={styles.errorContainer}>
-          <Ionicons name="alert-circle" size={64} color="#e94560" />
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={generateReading}>
-            <Text style={styles.retryButtonText}>Try Again</Text>
-          </TouchableOpacity>
-        </SafeAreaView>
-      </LinearGradient>
-    );
-  }
-
-  const sections = reading?.formattedContent?.sections || [];
+  const sections = reading?.sections || [];
 
   return (
     <LinearGradient colors={['#1a1a2e', '#16213e']} style={styles.container}>
@@ -170,17 +124,10 @@ export function PalmReadingResultScreen({ route, navigation }) {
           </View>
         </View>
 
-        {/* Palm Image Preview */}
-        <View style={styles.imagePreviewContainer}>
-          <Image source={{ uri: imageUri }} style={styles.palmPreview} />
-          <View style={styles.imageOverlay}>
-            <Text style={styles.handednessLabel}>
-              {handedness === 'right' ? 'Right Hand' : 'Left Hand'}
-            </Text>
-            <Text style={styles.confidenceLabel}>
-              Confidence: {Math.round((reading?.confidence || 0) * 100)}%
-            </Text>
-          </View>
+        {/* Summary Card */}
+        <View style={styles.summaryCard}>
+          <Ionicons name="sparkles" size={24} color="#FFD700" />
+          <Text style={styles.summaryText}>{reading?.summary}</Text>
         </View>
 
         {/* Section Tabs */}
@@ -241,6 +188,16 @@ export function PalmReadingResultScreen({ route, navigation }) {
               </TouchableOpacity>
             )}
           </View>
+
+          {/* Demo Notice if applicable */}
+          {isMockData && (
+            <View style={styles.demoNotice}>
+              <Ionicons name="information-circle" size={20} color="#FFC107" />
+              <Text style={styles.demoText}>
+                This is a sample reading. In the full version, your actual palm lines would be analyzed.
+              </Text>
+            </View>
+          )}
         </ScrollView>
 
         {/* Bottom Actions */}
@@ -256,32 +213,9 @@ export function PalmReadingResultScreen({ route, navigation }) {
               <Text style={styles.primaryButtonText}>Back to Dashboard</Text>
             </LinearGradient>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.secondaryButton}
-            onPress={() => navigation.navigate('PalmCamera', { 
-              handedness: handedness === 'right' ? 'left' : 'right' 
-            })}
-          >
-            <Text style={styles.secondaryButtonText}>
-              Read {handedness === 'right' ? 'Left' : 'Right'} Hand
-            </Text>
-          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </LinearGradient>
-  );
-}
-
-function LoadingStep({ label, completed }: { label: string; completed: boolean }) {
-  return (
-    <View style={styles.loadingStep}>
-      <View style={[styles.stepIndicator, completed && styles.stepCompleted]}>
-        {completed && <Ionicons name="checkmark" size={12} color="#fff" />}
-      </View>
-      <Text style={[styles.stepLabel, completed && styles.stepLabelCompleted]}>
-        {label}
-      </Text>
-    </View>
   );
 }
 
@@ -300,80 +234,18 @@ const styles = StyleSheet.create({
   loadingContent: {
     alignItems: 'center',
   },
-  processingImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginBottom: 30,
-    opacity: 0.7,
-  },
-  loader: {
-    marginBottom: 20,
-  },
   loadingText: {
     fontSize: 20,
     color: '#fff',
+    marginTop: 20,
     marginBottom: 8,
     fontWeight: '600',
   },
   loadingSubtext: {
     fontSize: 14,
     color: '#aaa',
-    marginBottom: 30,
     textAlign: 'center',
     paddingHorizontal: 40,
-  },
-  loadingSteps: {
-    width: 250,
-  },
-  loadingStep: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 8,
-  },
-  stepIndicator: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#666',
-    marginRight: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stepCompleted: {
-    backgroundColor: '#e94560',
-    borderColor: '#e94560',
-  },
-  stepLabel: {
-    color: '#666',
-    fontSize: 14,
-  },
-  stepLabelCompleted: {
-    color: '#fff',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  errorText: {
-    color: '#fff',
-    fontSize: 16,
-    textAlign: 'center',
-    marginVertical: 20,
-  },
-  retryButton: {
-    backgroundColor: '#e94560',
-    paddingHorizontal: 30,
-    paddingVertical: 12,
-    borderRadius: 25,
-  },
-  retryButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
   },
   header: {
     flexDirection: 'row',
@@ -393,34 +265,20 @@ const styles = StyleSheet.create({
   headerButton: {
     marginLeft: 15,
   },
-  imagePreviewContainer: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  palmPreview: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 3,
-    borderColor: '#e94560',
-  },
-  imageOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    paddingHorizontal: 15,
-    paddingVertical: 5,
+  summaryCard: {
+    backgroundColor: 'rgba(255, 215, 0, 0.1)',
     borderRadius: 15,
+    padding: 20,
+    marginHorizontal: 20,
+    marginVertical: 15,
+    alignItems: 'center',
   },
-  handednessLabel: {
+  summaryText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: 16,
+    lineHeight: 24,
     textAlign: 'center',
-  },
-  confidenceLabel: {
-    color: '#aaa',
-    fontSize: 10,
-    textAlign: 'center',
+    marginTop: 10,
   },
   tabContainer: {
     maxHeight: 80,
@@ -492,6 +350,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginHorizontal: 5,
   },
+  demoNotice: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  demoText: {
+    flex: 1,
+    color: '#FFC107',
+    fontSize: 13,
+    marginLeft: 10,
+    lineHeight: 18,
+  },
   bottomActions: {
     padding: 20,
   },
@@ -507,16 +380,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-  },
-  secondaryButton: {
-    paddingVertical: 15,
-    borderRadius: 25,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e94560',
-  },
-  secondaryButtonText: {
-    color: '#e94560',
-    fontSize: 16,
   },
 });
