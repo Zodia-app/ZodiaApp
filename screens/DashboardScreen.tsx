@@ -3,15 +3,29 @@ import {
   View,
   Text,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
+  SafeAreaView,
   RefreshControl,
   Alert,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+<<<<<<< HEAD
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { ErrorMessage } from '../components/ErrorMessage';
+import { DailyReport } from '../components/DailyReport';
+import { supabase } from '../lib/supabase';
+import { useScreenTracking, useAnalytics } from '../hooks/useAnalytics';
+
+const DashboardScreen = ({ navigation, route }: any) => {
+  useScreenTracking(); // Automatically tracks screen view
+  const analytics = useAnalytics();
+  
+  const { userData: initialUserData } = route.params || {};
+  const [userData, setUserData] = useState(initialUserData || null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+=======
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DashboardScreen = () => {
@@ -19,22 +33,88 @@ const DashboardScreen = () => {
 
   // Add state for error handling and data
   const [isLoading, setIsLoading] = useState(false);
+>>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
   const [error, setError] = useState<string | null>(null);
-  const [isOffline, setIsOffline] = useState(false);
-  const [dailyHoroscope, setDailyHoroscope] = useState<any>(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [showRetry, setShowRetry] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
 
-  // Load user data and daily content on mount
+  // Get current date formatted nicely
+  const getCurrentDate = () => {
+    const options: Intl.DateTimeFormatOptions = { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    };
+    return new Date().toLocaleDateString(undefined, options);
+  };
+
+  const fetchUserData = async () => {
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        throw new Error('No authenticated user found');
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) {
+        throw profileError;
+      }
+
+      setUserData({
+        id: profile.id,
+        name: profile.name || profile.full_name,
+        zodiacSign: profile.zodiac_sign,
+        birthDate: profile.birth_date ? new Date(profile.birth_date).toISOString() : null,
+        timeOfBirth: profile.time_of_birth,
+        placeOfBirth: profile.place_of_birth || profile.birth_city,
+        gender: profile.gender,
+        birthCity: profile.birth_city,
+        relationshipStatus: profile.relationship_status,
+      });
+      setError(null);
+    } catch (err: any) {
+      console.error('Error fetching user data:', err);
+      setError('Unable to load your profile. Please try again.');
+      
+      // Fallback to default data if available
+      if (!userData) {
+        setUserData({ name: 'User', zodiacSign: 'Aries' });
+      }
+    }
+  };
+
+  // Initial load
   useEffect(() => {
-    loadUserData();
-    fetchDailyContent();
+    loadDashboard();
   }, []);
 
-  // Load user data from storage or navigation params
-  const loadUserData = async () => {
+  const loadDashboard = async () => {
+    setIsLoading(true);
+    await fetchUserData();
+    setIsLoading(false);
+  };
+
+  // Pull to refresh
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchUserData();
+    setIsRefreshing(false);
+  };
+
+  // Updated handleAstrologyPress with proper userData passing
+  const handleAstrologyPress = async () => {
+    analytics.trackFeatureUsed('astrology');
+    
     try {
+<<<<<<< HEAD
+      // Ensure we have user data
+      if (!userData || !userData.birthDate) {
+=======
       // Try to get user data from AsyncStorage first
       const storedUserData = await AsyncStorage.getItem('userProfile');
       if (storedUserData) {
@@ -127,29 +207,114 @@ const DashboardScreen = () => {
       const onlineRequiredFeatures = ['astrology', 'compatibility', 'dream-interpreter'];
       
       if (onlineRequiredFeatures.includes(feature) && isOffline) {
+>>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
         Alert.alert(
-          'Internet Required',
-          'This feature requires an internet connection. Please connect and try again.',
+          'Complete Your Profile',
+          'Please complete your profile with your birth date to access astrology readings.',
           [
             { text: 'Cancel', style: 'cancel' },
-            { 
-              text: 'Retry', 
-              onPress: async () => {
-                await fetchDailyContent(); // Check connection
-                if (!isOffline) {
-                  navigation.navigate(screen as never);
-                }
-              }
-            }
+            { text: 'Go to Profile', onPress: () => navigation.navigate('Profile') }
           ]
         );
         return;
       }
-      
-      // Navigate to the screen
-      navigation.navigate(screen as never);
-      
+
+      // Navigate with complete userData
+      navigation.navigate('Astrology', {
+        userData: {
+          id: userData.id,
+          name: userData.name || 'User',
+          birthDate: userData.birthDate,
+          timeOfBirth: userData.timeOfBirth,
+          placeOfBirth: userData.placeOfBirth,
+          gender: userData.gender,
+          zodiacSign: userData.zodiacSign
+        }
+      });
     } catch (error) {
+<<<<<<< HEAD
+      console.error('Error navigating to astrology:', error);
+      Alert.alert('Error', 'Unable to access astrology. Please try again.');
+    }
+  };
+
+  const handlePalmReadingPress = () => {
+    analytics.trackFeatureUsed('palm_reading');
+    navigation.navigate('PalmIntro', { userData });
+  };
+
+  // Feature grid data
+  const features = [
+    {
+      id: 'astrology',
+      title: 'Astrology',
+      subtitle: 'Get Your Reading',
+      icon: 'star' as const,
+      screen: 'Astrology',
+      color: '#9b59b6',
+      onPress: handleAstrologyPress,
+    },
+    {
+      id: 'palm',
+      title: 'Palm Reading',
+      subtitle: 'Scan Your Palm',
+      icon: 'hand-left' as const,
+      screen: 'PalmIntro',
+      color: '#3498db',
+      onPress: handlePalmReadingPress,
+    },
+    {
+      id: 'dream',
+      title: 'Dream Interpreter',
+      subtitle: 'Decode Dreams',
+      icon: 'moon' as const,
+      screen: 'DreamInterpreter',
+      color: '#2ecc71',
+    },
+    {
+      id: 'compatibility',
+      title: 'Zodiac Match',
+      subtitle: 'Check Compatibility',
+      icon: 'heart' as const,
+      screen: 'CompatibilityInput',
+      color: '#e74c3c',
+    },
+    {
+      id: 'education',
+      title: 'Learn',
+      subtitle: 'Educational Materials',
+      icon: 'book' as const,
+      screen: 'Education',
+      color: '#f39c12',
+    },
+    {
+      id: 'clairvoyance',
+      title: 'Clairvoyance',
+      subtitle: 'Spirit Guidance',
+      icon: 'eye' as const,
+      screen: 'Clairvoyance',
+      color: '#95a5a6',
+      disabled: true,
+    },
+  ];
+
+  const handleFeaturePress = (feature: any) => {
+    if (!feature.disabled) {
+      // Use custom onPress if provided, otherwise use default navigation
+      if (feature.onPress) {
+        feature.onPress();
+      } else {
+        analytics.trackFeatureUsed(feature.id);
+        // Fix for Astrology navigation
+        const screenName = feature.id === 'astrology' ? 'Astrology' : feature.screen;
+        navigation.navigate(screenName, { userData });
+      }
+    }
+  };
+
+  // Show loading state
+  if (isLoading) {
+=======
       Alert.alert('Navigation Error', 'Unable to open this feature. Please try again.');
     }
   };
@@ -197,82 +362,74 @@ const DashboardScreen = () => {
   const ErrorBanner = () => {
     if (!error && !isOffline) return null;
     
+>>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
     return (
-      <View style={styles.errorBanner}>
-        {isOffline && (
-          <View style={styles.offlineIndicator}>
-            <Ionicons name="cloud-offline" size={20} color="#F59E0B" />
-            <Text style={styles.offlineText}>Offline Mode</Text>
-          </View>
-        )}
-        
-        {error && (
-          <View style={styles.errorContainer}>
-            <Ionicons name="alert-circle" size={20} color="#EF4444" />
-            <Text style={styles.errorText}>{error}</Text>
-            {showRetry && (
-              <TouchableOpacity onPress={handleRetry} style={styles.retryButton}>
-                <Text style={styles.retryText}>Retry</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-      </View>
+      <SafeAreaView style={styles.container}>
+        <LoadingSpinner message="Loading your cosmic dashboard..." />
+      </SafeAreaView>
     );
-  };
+  }
 
-  // Welcome text with user name
-  const getWelcomeText = () => {
-    if (userData?.name) {
-      return `Welcome, ${userData.name}!`;
-    }
-    return 'Welcome, Cosmic Traveler!';
-  };
+  // Show error state
+  if (error && !userData) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ErrorMessage 
+          message={error} 
+          onRetry={loadDashboard} 
+        />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.greeting}>Welcome, {userData?.name || 'Cosmic Traveler'}!</Text>
+          <Text style={styles.date}>{getCurrentDate()}</Text>
+        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile', { 
+          userData: {
+            ...userData,
+            birthDate: userData?.birthDate?.toString() || null
+          }
+        })}>
+          <Ionicons name="person-circle" size={40} color="#6c5ce7" />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView 
-        style={styles.scrollView} 
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
+            refreshing={isRefreshing}
             onRefresh={onRefresh}
-            colors={['#8B5CF6']}
-            tintColor="#8B5CF6"
+            tintColor="#6c5ce7"
+            colors={['#6c5ce7']}
           />
         }
       >
-        {/* Error/Offline Banner */}
-        <ErrorBanner />
-
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <View>
-              <Text style={styles.welcomeText}>{getWelcomeText()}</Text>
-              <Text style={styles.dateText}>Tuesday, August 5, 2025</Text>
-              {userData?.zodiacSign && (
-                <Text style={styles.zodiacText}>☆ {userData.zodiacSign} ☆</Text>
-              )}
-            </View>
-            <TouchableOpacity 
-              style={styles.profileIcon}
-              onPress={() => navigation.navigate('Profile' as never)}
-            >
-              <Ionicons name="person-circle" size={40} color="#8B5CF6" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Loading Indicator */}
-        {isLoading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#8B5CF6" />
-            <Text style={styles.loadingText}>Loading your cosmic insights...</Text>
+        {/* Error banner if there's an error but we have cached data */}
+        {error && userData && (
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorBannerText}>
+              ⚠️ Some data may be outdated. Pull down to refresh.
+            </Text>
           </View>
         )}
 
+<<<<<<< HEAD
+        {/* Test Button for Zodiac Calculator */}
+        <View style={styles.testButtonContainer}>
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={() => navigation.navigate('ZodiacTest')}
+          >
+            <Ionicons name="flask" size={20} color="white" />
+            <Text style={styles.testButtonText}>Test Zodiac Calculator</Text>
+=======
         {/* Daily Report Card - Enhanced */}
         <TouchableOpacity 
           style={styles.dailyReportCard}
@@ -316,57 +473,60 @@ const DashboardScreen = () => {
           >
             <Ionicons name="calculator" size={24} color="white" />
             <Text style={styles.zodiacButtonText}>Zodiac Calculator</Text>
+>>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
           </TouchableOpacity>
+        </View>
 
+        {/* Request a Reading Button */}
+        <View style={styles.requestReadingContainer}>
           <TouchableOpacity 
-            style={[styles.requestButton, isOffline && styles.disabledButton]}
-            onPress={handleRequestReading}
-            disabled={isOffline}
+            style={styles.requestReadingButton}
+            onPress={() => navigation.navigate('ReadingRequest' as never)}
+            activeOpacity={0.8}
           >
             <Ionicons name="sparkles" size={24} color="white" />
-            <Text style={styles.requestButtonText}>Request a Reading</Text>
+            <Text style={styles.requestReadingButtonText}>
+              Request a Reading 🔮
+            </Text>
             <Ionicons name="chevron-forward" size={24} color="white" />
           </TouchableOpacity>
         </View>
 
+<<<<<<< HEAD
+        {/* Daily Report Component */}
+        <DailyReport
+          zodiacSign={userData?.zodiacSign || 'Aries'}
+          userData={userData}
+          defaultExpanded={true}
+        />
+
+=======
+>>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
         {/* Feature Grid */}
         <View style={styles.featureGrid}>
-          <TouchableOpacity 
-            style={[styles.featureCard, styles.astrologyCard]}
-            onPress={() => handleFeaturePress('astrology', 'AstrologyScreen')}
-          >
-            <Ionicons name="star" size={40} color="white" />
-            <Text style={styles.featureTitle}>Astrology</Text>
-            <Text style={styles.featureSubtitle}>Get Your Reading</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[styles.featureCard, styles.palmCard]}
-            onPress={() => handleFeaturePress('palm-reading', 'PalmCamera')}
-          >
-            <Ionicons name="hand-left" size={40} color="white" />
-            <Text style={styles.featureTitle}>Palm Reading</Text>
-            <Text style={styles.featureSubtitle}>Scan Your Palm</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[styles.featureCard, styles.dreamCard]}
-            onPress={() => handleFeaturePress('dream-interpreter', 'DreamInterpreter')}
-          >
-            <Ionicons name="moon" size={40} color="white" />
-            <Text style={styles.featureTitle}>Dream Interpreter</Text>
-            <Text style={styles.featureSubtitle}>Decode Dreams</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[styles.featureCard, styles.matchCard]}
-            onPress={() => handleFeaturePress('compatibility', 'CompatibilityAnalysis')}
-          >
-            <Ionicons name="heart" size={40} color="white" />
-            <Text style={styles.featureTitle}>Zodiac Match</Text>
-            <Text style={styles.featureSubtitle}>Check Compatibility</Text>
-          </TouchableOpacity>
+          {features.map((feature) => (
+            <TouchableOpacity
+              key={feature.id}
+              style={[
+                styles.featureCard,
+                { backgroundColor: feature.color },
+                feature.disabled && styles.disabledCard,
+              ]}
+              onPress={() => handleFeaturePress(feature)}
+              disabled={feature.disabled}
+              activeOpacity={0.8}
+            >
+              <Ionicons name={feature.icon} size={32} color="white" />
+              <Text style={styles.featureTitle}>{feature.title}</Text>
+              <Text style={styles.featureSubtitle}>{feature.subtitle}</Text>
+              {feature.disabled && (
+                <Text style={styles.comingSoon}>Coming Soon</Text>
+              )}
+            </TouchableOpacity>
+          ))}
         </View>
+<<<<<<< HEAD
+=======
 
         {/* Educational Section */}
         <View style={styles.educationalSection}>
@@ -389,58 +549,106 @@ const DashboardScreen = () => {
 
         {/* Add some bottom padding */}
         <View style={{ height: 20 }} />
+>>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
       </ScrollView>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <BottomNavItem 
+          icon="home" 
+          label="Dashboard" 
+          active 
+          onPress={() => {}} 
+        />
+        <BottomNavItem 
+          icon="document-text" 
+          label="Reports" 
+          onPress={() => alert('Reports coming soon!')} 
+        />
+        <BottomNavItem 
+          icon="person" 
+          label="Profile" 
+          onPress={() => navigation.navigate('Profile', { 
+            userData: {
+              ...userData,
+              birthDate: userData?.birthDate?.toString() || null
+            }
+          })} 
+        />
+        <BottomNavItem 
+          icon="menu" 
+          label="More" 
+          onPress={() => alert('More options coming soon!')} 
+        />
+      </View>
     </SafeAreaView>
   );
 };
 
+// Bottom Navigation Item Component
+const BottomNavItem = ({ icon, label, active, onPress }: { 
+  icon: any; 
+  label: string; 
+  active?: boolean; 
+  onPress: () => void 
+}) => (
+  <TouchableOpacity style={styles.navItem} onPress={onPress}>
+    <Ionicons name={icon} size={24} color={active ? "#6c5ce7" : "#95a5a6"} />
+    <Text style={[styles.navLabel, active && styles.activeNavLabel]}>{label}</Text>
+  </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  scrollView: {
-    flex: 1,
+    backgroundColor: '#f8f9fa',
   },
   header: {
-    backgroundColor: 'white',
-    paddingTop: 20,
-    paddingHorizontal: 20,
-    paddingBottom: 15,
-  },
-  headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    padding: 20,
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
   },
-  welcomeText: {
+  greeting: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#2c3e50',
   },
-  dateText: {
+  date: {
     fontSize: 14,
-    color: '#666',
+    color: '#7f8c8d',
     marginTop: 4,
   },
-  zodiacText: {
+  errorBanner: {
+    backgroundColor: '#fff3cd',
+    padding: 12,
+    marginHorizontal: 20,
+    marginTop: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ffeaa7',
+  },
+  errorBannerText: {
+    color: '#856404',
     fontSize: 14,
-    color: '#8B5CF6',
-    marginTop: 2,
-    fontWeight: '600',
+    textAlign: 'center',
   },
-  profileIcon: {
-    padding: 5,
+  testButtonContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
   },
-  actionSection: {
-    padding: 20,
-    gap: 15,
-  },
-  zodiacButton: {
-    backgroundColor: '#FF6B6B',
+  testButton: {
+    backgroundColor: '#ff6b6b',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+<<<<<<< HEAD
+    padding: 12,
+    borderRadius: 10,
+=======
     padding: 18,
     borderRadius: 15,
     gap: 10,
@@ -473,19 +681,48 @@ const styles = StyleSheet.create({
     marginTop: 20,
     padding: 20,
     borderRadius: 15,
+>>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  dailyReportHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  testButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 8,
+    fontSize: 16,
   },
-  dailyReportTitle: {
+  requestReadingContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    paddingBottom: 10,
+  },
+  requestReadingButton: {
+    backgroundColor: '#7B68EE',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 18,
+    borderRadius: 15,
+    shadowColor: '#7B68EE',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(123, 104, 238, 0.3)',
+  },
+  requestReadingButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
     fontSize: 18,
+<<<<<<< HEAD
+    flex: 1,
+    textAlign: 'center',
+    marginHorizontal: 10,
+=======
     fontWeight: '600',
     color: '#333',
   },
@@ -499,6 +736,7 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 12,
     lineHeight: 20,
+>>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
   },
   dailyHighlights: {
     flexDirection: 'row',
@@ -522,28 +760,25 @@ const styles = StyleSheet.create({
   featureGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 20,
-    gap: 15,
+    padding: 10,
+    justifyContent: 'space-between',
   },
   featureCard: {
-    width: '47%',
-    padding: 25,
-    borderRadius: 20,
+    width: '48%',
+    aspectRatio: 1,
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 140,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  astrologyCard: {
-    backgroundColor: '#9C88FF',
-  },
-  palmCard: {
-    backgroundColor: '#54A0FF',
-  },
-  dreamCard: {
-    backgroundColor: '#48DBFB',
-  },
-  matchCard: {
-    backgroundColor: '#FF6B6B',
+  disabledCard: {
+    opacity: 0.5,
   },
   featureTitle: {
     color: 'white',
@@ -554,8 +789,40 @@ const styles = StyleSheet.create({
   featureSubtitle: {
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 12,
+    marginTop: 5,
+    textAlign: 'center',
+  },
+  comingSoon: {
+    position: 'absolute',
+    bottom: 10,
+    color: 'white',
+    fontSize: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  navItem: {
+    alignItems: 'center',
+    padding: 5,
+  },
+  navLabel: {
+    fontSize: 12,
+    color: '#95a5a6',
     marginTop: 4,
   },
+<<<<<<< HEAD
+  activeNavLabel: {
+    color: '#6c5ce7',
+=======
   educationalSection: {
     paddingHorizontal: 20,
     marginTop: 10,
@@ -640,6 +907,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: '#666',
     fontSize: 14,
+>>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
   },
 });
 

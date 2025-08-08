@@ -1,0 +1,9 @@
+  // Check if Camera is available
+  if (!Camera) {
+    return (
+      <View style={styles.centerContainer}>
+        <Text style={styles.errorText}>Camera not available</Text>
+        <Text style={styles.errorSubtext}>Please ensure expo-camera is properly installed</Text>
+      </View>
+    );
+  }
