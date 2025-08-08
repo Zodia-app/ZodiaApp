@@ -17,7 +17,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.yourcompany.zodiaapp",
       "infoPlist": {
-        "NSCameraUsageDescription": "Zodia needs access to your camera to capture palm photos for readings."
+        "NSCameraUsageDescription": "Zodia needs access to your camera to capture palm photos for readings.",
+        "NSPhotoLibraryUsageDescription": "Zodia needs access to your photos to analyze palm images for readings.",
+        "NSPhotoLibraryAddUsageDescription": "Zodia needs permission to save palm reading results to your photo library."
       }
     },
     "android": {
@@ -26,7 +28,11 @@
         "backgroundColor": "#1a1a2e"
       },
       "package": "com.yourcompany.zodiaapp",
-      "permissions": ["CAMERA"]
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -37,6 +43,13 @@
         "expo-camera",
         {
           "cameraPermission": "Allow Zodia to access your camera for palm reading photos."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Zodia needs access to your photos to analyze palm images for readings.",
+          "cameraPermission": "Zodia needs camera access to capture palm photos for readings."
         }
       ]
     ]
