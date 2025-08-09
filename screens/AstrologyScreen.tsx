@@ -11,14 +11,17 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-<<<<<<< HEAD
-import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { calculateZodiacSign } from '../utils/zodiac/calculator';
 import { generateDailyHoroscope, generateAIHoroscope } from '../services/horoscope/horoscopeService';
 import { supabase } from '../lib/supabase';
 
-const AstrologyScreen = ({ navigation, route }: any) => {
-  // Safely access route params with optional chaining
+const AstrologyScreen = () => {
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+  
+  // Safely get userData with fallback
   const routeUserData = route?.params?.userData;
   const [userData, setUserData] = useState(routeUserData);
   const [loading, setLoading] = useState(true);
@@ -27,7 +30,7 @@ const AstrologyScreen = ({ navigation, route }: any) => {
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
   useEffect(() => {
-    // If no userData from route, fetch from Supabase
+    // If no userData from route, fetch from Supabase or storage
     if (!userData) {
       fetchUserData();
     } else {
@@ -37,6 +40,7 @@ const AstrologyScreen = ({ navigation, route }: any) => {
 
   const fetchUserData = async () => {
     try {
+      // First try Supabase
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data: profile } = await supabase
@@ -58,12 +62,27 @@ const AstrologyScreen = ({ navigation, route }: any) => {
           setUserData(fetchedUserData);
           loadAstrologyData(fetchedUserData);
         } else {
-          // No profile found
-          showProfileAlert();
+          // Try AsyncStorage as fallback
+          const storedData = await AsyncStorage.getItem('userProfile');
+          if (storedData) {
+            const parsed = JSON.parse(storedData);
+            setUserData(parsed);
+            loadAstrologyData(parsed);
+          } else {
+            // No profile found
+            showProfileAlert();
+          }
         }
       } else {
-        // No user logged in
-        showLoginAlert();
+        // No user logged in - try AsyncStorage
+        const storedData = await AsyncStorage.getItem('userProfile');
+        if (storedData) {
+          const parsed = JSON.parse(storedData);
+          setUserData(parsed);
+          loadAstrologyData(parsed);
+        } else {
+          showLoginAlert();
+        }
       }
     } catch (error) {
       console.error('Error fetching user data:', error);
@@ -118,10 +137,85 @@ const AstrologyScreen = ({ navigation, route }: any) => {
       setDailyHoroscope(horoscope);
     } catch (error) {
       console.error('Error loading astrology data:', error);
-      Alert.alert('Error', 'Unable to generate astrology reading. Please ensure your birth date is set in your profile.');
+      // Fallback to mock data if services are unavailable
+      loadMockZodiacInfo(userDataToUse?.zodiacSign || 'Aries');
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadMockZodiacInfo = (sign: string) => {
+    const mockZodiacInfo = {
+      name: sign || 'Aries',
+      symbol: getZodiacSymbol(sign),
+      element: getElement(sign),
+      rulingPlanet: getRuler(sign),
+      modality: getModality(sign),
+      traits: getTraits(sign),
+      compatibility: getCompatibility(sign)
+    };
+
+    const mockHoroscope = {
+      date: new Date().toLocaleDateString(),
+      content: {
+        overallEnergy: "Today brings opportunities for growth and self-discovery. Your natural leadership qualities will shine through.",
+        loveRelationships: "Communication is key in your relationships today. Open your heart to meaningful conversations.",
+        careerMoney: "Professional opportunities are on the horizon. Stay focused on your goals and trust your instincts.",
+        healthWellness: "Take time for self-care today. A balanced approach to health will serve you well.",
+        luckyColor: "Red",
+        luckyNumber: "7",
+        bestTime: "Morning"
+      }
+    };
+
+    setZodiacInfo(mockZodiacInfo);
+    setDailyHoroscope(mockHoroscope);
+  };
+
+  const getZodiacSymbol = (sign: string) => {
+    const symbols: any = {
+      Aries: '♈', Taurus: '♉', Gemini: '♊', Cancer: '♋',
+      Leo: '♌', Virgo: '♍', Libra: '♎', Scorpio: '♏',
+      Sagittarius: '♐', Capricorn: '♑', Aquarius: '♒', Pisces: '♓'
+    };
+    return symbols[sign] || '♈';
+  };
+
+  const getElement = (sign: string) => {
+    const elements: any = {
+      Aries: 'Fire', Leo: 'Fire', Sagittarius: 'Fire',
+      Taurus: 'Earth', Virgo: 'Earth', Capricorn: 'Earth',
+      Gemini: 'Air', Libra: 'Air', Aquarius: 'Air',
+      Cancer: 'Water', Scorpio: 'Water', Pisces: 'Water'
+    };
+    return elements[sign] || 'Fire';
+  };
+
+  const getRuler = (sign: string) => {
+    const rulers: any = {
+      Aries: 'Mars', Taurus: 'Venus', Gemini: 'Mercury',
+      Cancer: 'Moon', Leo: 'Sun', Virgo: 'Mercury',
+      Libra: 'Venus', Scorpio: 'Pluto', Sagittarius: 'Jupiter',
+      Capricorn: 'Saturn', Aquarius: 'Uranus', Pisces: 'Neptune'
+    };
+    return rulers[sign] || 'Mars';
+  };
+
+  const getModality = (sign: string) => {
+    const modalities: any = {
+      Aries: 'Cardinal', Cancer: 'Cardinal', Libra: 'Cardinal', Capricorn: 'Cardinal',
+      Taurus: 'Fixed', Leo: 'Fixed', Scorpio: 'Fixed', Aquarius: 'Fixed',
+      Gemini: 'Mutable', Virgo: 'Mutable', Sagittarius: 'Mutable', Pisces: 'Mutable'
+    };
+    return modalities[sign] || 'Cardinal';
+  };
+
+  const getTraits = (sign: string) => {
+    return ['Creative', 'Passionate', 'Independent', 'Adventurous', 'Loyal'];
+  };
+
+  const getCompatibility = (sign: string) => {
+    return ['Leo', 'Sagittarius', 'Gemini', 'Aquarius'];
   };
 
   const generateAIReading = async () => {
@@ -161,106 +255,23 @@ const AstrologyScreen = ({ navigation, route }: any) => {
     } finally {
       setIsGeneratingAI(false);
     }
-=======
-import { useNavigation, useRoute } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const AstrologyScreen = () => {
-  const navigation = useNavigation<any>();
-  const route = useRoute<any>();
-  
-  // Safely get userData with fallback
-  const userData = route.params?.userData || {};
-  
-  const [loading, setLoading] = useState(true);
-  const [zodiacInfo, setZodiacInfo] = useState<any>(null);
-  const [userProfile, setUserProfile] = useState<any>(userData);
-
-  useEffect(() => {
-    loadUserData();
-  }, []);
-
-  const loadUserData = async () => {
-    try {
-      // If no userData from params, try to load from storage
-      if (!userData.zodiacSign) {
-        const storedData = await AsyncStorage.getItem('userProfile');
-        if (storedData) {
-          const parsed = JSON.parse(storedData);
-          setUserProfile(parsed);
-          loadZodiacInfo(parsed.zodiacSign || 'Aries');
-        } else {
-          // Use default zodiac sign if no user data
-          loadZodiacInfo('Aries');
-        }
-      } else {
-        loadZodiacInfo(userData.zodiacSign);
-      }
-    } catch (error) {
-      console.error('Error loading user data:', error);
-      // Load with default sign
-      loadZodiacInfo('Aries');
-    }
-  };
-
-  const loadZodiacInfo = (sign: string) => {
-    // Mock zodiac information
-    const mockZodiacInfo = {
-      sign: sign || 'Aries',
-      element: getElement(sign),
-      ruler: getRuler(sign),
-      traits: getTraits(sign),
-      compatibility: getCompatibility(sign),
-      todaysForecast: {
-        overall: 4,
-        love: 5,
-        career: 3,
-        health: 4,
-        message: "Today brings opportunities for growth and self-discovery. Your natural leadership qualities will shine through."
-      }
-    };
-
-    setTimeout(() => {
-      setZodiacInfo(mockZodiacInfo);
-      setLoading(false);
-    }, 1000);
-  };
-
-  const getElement = (sign: string) => {
-    const elements: any = {
-      Aries: 'Fire', Leo: 'Fire', Sagittarius: 'Fire',
-      Taurus: 'Earth', Virgo: 'Earth', Capricorn: 'Earth',
-      Gemini: 'Air', Libra: 'Air', Aquarius: 'Air',
-      Cancer: 'Water', Scorpio: 'Water', Pisces: 'Water'
-    };
-    return elements[sign] || 'Fire';
-  };
-
-  const getRuler = (sign: string) => {
-    const rulers: any = {
-      Aries: 'Mars', Taurus: 'Venus', Gemini: 'Mercury',
-      Cancer: 'Moon', Leo: 'Sun', Virgo: 'Mercury',
-      Libra: 'Venus', Scorpio: 'Pluto', Sagittarius: 'Jupiter',
-      Capricorn: 'Saturn', Aquarius: 'Uranus', Pisces: 'Neptune'
-    };
-    return rulers[sign] || 'Mars';
-  };
-
-  const getTraits = (sign: string) => {
-    return ['Creative', 'Passionate', 'Independent', 'Adventurous', 'Loyal'];
-  };
-
-  const getCompatibility = (sign: string) => {
-    return ['Leo', 'Sagittarius', 'Gemini', 'Aquarius'];
   };
 
   const handleRequestReading = () => {
     navigation.navigate('ReadingQueue', {
       readingType: 'astrology',
-      userData: userProfile
+      userData: userData
     });
->>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
   };
+
+const handleDetailedReading = () => {
+  navigation.navigate('AstrologyDetailedForm', {  // <-- Remove "Screen"
+    userData: {
+      ...userData,
+      zodiacInfo
+    }
+  });
+};
 
   if (loading) {
     return (
@@ -276,8 +287,8 @@ const AstrologyScreen = () => {
   // If no userData after loading, show error state
   if (!userData) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.errorContainer}>
+      <LinearGradient colors={['#1a1a2e', '#16213e']} style={styles.container}>
+        <SafeAreaView style={styles.errorContainer}>
           <Ionicons name="alert-circle" size={60} color="#9d4edd" />
           <Text style={styles.errorText}>Unable to load user data</Text>
           <TouchableOpacity 
@@ -286,188 +297,12 @@ const AstrologyScreen = () => {
           >
             <Text style={styles.errorButtonText}>Complete Profile</Text>
           </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      </LinearGradient>
     );
   }
 
   return (
-<<<<<<< HEAD
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Astrology</Text>
-        <View style={{ width: 24 }} />
-      </View>
-
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Zodiac Sign Card */}
-        <View style={styles.zodiacCard}>
-          <Text style={styles.zodiacSymbol}>{zodiacInfo?.symbol}</Text>
-          <Text style={styles.zodiacName}>{zodiacInfo?.name}</Text>
-          <Text style={styles.zodiacDate}>
-            {new Date(userData.birthDate).toLocaleDateString()} • {zodiacInfo?.element} Sign
-          </Text>
-          
-          <View style={styles.zodiacDetails}>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Element</Text>
-              <Text style={styles.detailValue}>{zodiacInfo?.element}</Text>
-            </View>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Ruling Planet</Text>
-              <Text style={styles.detailValue}>{zodiacInfo?.rulingPlanet}</Text>
-            </View>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Modality</Text>
-              <Text style={styles.detailValue}>{zodiacInfo?.modality}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* AI Generation Button */}
-        {!dailyHoroscope?.isAIGenerated && (
-          <TouchableOpacity
-            style={styles.aiButton}
-            onPress={generateAIReading}
-            disabled={isGeneratingAI}
-          >
-            {isGeneratingAI ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <>
-                <Ionicons name="sparkles" size={20} color="#fff" />
-                <Text style={styles.aiButtonText}>Generate AI-Powered Reading</Text>
-              </>
-            )}
-          </TouchableOpacity>
-        )}
-
-        {/* Daily Horoscope */}
-        <View style={styles.horoscopeCard}>
-          <View style={styles.horoscopeHeader}>
-            <Text style={styles.sectionTitle}>Today's Horoscope</Text>
-            {dailyHoroscope?.isAIGenerated && (
-              <View style={styles.aiBadge}>
-                <Ionicons name="sparkles" size={12} color="#fff" />
-                <Text style={styles.aiBadgeText}>AI</Text>
-              </View>
-            )}
-          </View>
-          <Text style={styles.horoscopeDate}>{dailyHoroscope?.date}</Text>
-          
-          <View style={styles.horoscopeSection}>
-            <Ionicons name="sunny" size={20} color="#9d4edd" />
-            <View style={styles.horoscopeContent}>
-              <Text style={styles.horoscopeLabel}>Overall Energy</Text>
-              <Text style={styles.horoscopeText}>
-                {dailyHoroscope?.content?.overallEnergy || 'Loading...'}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.horoscopeSection}>
-            <Ionicons name="heart" size={20} color="#e74c3c" />
-            <View style={styles.horoscopeContent}>
-              <Text style={styles.horoscopeLabel}>Love & Relationships</Text>
-              <Text style={styles.horoscopeText}>
-                {dailyHoroscope?.content?.loveRelationships || 'Loading...'}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.horoscopeSection}>
-            <Ionicons name="briefcase" size={20} color="#3498db" />
-            <View style={styles.horoscopeContent}>
-              <Text style={styles.horoscopeLabel}>Career & Money</Text>
-              <Text style={styles.horoscopeText}>
-                {dailyHoroscope?.content?.careerMoney || 'Loading...'}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.horoscopeSection}>
-            <Ionicons name="fitness" size={20} color="#2ecc71" />
-            <View style={styles.horoscopeContent}>
-              <Text style={styles.horoscopeLabel}>Health & Wellness</Text>
-              <Text style={styles.horoscopeText}>
-                {dailyHoroscope?.content?.healthWellness || 'Loading...'}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Lucky Elements */}
-        <View style={styles.luckyCard}>
-          <Text style={styles.sectionTitle}>Today's Lucky Elements</Text>
-          <View style={styles.luckyGrid}>
-            <View style={styles.luckyItem}>
-              <Text style={styles.luckyLabel}>Color</Text>
-              <Text style={styles.luckyValue}>
-                {dailyHoroscope?.content?.luckyColor || '-'}
-              </Text>
-            </View>
-            <View style={styles.luckyItem}>
-              <Text style={styles.luckyLabel}>Number</Text>
-              <Text style={styles.luckyValue}>
-                {dailyHoroscope?.content?.luckyNumber || '-'}
-              </Text>
-            </View>
-            <View style={styles.luckyItem}>
-              <Text style={styles.luckyLabel}>Time</Text>
-              <Text style={styles.luckyValue}>
-                {dailyHoroscope?.content?.bestTime || '-'}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.actionButtons}>
-          <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('AstrologyReading', { userData })}
-          >
-            <Ionicons name="book" size={24} color="#fff" />
-            <Text style={styles.actionButtonText}>Get Full Reading</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionButton, styles.secondaryButton]}
-            onPress={() => navigation.navigate('CompatibilityAnalysis', { userData, zodiacInfo })}
-          >
-            <Ionicons name="people" size={24} color="#9d4edd" />
-            <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
-              Check Compatibility
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionButton, styles.secondaryButton]}
-            onPress={() => navigation.navigate('WeeklyHoroscope', { userData, zodiacInfo })}
-          >
-            <Ionicons name="calendar" size={24} color="#9d4edd" />
-            <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
-              Weekly Forecast
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.monthlyReportButton}
-            onPress={() => navigation.navigate('MonthlyAstrologyReport', { userData })}
-          >
-            <LinearGradient
-              colors={['#7c3aed', '#9d4edd']}
-              style={styles.monthlyButtonGradient}
-            >
-              <Ionicons name="book-outline" size={24} color="#fff" />
-              <Text style={styles.monthlyButtonText}>Get Full Monthly Report</Text>
-              <Ionicons name="arrow-forward" size={20} color="#fff" />
-            </LinearGradient>
-          </TouchableOpacity>
-=======
     <LinearGradient colors={['#1a1a2e', '#16213e']} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
@@ -476,7 +311,6 @@ const AstrologyScreen = () => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Astrology</Text>
           <View style={{ width: 24 }} />
->>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
         </View>
 
         <ScrollView 
@@ -486,31 +320,124 @@ const AstrologyScreen = () => {
         >
           {/* Zodiac Sign Card */}
           <View style={styles.zodiacCard}>
-            <Text style={styles.zodiacSymbol}>♈</Text>
-            <Text style={styles.zodiacName}>{zodiacInfo.sign}</Text>
+            <Text style={styles.zodiacSymbol}>{zodiacInfo?.symbol}</Text>
+            <Text style={styles.zodiacName}>{zodiacInfo?.name}</Text>
+            <Text style={styles.zodiacDate}>
+              {userData.birthDate ? new Date(userData.birthDate).toLocaleDateString() : ''} • {zodiacInfo?.element} Sign
+            </Text>
+            
             <View style={styles.zodiacDetails}>
               <View style={styles.detailItem}>
                 <Text style={styles.detailLabel}>Element</Text>
-                <Text style={styles.detailValue}>{zodiacInfo.element}</Text>
+                <Text style={styles.detailValue}>{zodiacInfo?.element}</Text>
               </View>
               <View style={styles.detailDivider} />
               <View style={styles.detailItem}>
-                <Text style={styles.detailLabel}>Ruler</Text>
-                <Text style={styles.detailValue}>{zodiacInfo.ruler}</Text>
+                <Text style={styles.detailLabel}>Ruling Planet</Text>
+                <Text style={styles.detailValue}>{zodiacInfo?.rulingPlanet}</Text>
+              </View>
+              <View style={styles.detailDivider} />
+              <View style={styles.detailItem}>
+                <Text style={styles.detailLabel}>Modality</Text>
+                <Text style={styles.detailValue}>{zodiacInfo?.modality}</Text>
               </View>
             </View>
           </View>
 
-          {/* Today's Forecast */}
-          <View style={styles.forecastCard}>
-            <Text style={styles.sectionTitle}>Today's Forecast</Text>
-            <Text style={styles.forecastMessage}>{zodiacInfo.todaysForecast.message}</Text>
+          {/* AI Generation Button */}
+          {!dailyHoroscope?.isAIGenerated && (
+            <TouchableOpacity
+              style={styles.aiButton}
+              onPress={generateAIReading}
+              disabled={isGeneratingAI}
+            >
+              {isGeneratingAI ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <>
+                  <Ionicons name="sparkles" size={20} color="#fff" />
+                  <Text style={styles.aiButtonText}>Generate AI-Powered Reading</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          )}
+
+          {/* Daily Horoscope */}
+          <View style={styles.horoscopeCard}>
+            <View style={styles.horoscopeHeader}>
+              <Text style={styles.sectionTitle}>Today's Horoscope</Text>
+              {dailyHoroscope?.isAIGenerated && (
+                <View style={styles.aiBadge}>
+                  <Ionicons name="sparkles" size={12} color="#fff" />
+                  <Text style={styles.aiBadgeText}>AI</Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.horoscopeDate}>{dailyHoroscope?.date}</Text>
             
-            <View style={styles.ratingContainer}>
-              <RatingItem label="Overall" rating={zodiacInfo.todaysForecast.overall} />
-              <RatingItem label="Love" rating={zodiacInfo.todaysForecast.love} />
-              <RatingItem label="Career" rating={zodiacInfo.todaysForecast.career} />
-              <RatingItem label="Health" rating={zodiacInfo.todaysForecast.health} />
+            <View style={styles.horoscopeSection}>
+              <Ionicons name="sunny" size={20} color="#9d4edd" />
+              <View style={styles.horoscopeContent}>
+                <Text style={styles.horoscopeLabel}>Overall Energy</Text>
+                <Text style={styles.horoscopeText}>
+                  {dailyHoroscope?.content?.overallEnergy || 'Loading...'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.horoscopeSection}>
+              <Ionicons name="heart" size={20} color="#e74c3c" />
+              <View style={styles.horoscopeContent}>
+                <Text style={styles.horoscopeLabel}>Love & Relationships</Text>
+                <Text style={styles.horoscopeText}>
+                  {dailyHoroscope?.content?.loveRelationships || 'Loading...'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.horoscopeSection}>
+              <Ionicons name="briefcase" size={20} color="#3498db" />
+              <View style={styles.horoscopeContent}>
+                <Text style={styles.horoscopeLabel}>Career & Money</Text>
+                <Text style={styles.horoscopeText}>
+                  {dailyHoroscope?.content?.careerMoney || 'Loading...'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.horoscopeSection}>
+              <Ionicons name="fitness" size={20} color="#2ecc71" />
+              <View style={styles.horoscopeContent}>
+                <Text style={styles.horoscopeLabel}>Health & Wellness</Text>
+                <Text style={styles.horoscopeText}>
+                  {dailyHoroscope?.content?.healthWellness || 'Loading...'}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Lucky Elements */}
+          <View style={styles.luckyCard}>
+            <Text style={styles.sectionTitle}>Today's Lucky Elements</Text>
+            <View style={styles.luckyGrid}>
+              <View style={styles.luckyItem}>
+                <Text style={styles.luckyLabel}>Color</Text>
+                <Text style={styles.luckyValue}>
+                  {dailyHoroscope?.content?.luckyColor || '-'}
+                </Text>
+              </View>
+              <View style={styles.luckyItem}>
+                <Text style={styles.luckyLabel}>Number</Text>
+                <Text style={styles.luckyValue}>
+                  {dailyHoroscope?.content?.luckyNumber || '-'}
+                </Text>
+              </View>
+              <View style={styles.luckyItem}>
+                <Text style={styles.luckyLabel}>Time</Text>
+                <Text style={styles.luckyValue}>
+                  {dailyHoroscope?.content?.bestTime || '-'}
+                </Text>
+              </View>
             </View>
           </View>
 
@@ -518,7 +445,7 @@ const AstrologyScreen = () => {
           <View style={styles.traitsCard}>
             <Text style={styles.sectionTitle}>Your Key Traits</Text>
             <View style={styles.traitsContainer}>
-              {zodiacInfo.traits.map((trait: string, index: number) => (
+              {zodiacInfo?.traits?.map((trait: string, index: number) => (
                 <View key={index} style={styles.traitBadge}>
                   <Text style={styles.traitText}>{trait}</Text>
                 </View>
@@ -530,7 +457,7 @@ const AstrologyScreen = () => {
           <View style={styles.compatibilityCard}>
             <Text style={styles.sectionTitle}>Best Compatibility</Text>
             <View style={styles.compatibilityList}>
-              {zodiacInfo.compatibility.map((sign: string, index: number) => (
+              {zodiacInfo?.compatibility?.map((sign: string, index: number) => (
                 <TouchableOpacity key={index} style={styles.compatibilityItem}>
                   <Text style={styles.compatibilitySign}>{sign}</Text>
                   <Ionicons name="heart" size={16} color="#FF6B6B" />
@@ -539,37 +466,75 @@ const AstrologyScreen = () => {
             </View>
           </View>
 
-          {/* Request Full Reading Button */}
-          <TouchableOpacity style={styles.requestButton} onPress={handleRequestReading}>
-            <LinearGradient
-              colors={['#9C88FF', '#7C3AED']}
-              style={styles.requestButtonGradient}
+          {/* Action Buttons */}
+          <View style={styles.actionButtons}>
+            {/* TEST BUTTON - PROMINENT AND EASY TO FIND */}
+            <TouchableOpacity
+              style={[styles.testButton]}
+              onPress={handleDetailedReading}
             >
-              <Ionicons name="sparkles" size={24} color="#fff" />
-              <Text style={styles.requestButtonText}>Get Full Birth Chart Reading</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+              <LinearGradient
+                colors={['#e74c3c', '#c0392b']}
+                style={styles.testButtonGradient}
+              >
+                <Ionicons name="flask" size={24} color="#fff" />
+                <Text style={styles.testButtonText}>TEST: Detailed Astrology Form</Text>
+                <Ionicons name="arrow-forward" size={20} color="#fff" />
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.requestButton}
+              onPress={handleRequestReading}
+            >
+              <LinearGradient
+                colors={['#9C88FF', '#7C3AED']}
+                style={styles.requestButtonGradient}
+              >
+                <Ionicons name="sparkles" size={24} color="#fff" />
+                <Text style={styles.requestButtonText}>Get Full Birth Chart Reading</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.actionButton, styles.secondaryButton]}
+              onPress={() => navigation.navigate('CompatibilityAnalysis', { userData, zodiacInfo })}
+            >
+              <Ionicons name="people" size={24} color="#9d4edd" />
+              <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
+                Check Compatibility
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.actionButton, styles.secondaryButton]}
+              onPress={() => navigation.navigate('WeeklyHoroscope', { userData, zodiacInfo })}
+            >
+              <Ionicons name="calendar" size={24} color="#9d4edd" />
+              <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
+                Weekly Forecast
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.monthlyReportButton}
+              onPress={() => navigation.navigate('MonthlyAstrologyReport', { userData })}
+            >
+              <LinearGradient
+                colors={['#7c3aed', '#9d4edd']}
+                style={styles.monthlyButtonGradient}
+              >
+                <Ionicons name="book-outline" size={24} color="#fff" />
+                <Text style={styles.monthlyButtonText}>Get Full Monthly Report</Text>
+                <Ionicons name="arrow-forward" size={20} color="#fff" />
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
   );
 };
-
-const RatingItem = ({ label, rating }: { label: string; rating: number }) => (
-  <View style={styles.ratingItem}>
-    <Text style={styles.ratingLabel}>{label}</Text>
-    <View style={styles.starsContainer}>
-      {[1, 2, 3, 4, 5].map((star) => (
-        <Ionicons
-          key={star}
-          name={star <= rating ? 'star' : 'star-outline'}
-          size={16}
-          color={star <= rating ? '#FFD700' : '#666'}
-        />
-      ))}
-    </View>
-  </View>
-);
 
 const styles = StyleSheet.create({
   container: {
@@ -646,11 +611,17 @@ const styles = StyleSheet.create({
   zodiacSymbol: {
     fontSize: 60,
     marginBottom: 10,
+    color: '#9C88FF',
   },
   zodiacName: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
+    marginBottom: 10,
+  },
+  zodiacDate: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.6)',
     marginBottom: 20,
   },
   zodiacDetails: {
@@ -671,13 +642,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-<<<<<<< HEAD
+  detailDivider: {
+    width: 1,
+    height: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
   aiButton: {
     backgroundColor: '#7c3aed',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 20,
     marginBottom: 20,
     padding: 16,
     borderRadius: 12,
@@ -689,19 +663,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   horoscopeCard: {
-    backgroundColor: '#2d2d44',
-    marginHorizontal: 20,
-    marginBottom: 20,
-    padding: 20,
-=======
-  detailDivider: {
-    width: 1,
-    height: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  forecastCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
->>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
     borderRadius: 15,
     padding: 20,
     marginBottom: 20,
@@ -727,14 +689,14 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   sectionTitle: {
-<<<<<<< HEAD
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 18,
+    fontWeight: '600',
     color: '#fff',
+    marginBottom: 15,
   },
   horoscopeDate: {
     fontSize: 14,
-    color: '#888',
+    color: 'rgba(255, 255, 255, 0.6)',
     marginBottom: 20,
   },
   horoscopeSection: {
@@ -753,59 +715,31 @@ const styles = StyleSheet.create({
   },
   horoscopeText: {
     fontSize: 14,
-    color: '#ccc',
+    color: 'rgba(255, 255, 255, 0.8)',
     lineHeight: 20,
   },
   luckyCard: {
-    backgroundColor: '#2d2d44',
-    marginHorizontal: 20,
-    marginBottom: 20,
-    padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 15,
+    padding: 20,
+    marginBottom: 20,
   },
   luckyGrid: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 15,
   },
   luckyItem: {
     alignItems: 'center',
   },
   luckyLabel: {
     fontSize: 12,
-    color: '#888',
+    color: 'rgba(255, 255, 255, 0.6)',
     marginBottom: 5,
   },
   luckyValue: {
-=======
->>>>>>> b00858738ffd6822fe1a7f83d28783415ccdda17
-    fontSize: 18,
+    fontSize: 16,
+    color: '#9C88FF',
     fontWeight: '600',
-    color: '#fff',
-    marginBottom: 15,
-  },
-  forecastMessage: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 14,
-    lineHeight: 22,
-    marginBottom: 20,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  ratingItem: {
-    width: '48%',
-    marginBottom: 15,
-  },
-  ratingLabel: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 12,
-    marginBottom: 5,
-  },
-  starsContainer: {
-    flexDirection: 'row',
   },
   traitsCard: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -849,10 +783,32 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
   },
-  requestButton: {
+  actionButtons: {
+    marginTop: 10,
+  },
+  testButton: {
     borderRadius: 25,
     overflow: 'hidden',
     marginBottom: 20,
+    borderWidth: 2,
+    borderColor: '#e74c3c',
+  },
+  testButtonGradient: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 18,
+    gap: 10,
+  },
+  testButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  requestButton: {
+    borderRadius: 25,
+    overflow: 'hidden',
+    marginBottom: 15,
   },
   requestButtonGradient: {
     flexDirection: 'row',
@@ -865,6 +821,29 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  actionButton: {
+    backgroundColor: '#7c3aed',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 10,
+  },
+  secondaryButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#9d4edd',
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 10,
+  },
+  secondaryButtonText: {
+    color: '#9d4edd',
   },
   monthlyReportButton: {
     marginTop: 10,
