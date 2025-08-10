@@ -17,13 +17,12 @@ import MonthlyAstrologyReport from './screens/MonthlyAstrologyReport';
 import AstrologyDetailedFormScreen from './screens/AstrologyDetailedFormScreen';
 import AstrologyReadingResultScreen from './screens/AstrologyReadingResultScreen';
 import PalmCameraScreen from './screens/PalmCameraScreen';
-import { PalmReadingResultScreen } from './screens/PalmReadingResultScreen';
+import { PalmReadingResult } from './screens/PalmReading/PalmReadingResult';
 import CompatibilityAnalysisScreen from './screens/CompatibilityAnalysisScreen';
 import CompatibilityInputScreen from './screens/CompatibilityInputScreen';
 import ClairvoyanceReadingScreen from './screens/ClairvoyanceReadingScreen';
 import ReadingQueueScreen from './screens/ReadingQueueScreen';
 import ReadingRequestScreen from './screens/ReadingRequestScreen';
-import PremiumPaymentScreen from './screens/PremiumPaymentScreen';
 import EditProfileScreen from './screens/EditProfileScreen';
 
 // Import new screens
@@ -32,6 +31,10 @@ import PalmIntroScreen from './screens/PalmIntroScreen';
 import DreamInterpreterScreen from './screens/DreamInterpreterScreen';
 import DailyReportDetailScreen from './screens/DailyReportDetailScreen';
 import EducationalLibraryScreen from './screens/EducationalLibraryScreen';
+
+// Import palm reading screens
+import { PalmReadingFormScreen } from './screens/PalmReading/PalmReadingFormScreen';
+import { PalmReadingWaitingScreen } from './screens/PalmReading/PalmReadingWaitingScreen';
 
 // Import ErrorBoundary
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -133,6 +136,13 @@ export default function App() {
             options={{ headerShown: false }}
           />
 
+          {/* Dashboard - Also add standalone */}
+          <Stack.Screen 
+            name="DashboardScreen" 
+            component={DashboardScreen}
+            options={{ headerShown: false }}
+          />
+
           {/* Astrology Feature Screens */}
           <Stack.Screen 
             name="Astrology" 
@@ -188,6 +198,32 @@ export default function App() {
             component={PalmIntroScreen}
             options={{ title: 'Palm Reading Intro', headerShown: false }}
           />
+
+          {/* New Palm Reading Flow Screens */}
+          <Stack.Screen 
+            name="PalmReadingForm" 
+            component={PalmReadingFormScreen}
+            options={{ 
+              title: 'Palm Reading Details', 
+              headerShown: false,
+              animation: 'slide_from_right'
+            }}
+          />
+
+          <Stack.Screen 
+            name="PalmReadingFormScreen" 
+            component={PalmReadingFormScreen}
+            options={{ 
+              title: 'Palm Reading Details', 
+              headerShown: false
+            }}
+          />
+
+          <Stack.Screen 
+            name="PalmReadingWaitingScreen" 
+            component={PalmReadingWaitingScreen}
+            options={{ headerShown: false }}
+          />
           
           <Stack.Screen 
             name="PalmCamera" 
@@ -197,8 +233,8 @@ export default function App() {
 
           <Stack.Screen 
             name="PalmReadingResult" 
-            component={PalmReadingResultScreen}
-            options={{ title: 'Your Palm Reading', headerShown: false }}
+            component={PalmReadingResult}
+            options={{ title: 'Your Palm Reading' }}
           />
           
           {/* Dream Interpreter */}
@@ -255,13 +291,6 @@ export default function App() {
             options={{ title: 'Request a Reading', headerShown: false }}
           />
           
-          {/* Premium & Payment */}
-          <Stack.Screen 
-            name="PremiumPayment" 
-            component={PremiumPaymentScreen}
-            options={{ title: 'Unlock Premium', headerShown: false }}
-          />
-          
           {/* Profile Management */}
           <Stack.Screen 
             name="EditProfile" 
@@ -292,6 +321,12 @@ export default function App() {
             name="ZodiacTest" 
             component={PlaceholderScreen}
             options={{ title: 'Zodiac Calculator Test', headerShown: false }}
+          />
+
+          <Stack.Screen 
+            name="Clairvoyance" 
+            component={PlaceholderScreen}
+            options={{ title: 'Clairvoyance', headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>

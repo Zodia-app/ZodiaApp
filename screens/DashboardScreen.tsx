@@ -132,10 +132,10 @@ const DashboardScreen = ({ navigation, route }: any) => {
     }
   };
 
-  const handlePalmReadingPress = () => {
-    analytics.trackFeatureUsed('palm_reading');
-    navigation.navigate('PalmIntro', { userData });
-  };
+const handlePalmReadingPress = () => {
+  analytics.trackFeatureUsed('palm_reading');
+  navigation.navigate('PalmIntro', { userData }); // Make sure userData is passed here
+};
 
   // Feature grid data
   const features = [

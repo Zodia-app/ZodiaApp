@@ -1,33 +1,33 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useScreenTracking, useAnalytics } from '../hooks/useAnalytics';
+
 
 const PalmIntroScreen = () => {
   const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+  const { userData } = route.params || {};
   useScreenTracking(); // Automatically track screen view
   const analytics = useAnalytics();
 
   const handleStartReading = () => {
     analytics.trackPalmReadingStarted();
     analytics.trackEvent('Palm Intro CTA Clicked');
-    navigation.navigate('PalmCamera');
+    navigation.navigate('PalmReadingForm', { userData });
   };
 
-  const handleLearnMore = () => {
-    analytics.trackEvent('Palm Intro Learn More Clicked');
-    // Could navigate to a detailed guide or show a modal
-  };
+const handleLearnMore = () => {
+  analytics.trackEvent('Palm Intro Learn More Clicked');
+  // You can navigate to an educational screen or show a modal
+  navigation.navigate('EducationalLibrary', { 
+    initialCategory: 'palmistry',
+    userData 
+  });
+};
 
   const handleGoBack = () => {
     navigation.goBack();
