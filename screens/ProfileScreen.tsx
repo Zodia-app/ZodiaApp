@@ -3,9 +3,9 @@ import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } fr
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../App';
-import { calculateZodiacSign } from '../utils/zodiac/calculator';
+import { calculateZodiacSign } from '../utils/zodiacCalculator';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import { ErrorMessage } from '../components/ErrorMessage';
+import { ErrorMessage } from '../components/errors/ErrorMessage';
 import { supabase } from '../lib/supabase';
 
 type ProfileScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Profile'>;

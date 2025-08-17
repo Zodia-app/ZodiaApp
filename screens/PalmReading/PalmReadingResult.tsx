@@ -5,13 +5,43 @@ import {
   StyleSheet, 
   ScrollView, 
   TouchableOpacity,
-  ActivityIndicator 
+  ActivityIndicator,
+  Alert 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { analyzePalmReading, PalmReadingAnalysis } from '../../services/palmReading/palmAnalysisService';
+import { analyzeWithAI } from '../../services/palmReading/aiPalmAnalysisService';
+
+interface PalmReadingAnalysis {
+  greeting?: string;
+  overallPersonality: string;
+  lines: {
+    [key: string]: {
+      name: string;
+      description: string;
+      meaning: string;
+      personalizedInsight: string;
+    }
+  };
+  mounts: {
+    [key: string]: {
+      name: string;
+      prominence: string;
+      meaning: string;
+    }
+  };
+  specialMarkings: string[];
+  handComparison?: string;
+  futureInsights: string;
+  personalizedAdvice: string;
+  luckyElements?: {
+    colors: string[];
+    numbers: number[];
+    days: string[];
+  };
+}
 
 export const PalmReadingResult: React.FC<any> = ({ navigation, route }) => {
-  const { readingData } = route.params || {};
+  const { readingResult, readingData } = route.params || {};
   const { userData, palmData } = readingData || {};
   const [analysis, setAnalysis] = useState<PalmReadingAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
@@ -20,16 +50,75 @@ export const PalmReadingResult: React.FC<any> = ({ navigation, route }) => {
     loadAnalysis();
   }, []);
 
-  const loadAnalysis = async () => {
-    try {
-      const result = await analyzePalmReading(userData, palmData);
-      setAnalysis(result);
-    } catch (error) {
-      console.error('Error analyzing palm:', error);
-    } finally {
+const loadAnalysis = async () => {
+  try {
+    // Check if we already have a result from the service
+    if (readingResult?.reading || readingResult?.reading_content) {
+      console.log('=== USING EXISTING READING RESULT ===');
+      let readingContent = readingResult.reading || readingResult.reading_content;
+      console.log('Reading content type:', typeof readingContent);
+      console.log('Reading content keys:', Object.keys(readingContent || {}));
+      console.log('Full reading content:', JSON.stringify(readingContent, null, 2));
+      
+      // Fix data structure if needed - move misplaced fields from mounts to root
+      if (readingContent?.mounts) {
+        const { mounts } = readingContent;
+        
+        // Move misplaced fields from mounts to root level
+        if (mounts.futureInsights && !readingContent.futureInsights) {
+          readingContent.futureInsights = mounts.futureInsights;
+          delete mounts.futureInsights;
+        }
+        if (mounts.personalizedAdvice && !readingContent.personalizedAdvice) {
+          readingContent.personalizedAdvice = mounts.personalizedAdvice;
+          delete mounts.personalizedAdvice;
+        }
+        if (mounts.handComparison && !readingContent.handComparison) {
+          readingContent.handComparison = mounts.handComparison;
+          delete mounts.handComparison;
+        }
+        if (mounts.specialMarkings && !readingContent.specialMarkings) {
+          readingContent.specialMarkings = mounts.specialMarkings;
+          delete mounts.specialMarkings;
+        }
+        if (mounts.luckyElements && !readingContent.luckyElements) {
+          readingContent.luckyElements = mounts.luckyElements;
+          delete mounts.luckyElements;
+        }
+        
+        console.log('=== FIXED READING CONTENT ===');
+        console.log('Fixed content keys:', Object.keys(readingContent || {}));
+      }
+      
+      setAnalysis(readingContent);
       setLoading(false);
+      return;
     }
-  };
+    
+    // Fallback: generate new analysis if no result provided
+    console.log('=== GENERATING NEW ANALYSIS ===');
+    console.log('readingData:', readingData);
+    console.log('userData:', userData);
+    console.log('palmData:', palmData);
+    
+    // Check if palm images exist before calling AI
+    if (!palmData?.leftPalmImage || !palmData?.rightPalmImage) {
+      throw new Error('Palm images are missing. Please retake the photos.');
+    }
+    
+    const result = await analyzeWithAI(userData, palmData);
+    console.log('=== RECEIVED ANALYSIS RESULT ===');
+    console.log('result type:', typeof result);
+    console.log('result keys:', Object.keys(result || {}));
+    console.log('Full result:', JSON.stringify(result, null, 2));
+    setAnalysis(result);
+  } catch (error) {
+    console.error('Error analyzing palm:', error);
+    Alert.alert('Analysis Failed', `${(error as Error).message}\n\nPlease try taking the photos again.`);
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (loading || !analysis) {
     return (
@@ -46,15 +135,23 @@ export const PalmReadingResult: React.FC<any> = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.content}>
         <Text style={styles.title}>Your Detailed Palm Analysis</Text>
-        <Text style={styles.greeting}>Hello {userData?.name},</Text>
+        
+        {/* Display AI-generated greeting if available, otherwise use fallback */}
+        {analysis.greeting ? (
+          <View style={styles.greetingCard}>
+            <Text style={styles.greetingText}>{analysis.greeting}</Text>
+          </View>
+        ) : (
+          <Text style={styles.greeting}>Hello {userData?.name},</Text>
+        )}
         
         <View style={styles.overviewCard}>
           <Text style={styles.overviewText}>{analysis.overallPersonality}</Text>
         </View>
 
-        <Text style={styles.sectionTitle}>📏 Major Lines Analysis</Text>
+        <Text style={styles.sectionTitle}>📏 Complete Lines Analysis (7 Lines)</Text>
         
-        {Object.values(analysis.lines).map((line, index) => line && (
+        {analysis.lines && Object.values(analysis.lines).map((line, index) => line && (
           <View key={index} style={styles.lineCard}>
             <Text style={styles.lineName}>{line.name}</Text>
             <Text style={styles.lineDescription}>{line.description}</Text>
@@ -66,26 +163,41 @@ export const PalmReadingResult: React.FC<any> = ({ navigation, route }) => {
           </View>
         ))}
 
-        <Text style={styles.sectionTitle}>🏔️ Mounts Analysis</Text>
+        <Text style={styles.sectionTitle}>🏔️ Complete Mounts Analysis (7 Mounts)</Text>
         
-        {Object.values(analysis.mounts).map((mount, index) => (
-          <View key={index} style={styles.mountCard}>
-            <View style={styles.mountHeader}>
+        {analysis.mounts && Object.entries(analysis.mounts)
+          .filter(([key, mount]) => {
+            // Filter out non-mount objects and ensure it's a proper mount
+            return mount && 
+                   typeof mount === 'object' && 
+                   mount.name && 
+                   mount.prominence && 
+                   mount.meaning && 
+                   key.trim() !== "" &&
+                   !Array.isArray(mount) &&
+                   typeof mount.name === 'string' &&
+                   typeof mount.prominence === 'string' &&
+                   typeof mount.meaning === 'string';
+          })
+          .map(([key, mount], index) => (
+            <View key={key || index} style={styles.mountCard}>
               <Text style={styles.mountName}>{mount.name}</Text>
-              <Text style={styles.mountProminence}>
-                Prominence: {mount.prominence}
-              </Text>
+              <View style={styles.prominenceContainer}>
+                <Text style={styles.prominenceLabel}>Prominence:</Text>
+                <Text style={styles.prominenceValue}>{mount.prominence}</Text>
+              </View>
+              <Text style={styles.mountMeaning}>{mount.meaning}</Text>
             </View>
-            <Text style={styles.mountMeaning}>{mount.meaning}</Text>
-          </View>
-        ))}
+          ))}
 
         <Text style={styles.sectionTitle}>✨ Special Markings</Text>
         
         <View style={styles.markingsCard}>
-          {analysis.specialMarkings.map((marking, index) => (
-            <Text key={index} style={styles.marking}>• {marking}</Text>
-          ))}
+          {analysis.specialMarkings && analysis.specialMarkings
+            .filter(marking => marking && marking.trim() !== '') // Filter out empty markings
+            .map((marking, index) => (
+              <Text key={index} style={styles.marking}>• {marking}</Text>
+            ))}
         </View>
 
         <Text style={styles.sectionTitle}>🔮 Future Insights</Text>
@@ -100,11 +212,48 @@ export const PalmReadingResult: React.FC<any> = ({ navigation, route }) => {
           <Text style={styles.adviceText}>{analysis.personalizedAdvice}</Text>
         </View>
 
+        {/* Hand Comparison Section */}
+        {analysis.handComparison && (
+          <>
+            <Text style={styles.sectionTitle}>🤲 Hand Comparison</Text>
+            <View style={styles.comparisonCard}>
+              <Text style={styles.comparisonText}>{analysis.handComparison}</Text>
+            </View>
+          </>
+        )}
+
+        {/* Lucky Elements Section */}
+        {analysis.luckyElements && (
+          <>
+            <Text style={styles.sectionTitle}>🍀 Your Lucky Elements</Text>
+            <View style={styles.luckyCard}>
+              {analysis.luckyElements.colors && analysis.luckyElements.colors.length > 0 && (
+                <View style={styles.luckySection}>
+                  <Text style={styles.luckyLabel}>Lucky Colors:</Text>
+                  <Text style={styles.luckyText}>{analysis.luckyElements.colors.join(', ')}</Text>
+                </View>
+              )}
+              {analysis.luckyElements.numbers && analysis.luckyElements.numbers.length > 0 && (
+                <View style={styles.luckySection}>
+                  <Text style={styles.luckyLabel}>Lucky Numbers:</Text>
+                  <Text style={styles.luckyText}>{analysis.luckyElements.numbers.join(', ')}</Text>
+                </View>
+              )}
+              {analysis.luckyElements.days && analysis.luckyElements.days.length > 0 && (
+                <View style={styles.luckySection}>
+                  <Text style={styles.luckyLabel}>Lucky Days:</Text>
+                  <Text style={styles.luckyText}>{analysis.luckyElements.days.join(', ')}</Text>
+                </View>
+              )}
+            </View>
+          </>
+        )}
+
         <TouchableOpacity 
           style={styles.button}
-          onPress={() => navigation.navigate('DashboardScreen')}
+          onPress={() => navigation.navigate('PalmIntro')}
         >
-          <Text style={styles.buttonText}>Back to Dashboard</Text>
+          <Text style={styles.buttonText}>New Reading</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -141,6 +290,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#666',
     marginBottom: 24,
+    textAlign: 'center',
+  },
+  greetingCard: {
+    backgroundColor: '#f0f9ff',
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 24,
+    borderLeftWidth: 4,
+    borderLeftColor: '#0ea5e9',
+  },
+  greetingText: {
+    fontSize: 16,
+    color: '#0369a1',
+    lineHeight: 24,
     textAlign: 'center',
   },
   overviewCard: {
@@ -212,29 +375,49 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
-    borderLeftWidth: 4,
+    borderLeftWidth: 3,
     borderLeftColor: '#6B46C1',
-  },
-  mountHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
   },
   mountName: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1a1a1a',
-  },
-  mountProminence: {
-    fontSize: 12,
+    fontWeight: '700',
     color: '#6B46C1',
+    marginBottom: 8,
+  },
+  prominenceContainer: {
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+    marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  prominenceLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#64748b',
     textTransform: 'uppercase',
+    marginRight: 8,
+    flex: 0,
+  },
+  prominenceValue: {
+    fontSize: 13,
+    color: '#334155',
+    fontWeight: '500',
+    flex: 1,
+    flexWrap: 'wrap',
   },
   mountMeaning: {
     fontSize: 14,
-    color: '#4a5568',
+    color: '#475569',
     lineHeight: 20,
+    fontWeight: '400',
   },
   markingsCard: {
     backgroundColor: '#fff',
@@ -281,5 +464,40 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '600',
+  },
+  comparisonCard: {
+    backgroundColor: '#f8fafc',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  comparisonText: {
+    fontSize: 16,
+    color: '#475569',
+    lineHeight: 24,
+  },
+  luckyCard: {
+    backgroundColor: '#fefce8',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: '#facc15',
+  },
+  luckySection: {
+    marginBottom: 12,
+  },
+  luckyLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#a16207',
+    marginBottom: 4,
+  },
+  luckyText: {
+    fontSize: 16,
+    color: '#713f12',
+    lineHeight: 22,
   },
 });

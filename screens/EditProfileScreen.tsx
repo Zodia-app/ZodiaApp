@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Scro
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../App';
-import { calculateZodiacSign } from '../utils/zodiac/calculator';
+import { calculateZodiacSign } from '../utils/zodiacCalculator';
 import { FullScreenLoader } from '../components/FullScreenLoader';
 import { supabase } from '../lib/supabase';
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface ProgressBarProps {
   percentage: number;
@@ -9,7 +10,12 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ percentage }) => {
   return (
     <View style={styles.container}>
       <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: `${percentage}%` }]} />
+        <LinearGradient
+          colors={['#F59E0B', '#EAB308', '#FCD34D']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[styles.progressFill, { width: `${percentage}%` }]}
+        />
       </View>
     </View>
   );
@@ -17,18 +23,17 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ percentage }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
     paddingVertical: 10,
   },
   progressBar: {
-    height: 8,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 4,
+    height: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: 10,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#6B46C1',
-    borderRadius: 4,
+    borderRadius: 10,
   },
 });
