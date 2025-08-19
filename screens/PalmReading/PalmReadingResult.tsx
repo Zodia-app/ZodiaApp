@@ -249,6 +249,20 @@ const loadAnalysis = async () => {
           </>
         )}
 
+        {/* Compatibility CTA */}
+        <View style={styles.compatibilitySection}>
+          <Text style={styles.compatibilityTitle}>✨ Ready for Something Even Cooler?</Text>
+          <Text style={styles.compatibilityDescription}>
+            Check your compatibility with friends, partners, or crushes using your palm reading!
+          </Text>
+          <TouchableOpacity
+            style={styles.compatibilityButton}
+            onPress={() => navigation.navigate('CompatibilityIntro', { readingData: { userData, palmData, readingResult: analysis } })}
+          >
+            <Text style={styles.compatibilityButtonText}>Check Compatibility 💕</Text>
+          </TouchableOpacity>
+        </View>
+
         <TouchableOpacity 
           style={styles.button}
           onPress={() => navigation.navigate('PalmIntro')}
@@ -499,5 +513,44 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#713f12',
     lineHeight: 22,
+  },
+  compatibilitySection: {
+    backgroundColor: '#f8fafc',
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: '#8B5CF6',
+    alignItems: 'center',
+  },
+  compatibilityTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#8B5CF6',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  compatibilityDescription: {
+    fontSize: 16,
+    color: '#4B5563',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 16,
+  },
+  compatibilityButton: {
+    backgroundColor: '#8B5CF6',
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 25,
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  compatibilityButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });

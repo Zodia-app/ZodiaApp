@@ -1,4 +1,4 @@
-import { supabase } from '../supabaseService';
+import { supabase } from '../../lib/supabase';
 
 export const imageUploadService = {
   async uploadHandImage(imageUri: string, userId: string, hand: 'left' | 'right') {

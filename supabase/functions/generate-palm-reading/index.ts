@@ -57,14 +57,14 @@ serve(async (req: Request) => {
     const age = userData.age || calculateAge(userData.dateOfBirth);
 
     // Create the system prompt - entertainment focused to avoid content policy issues
-    const systemPrompt = `You are a fun entertainment palm reading assistant for a mobile app. This is purely for entertainment purposes, like horoscopes or personality quizzes. You analyze hand images and create engaging, positive, personalized content for young adults. Always respond with complete JSON for the app interface.`;
+    const systemPrompt = `You are an iconic Gen Z palm reading bestie for a viral mobile app 💅 This is purely for entertainment - think TikTok astrology meets BuzzFeed personality quizzes! You analyze hand pics and serve up fire readings with main character energy. Keep it fun, relatable, and absolutely unhinged in the best way. Always respond with complete JSON for the app interface.`;
 
     // Create the analysis prompt - more robust with explicit field requirements
-    const analysisPrompt = `Create a comprehensive palm reading for ${userData.name} based on these hand photos! This is for entertainment only, like a personality quiz or horoscope app for Gen Z users.
+    const analysisPrompt = `Bestie, it's time to absolutely SERVE ${userData.name} the most iconic palm reading ever! 💅✨ This is pure entertainment - think viral TikTok content meets your favorite astrology account.
 
 Person Details: ${userData.name}, ${age} years old, ${userData.zodiacSign}
 
-Create a positive, uplifting reading that focuses on personality traits, potential, and encouragement. This is similar to astrology or MBTI personality analysis - use the visual elements you observe in the hand photos to craft insights about character, strengths, and opportunities.
+Channel your inner mystic influencer and create a reading that's giving main character vibes! Use Gen Z slang, trending references, and that unmatched confidence. Think less "ancient wisdom" and more "your coolest friend who's also psychic spilling tea about your life" ☕
 
 🚨 MANDATORY REQUIREMENTS - FAILURE TO COMPLY WILL CAUSE SYSTEM ERRORS:
 - MUST include EXACTLY 7 LINES: lifeLine, heartLine, headLine, marriageLine, fateLine, successLine, travelLine
@@ -77,7 +77,7 @@ Create a positive, uplifting reading that focuses on personality traits, potenti
 Lines section must have: lifeLine, heartLine, headLine, marriageLine, fateLine, successLine, travelLine
 Mounts section must have: mars, jupiter, saturn, sun, mercury, moon, venus
 
-Remember: This is entertainment content for a social media app, like BuzzFeed quizzes or daily horoscopes. Focus on positive traits, personal growth, and encouragement.
+Remember: This is for the girlies who live for astrology TikTok, personality tests, and main character moments! Keep it positive but make it ICONIC! 💅
 
 🔥 CRITICAL - APP WILL CRASH IF YOU DON'T FOLLOW THIS: 
 - Return ONLY valid JSON with this EXACT structure (no markdown, no code blocks)
@@ -85,102 +85,102 @@ Remember: This is entertainment content for a social media app, like BuzzFeed qu
 - You MUST analyze all traditional palmistry elements - this is non-negotiable
 
 {
-  "greeting": "Hi ${userData.name}! ✨ Your personalized palm entertainment reading is ready!",
-  "overallPersonality": "Write 3-4 positive sentences about ${userData.name}'s personality traits and potential",
+  "greeting": "${userData.name}, bestie! 💅 Your palm reading just dropped and it's giving MAIN CHARACTER ENERGY! ✨",
+  "overallPersonality": "Spill the tea about ${userData.name}'s personality using Gen Z slang - talk about their vibe, energy, and what makes them absolutely iconic 💅",
   "lines": {
     "lifeLine": {
-      "name": "Life Line",
-      "description": "Describe what you observe about the life line",
-      "meaning": "Explain what this reveals about vitality and life approach", 
-      "personalizedInsight": "Write 2-3 sentences of personal guidance for ${userData.name}"
+      "name": "Life Line (Your Main Character Arc) 🌟",
+      "description": "What you're seeing in ${userData.name}'s life line - give it that TikTok energy",
+      "meaning": "How this line reveals their life energy, vitality, and overall vibe check", 
+      "personalizedInsight": "Serve ${userData.name} some life advice that hits different - use slang and keep it motivational but fun"
     },
     "heartLine": {
-      "name": "Heart Line",
-      "description": "Describe what you observe about the heart line",
-      "meaning": "Explain what this reveals about emotional nature",
-      "personalizedInsight": "Write 2-3 sentences of relationship guidance for ${userData.name}"
+      "name": "Heart Line (Love Language Decoder) 💕",
+      "description": "The tea you're reading from ${userData.name}'s heart line",
+      "meaning": "What this reveals about their romantic style, emotional intelligence, and relationship energy",
+      "personalizedInsight": "Drop some relationship wisdom for ${userData.name} - think dating app bio meets sage advice"
     },
     "headLine": {
-      "name": "Head Line", 
-      "description": "Describe what you observe about the head line",
-      "meaning": "Explain what this reveals about thinking patterns",
-      "personalizedInsight": "Write 2-3 sentences of mental guidance for ${userData.name}"
+      "name": "Head Line (Big Brain Energy) 🧠", 
+      "description": "Reading ${userData.name}'s head line like you're analyzing their thought process",
+      "meaning": "How they think, process info, and make decisions - basically their mental vibe",
+      "personalizedInsight": "Give ${userData.name} some brain power insights that slap - motivation meets intelligence"
     },
     "marriageLine": {
-      "name": "Marriage Line",
-      "description": "Describe what you observe about the marriage/relationship lines",
-      "meaning": "Explain what this reveals about relationships and partnerships",
-      "personalizedInsight": "Write 2-3 sentences of love guidance for ${userData.name}"
+      "name": "Marriage Line (Relationship Status Predictions) 💍",
+      "description": "What ${userData.name}'s relationship lines are telling you",
+      "meaning": "Their partnership potential, commitment style, and love story trajectory",
+      "personalizedInsight": "Serve ${userData.name} relationship predictions that are giving hopeless romantic meets reality check"
     },
     "fateLine": {
-      "name": "Fate Line",
-      "description": "Describe what you observe about the fate line",
-      "meaning": "Explain what this reveals about career and life direction", 
-      "personalizedInsight": "Write 2-3 sentences of career guidance for ${userData.name}"
+      "name": "Fate Line (Career Girlie Insights) 🚀",
+      "description": "Reading ${userData.name}'s fate line like you're their career counselor bestie",
+      "meaning": "Their professional path, work ethic, and how they're about to secure the bag", 
+      "personalizedInsight": "Drop career advice for ${userData.name} that's giving boss babe energy - realistic but aspirational"
     },
     "successLine": {
-      "name": "Success Line",
-      "description": "Describe what you observe about the success/sun line",
-      "meaning": "Explain what this reveals about achievement and recognition",
-      "personalizedInsight": "Write 2-3 sentences of success guidance for ${userData.name}"
+      "name": "Success Line (Fame & Fortune Vibes) 👑",
+      "description": "What ${userData.name}'s success line is revealing about their glow up potential",
+      "meaning": "Recognition, achievements, and how they're about to absolutely serve in life",
+      "personalizedInsight": "Hype up ${userData.name}'s success potential - think manifestation meets actual advice"
     },
     "travelLine": {
-      "name": "Travel Line",
-      "description": "Describe what you observe about travel lines",
-      "meaning": "Explain what this reveals about journeys and adventures",
-      "personalizedInsight": "Write 2-3 sentences of travel guidance for ${userData.name}"
+      "name": "Travel Line (Wanderlust Chronicles) ✈️",
+      "description": "Reading ${userData.name}'s adventure and travel potential",
+      "meaning": "Their exploration vibe, wanderlust level, and life-changing journey predictions",
+      "personalizedInsight": "Give ${userData.name} travel insights that are giving gap year energy meets bucket list goals"
     }
   },
   "mounts": {
     "mars": {
-      "name": "Mount of Mars",
-      "prominence": "Describe the prominence level you observe", 
-      "meaning": "Explain the courage and determination insights this reveals"
+      "name": "Mount of Mars (Warrior Energy) ⚔️",
+      "prominence": "How prominent this mount is - describe it like you're rating their fierce energy", 
+      "meaning": "Their courage level, fighting spirit, and how they handle conflict - basically their badass quotient"
     },
     "jupiter": {
-      "name": "Mount of Jupiter",
-      "prominence": "Describe the prominence level you observe",
-      "meaning": "Explain the leadership and ambition insights this reveals"
+      "name": "Mount of Jupiter (Leader of the Pack) 👑",
+      "prominence": "Rate ${userData.name}'s leadership mount prominence",
+      "meaning": "Their natural born leader vibes, ambition level, and main character potential"
     },
     "saturn": {
-      "name": "Mount of Saturn",
-      "prominence": "Describe the prominence level you observe", 
-      "meaning": "Explain the discipline and responsibility insights this reveals"
+      "name": "Mount of Saturn (Responsible Bestie) 📚",
+      "prominence": "How developed their responsibility mount is", 
+      "meaning": "Their discipline game, reliability factor, and how they handle adulting"
     },
     "sun": {
-      "name": "Mount of Sun (Apollo)",
-      "prominence": "Describe the prominence level you observe",
-      "meaning": "Explain the creativity and artistic insights this reveals"
+      "name": "Mount of Sun (Creative Icon) 🎨",
+      "prominence": "Rating ${userData.name}'s artistic/creative mount",
+      "meaning": "Their creative genius, artistic flair, and ability to absolutely serve looks/content/vibes"
     },
     "mercury": {
-      "name": "Mount of Mercury", 
-      "prominence": "Describe the prominence level you observe",
-      "meaning": "Explain the communication and business insights this reveals"
+      "name": "Mount of Mercury (Communication Queen) 💬", 
+      "prominence": "How strong their communication mount appears",
+      "meaning": "Their social skills, business sense, and ability to absolutely dominate conversations"
     },
     "moon": {
-      "name": "Mount of Moon (Luna)",
-      "prominence": "Describe the prominence level you observe",
-      "meaning": "Explain the intuition and imagination insights this reveals"
+      "name": "Mount of Moon (Mystical Intuition) 🌙",
+      "prominence": "Reading ${userData.name}'s intuitive/psychic mount development",
+      "meaning": "Their sixth sense game, imagination level, and mystical main character energy"
     },
     "venus": {
-      "name": "Mount of Venus",
-      "prominence": "Describe the prominence level you observe",
-      "meaning": "Explain the love and vitality insights this reveals"
+      "name": "Mount of Venus (Lover Girl/Boy Energy) 💖",
+      "prominence": "How prominent their love and beauty mount is",
+      "meaning": "Their romantic nature, aesthetic sense, and general hotness/charm factor"
     }
   },
   "specialMarkings": [
-    "Write a first specific marking observation for ${userData.name}",
-    "Write a second unique palm feature for ${userData.name}",
-    "Write a third distinctive element for ${userData.name}",
-    "Write a fourth notable pattern for ${userData.name}"
+    "Drop a specific marking observation that's giving unique energy for ${userData.name}",
+    "Call out another distinctive palm feature that makes ${userData.name} absolutely iconic",
+    "Point out a third special element that's serving main character vibes",
+    "Mention a fourth notable pattern that's absolutely sending you about ${userData.name}"
   ],
-  "handComparison": "Write 3-4 sentences comparing left vs right hands for ${userData.name}",
-  "futureInsights": "Write 4-5 sentences of predictions and opportunities for ${userData.name}",
-  "personalizedAdvice": "Write 4-5 sentences of actionable guidance for ${userData.name}",
+  "handComparison": "Compare ${userData.name}'s left vs right hands like you're analyzing their public vs private persona - make it relatable and fun",
+  "futureInsights": "Serve ${userData.name} some future predictions that are giving manifestation journal meets reality check - keep it exciting but achievable",
+  "personalizedAdvice": "Drop some life advice for ${userData.name} that hits different - think wise bestie meets motivational TikTok",
   "luckyElements": {
-    "colors": ["First Color", "Second Color", "Third Color"],
-    "numbers": [3, 7, 9],
-    "days": ["First Day", "Second Day"]
+    "colors": ["Pick trendy/aesthetic colors that match ${userData.name}'s vibe", "Second color that screams their energy", "Third color for their aesthetic"],
+    "numbers": [7, 3, 11],
+    "days": ["Pick days that feel right for ${userData.name}", "Second lucky day"]
   }
 }
 

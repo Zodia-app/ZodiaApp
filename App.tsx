@@ -13,6 +13,11 @@ import { PalmReadingFormScreen } from './screens/PalmReading/PalmReadingFormScre
 import { PalmReadingWaitingScreen } from './screens/PalmReading/PalmReadingWaitingScreen';
 import { PalmReadingResult } from './screens/PalmReading/PalmReadingResult';
 
+// Import compatibility screens
+import CompatibilityIntroScreen from './screens/Compatibility/CompatibilityIntroScreen';
+import CreateProfileScreen from './screens/Compatibility/CreateProfileScreen';
+import CompatibilityDashboard from './screens/Compatibility/CompatibilityDashboard';
+
 // Import ErrorBoundary
 import { ErrorBoundary } from './components/ErrorBoundary';
 
@@ -62,6 +67,34 @@ export default function App() {
             options={{ 
               title: 'Your Palm Reading',
               gestureEnabled: false // Prevent accidental back from results
+            }}
+          />
+
+          {/* Compatibility Screens */}
+          <Stack.Screen 
+            name="CompatibilityIntro" 
+            component={CompatibilityIntroScreen}
+            options={{ 
+              title: 'Compatibility',
+              animation: 'slide_from_right'
+            }}
+          />
+
+          <Stack.Screen 
+            name="CreateProfile" 
+            component={CreateProfileScreen}
+            options={{ 
+              title: 'Create Profile',
+              animation: 'slide_from_right'
+            }}
+          />
+
+          <Stack.Screen 
+            name="CompatibilityDashboard" 
+            component={CompatibilityDashboard}
+            options={{ 
+              title: 'Compatibility Dashboard',
+              animation: 'slide_from_right'
             }}
           />
           

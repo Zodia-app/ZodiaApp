@@ -135,27 +135,8 @@ export async function analyzeWithAI(userData: any, palmData: any) {
   } catch (error: any) {
     console.error('Palm Reading Error:', error);
     
-    // Return enhanced fallback response
-    console.log('Using fallback palm reading due to error');
-    const fallbackResponse = createEnhancedFallbackResponse(userData);
-    
-    // Try to save fallback to database
-    const userId = await ensureAuth();
-    if (userId || userData.id) {
-      try {
-        await saveToDatabase(
-          userId || userData.id,
-          userData,
-          palmData,
-          fallbackResponse,
-          { fallback: true }
-        );
-      } catch (dbError) {
-        console.error('Failed to save fallback to database:', dbError);
-      }
-    }
-    
-    return fallbackResponse;
+    // Never use fallback - always throw the error
+    throw new Error(`Palm reading failed: ${error.message || 'Unknown error'}`);
   }
 }
 
@@ -224,29 +205,3 @@ function getZodiacSign(date: Date): string {
   return 'Pisces';
 }
 
-// Create enhanced fallback response
-function createEnhancedFallbackResponse(userData: any): any {
-  const age = calculateAge(userData.dateOfBirth);
-  const firstName = userData.name.split(' ')[0];
-  const zodiacSign = userData.zodiacSign || getZodiacSign(new Date(userData.dateOfBirth));
-  
-  return {
-    greeting: `Dear ${firstName},\n\nWelcome to your personalized palm reading experience.`,
-    
-    mainReading: `As a ${age}-year-old ${zodiacSign}, your palms reveal a fascinating story of potential and growth. While we couldn't analyze your specific palm images at this moment, we can provide insights based on your astrological profile and life circumstances.
-
-Your ${zodiacSign} nature brings unique strengths to your life path. At ${age}, you're at a significant point in your journey where experience meets opportunity.
-
-${userData.relationshipStatus === 'single' ? 
-  'Your relationship status indicates you\'re open to new connections. The universe often brings people into our lives when we\'re ready for growth.' :
-  'Your relationship journey adds depth to your personal growth and shared experiences.'}
-
-Remember, ${firstName}, your hands hold the power to shape your destiny. Every line tells a story, but more importantly, every action you take writes a new chapter.`,
-    
-    closing: {
-      message: `May this reading provide guidance and inspiration for your journey ahead.`,
-      signature: `With cosmic blessings,\n\nZodia\nYour Expert Astrologer & Master Palmist`,
-      disclaimer: `This reading is for entertainment purposes only.`
-    }
-  };
-}
