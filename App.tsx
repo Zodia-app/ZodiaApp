@@ -1,7 +1,8 @@
 // App.tsx
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import * as Linking from 'expo-linking';
 
 // Import core screens
 import ProfileScreen from './screens/ProfileScreen';
@@ -17,16 +18,73 @@ import { PalmReadingResult } from './screens/PalmReading/PalmReadingResult';
 import CompatibilityIntroScreen from './screens/Compatibility/CompatibilityIntroScreen';
 import CreateProfileScreen from './screens/Compatibility/CreateProfileScreen';
 import CompatibilityDashboard from './screens/Compatibility/CompatibilityDashboard';
+import { FriendModeScreen } from './screens/Compatibility/FriendModeScreen';
+import { FriendCompatibilityResult } from './screens/Compatibility/FriendCompatibilityResult';
+import { DatingModeScreen } from './screens/Dating/DatingModeScreen';
+import { DatingDashboard } from './screens/Dating/DatingDashboard';
+import { SocialModeScreen } from './screens/Social/SocialModeScreen';
+import { SocialCompatibilityResult } from './screens/Social/SocialCompatibilityResult';
 
 // Import ErrorBoundary
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 const Stack = createStackNavigator();
 
+// Deep linking configuration
+const linking = {
+  prefixes: ['https://zodia.app', 'zodia://'],
+  config: {
+    screens: {
+      PalmIntro: 'palm-intro',
+      SocialMode: 'compatibility/:code',
+      PalmReadingResult: 'reading-result',
+    },
+  },
+};
+
 export default function App() {
+  const navigationRef = useRef<any>();
+  const [initialURL, setInitialURL] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Handle deep links when app is already open
+    const handleDeepLink = (url: string) => {
+      console.log('Deep link received:', url);
+      
+      if (url.includes('/compatibility/')) {
+        const code = url.split('/compatibility/')[1];
+        console.log('Compatibility code from deep link:', code);
+        
+        // Navigate to social mode with prefilled code
+        if (navigationRef.current) {
+          navigationRef.current.navigate('SocialMode', {
+            prefilledCode: code,
+            autoEnterMode: true
+          });
+        }
+      }
+    };
+
+    // Listen for incoming links when app is already open
+    const subscription = Linking.addEventListener('url', (event) => {
+      handleDeepLink(event.url);
+    });
+
+    // Check if app was opened via deep link
+    Linking.getInitialURL().then((url) => {
+      if (url) {
+        setInitialURL(url);
+        handleDeepLink(url);
+      }
+    });
+
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
   return (
     <ErrorBoundary>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef} linking={linking}>
         <Stack.Navigator
           initialRouteName="PalmIntro"
           screenOptions={{
@@ -95,6 +153,63 @@ export default function App() {
             options={{ 
               title: 'Compatibility Dashboard',
               animation: 'slide_from_right'
+            }}
+          />
+
+          {/* Friend Mode Screens */}
+          <Stack.Screen 
+            name="FriendMode" 
+            component={FriendModeScreen}
+            options={{ 
+              title: 'Friend Mode',
+              animation: 'slide_from_right'
+            }}
+          />
+
+          <Stack.Screen 
+            name="FriendCompatibilityResult" 
+            component={FriendCompatibilityResult}
+            options={{ 
+              title: 'Friend Compatibility',
+              gestureEnabled: false // Prevent back during results display
+            }}
+          />
+
+          {/* Dating Mode Screens */}
+          <Stack.Screen 
+            name="DatingMode" 
+            component={DatingModeScreen}
+            options={{ 
+              title: 'Dating Mode',
+              animation: 'slide_from_right'
+            }}
+          />
+
+          <Stack.Screen 
+            name="DatingDashboard" 
+            component={DatingDashboard}
+            options={{ 
+              title: 'Dating Dashboard',
+              gestureEnabled: false // Prevent accidental back from matches
+            }}
+          />
+
+          {/* Social Mode Screens */}
+          <Stack.Screen 
+            name="SocialMode" 
+            component={SocialModeScreen}
+            options={{ 
+              title: 'Social Mode',
+              animation: 'slide_from_right'
+            }}
+          />
+
+          <Stack.Screen 
+            name="SocialCompatibilityResult" 
+            component={SocialCompatibilityResult}
+            options={{ 
+              title: 'Social Compatibility',
+              gestureEnabled: false // Prevent back during results display
             }}
           />
           

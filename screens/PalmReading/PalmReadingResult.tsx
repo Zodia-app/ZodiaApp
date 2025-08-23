@@ -6,10 +6,12 @@ import {
   ScrollView, 
   TouchableOpacity,
   ActivityIndicator,
-  Alert 
+  Alert,
+  Modal
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { analyzeWithAI } from '../../services/palmReading/aiPalmAnalysisService';
+import { ShareableCardsView } from '../../components/palmReading/ShareableCardsView';
 
 interface PalmReadingAnalysis {
   greeting?: string;
@@ -42,13 +44,28 @@ interface PalmReadingAnalysis {
 
 export const PalmReadingResult: React.FC<any> = ({ navigation, route }) => {
   const { readingResult, readingData } = route.params || {};
-  const { userData, palmData } = readingData || {};
+  const { userData, palmData, nextAction, compatibilityCode } = readingData || {};
   const [analysis, setAnalysis] = useState<PalmReadingAnalysis | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showShareableCards, setShowShareableCards] = useState(false);
 
   useEffect(() => {
     loadAnalysis();
   }, []);
+
+  useEffect(() => {
+    // Handle post-reading navigation for deep links
+    if (nextAction === 'compatibility' && compatibilityCode && analysis) {
+      // Auto-navigate to compatibility with the code after reading is complete
+      setTimeout(() => {
+        navigation.navigate('SocialMode', {
+          userReading: { userData, palmData, readingResult: analysis },
+          prefilledCode: compatibilityCode,
+          autoEnterMode: true
+        });
+      }, 2000); // Give user 2 seconds to see their results first
+    }
+  }, [analysis, nextAction, compatibilityCode]);
 
 const loadAnalysis = async () => {
   try {
@@ -249,27 +266,72 @@ const loadAnalysis = async () => {
           </>
         )}
 
-        {/* Compatibility CTA */}
+        {/* Share Cards Button */}
+        <TouchableOpacity
+          style={styles.shareCardsButton}
+          onPress={() => setShowShareableCards(true)}
+        >
+          <Text style={styles.shareCardsButtonText}>✨ Create Shareable Cards 📸</Text>
+          <Text style={styles.shareCardsSubText}>Turn your reading into Instagram-worthy cards!</Text>
+        </TouchableOpacity>
+
+        {/* Compatibility Options */}
         <View style={styles.compatibilitySection}>
           <Text style={styles.compatibilityTitle}>✨ Ready for Something Even Cooler?</Text>
           <Text style={styles.compatibilityDescription}>
             Check your compatibility with friends, partners, or crushes using your palm reading!
           </Text>
-          <TouchableOpacity
-            style={styles.compatibilityButton}
-            onPress={() => navigation.navigate('CompatibilityIntro', { readingData: { userData, palmData, readingResult: analysis } })}
-          >
-            <Text style={styles.compatibilityButtonText}>Check Compatibility 💕</Text>
-          </TouchableOpacity>
+          
+          <View style={styles.compatibilityButtons}>
+            <TouchableOpacity
+              style={styles.friendModeButton}
+              onPress={() => navigation.navigate('FriendMode', { 
+                userReading: { userData, palmData, readingResult: analysis } 
+              })}
+            >
+              <Text style={styles.friendModeButtonText}>👫 Friend</Text>
+              <Text style={styles.friendModeSubText}>In-person</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.datingModeButton}
+              onPress={() => navigation.navigate('DatingMode', { 
+                userReading: { userData, palmData, readingResult: analysis } 
+              })}
+            >
+              <Text style={styles.datingModeButtonText}>💕 Dating</Text>
+              <Text style={styles.datingModeSubText}>Find love</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.socialModeButton}
+              onPress={() => navigation.navigate('SocialMode', { 
+                userReading: { userData, palmData, readingResult: analysis } 
+              })}
+            >
+              <Text style={styles.socialModeButtonText}>🔗 Social</Text>
+              <Text style={styles.socialModeSubText}>Share code</Text>
+            </TouchableOpacity>
+          </View>
+
         </View>
 
-        <TouchableOpacity 
-          style={styles.button}
-          onPress={() => navigation.navigate('PalmIntro')}
-        >
-          <Text style={styles.buttonText}>New Reading</Text>
-        </TouchableOpacity>
       </ScrollView>
+
+      {/* Shareable Cards Modal */}
+      <Modal
+        visible={showShareableCards}
+        animationType="slide"
+        presentationStyle="fullScreen"
+      >
+        {analysis && (
+          <ShareableCardsView
+            analysis={analysis}
+            userName={userData?.name || 'Mystic Soul'}
+            onClose={() => setShowShareableCards(false)}
+          />
+        )}
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -467,18 +529,6 @@ const styles = StyleSheet.create({
     color: '#92400e',
     lineHeight: 24,
   },
-  button: {
-    backgroundColor: '#6B46C1',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 40,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-  },
   comparisonCard: {
     backgroundColor: '#f8fafc',
     padding: 20,
@@ -537,20 +587,103 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     marginBottom: 16,
   },
-  compatibilityButton: {
+  compatibilityButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  friendModeButton: {
+    backgroundColor: '#10B981',
+    flex: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  friendModeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  friendModeSubText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  datingModeButton: {
+    backgroundColor: '#EC4899',
+    flex: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowColor: '#EC4899',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  datingModeButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  datingModeSubText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  socialModeButton: {
+    backgroundColor: '#F59E0B',
+    flex: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  socialModeButtonText: {
+    color: 'white',
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  socialModeSubText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  shareCardsButton: {
     backgroundColor: '#8B5CF6',
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 25,
+    padding: 20,
+    borderRadius: 16,
+    marginBottom: 20,
+    alignItems: 'center',
     shadowColor: '#8B5CF6',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 5,
   },
-  compatibilityButtonText: {
+  shareCardsButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
+    marginBottom: 4,
+  },
+  shareCardsSubText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "zodia",
     "splash": {
       "backgroundColor": "#1a1a2e",
       "resizeMode": "contain"
@@ -16,6 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yourcompany.zodiaapp",
+      "associatedDomains": ["applinks:zodia.app"],
       "infoPlist": {
         "NSCameraUsageDescription": "Zodia needs access to your camera to capture palm photos for readings."
       }
@@ -26,7 +28,19 @@
         "backgroundColor": "#1a1a2e"
       },
       "package": "com.yourcompany.zodiaapp",
-      "permissions": ["CAMERA"]
+      "permissions": ["CAMERA"],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "zodia.app"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"

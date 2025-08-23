@@ -184,14 +184,17 @@ Remember: This is for the girlies who live for astrology TikTok, personality tes
   }
 }
 
-IMPORTANT: 
+🚨 CRITICAL REQUIREMENTS - APP WILL BREAK IF NOT FOLLOWED:
 - Do NOT use empty strings, do NOT create keys with empty names like "": ""
-- Every field must have meaningful content
+- Every field must have meaningful content - NO PLACEHOLDERS
 - All 7 lines must be analyzed: Heart, Life, Head, Marriage, Fate, Success, Travel
 - All 7 mounts must be analyzed: Mars, Jupiter, Saturn, Sun, Mercury, Moon, Venus
 - Each line needs: name, description, meaning, personalizedInsight
 - Each mount needs: name, prominence, meaning
-- Prominence should describe level like "Well-developed", "Moderately prominent", "Slightly raised", etc.`;
+- Prominence should describe level like "Well-developed", "Moderately prominent", "Slightly raised", etc.
+- futureInsights MUST be at least 50 words of meaningful predictions
+- personalizedAdvice MUST be at least 50 words of actionable advice
+- handComparison MUST be meaningful comparison content`;
 
     // Call OpenAI API with vision capability
     console.log('=== CALLING OPENAI API ===');
@@ -322,7 +325,23 @@ IMPORTANT:
       throw new Error('Incomplete reading: need at least 4 special markings');
     }
     
-    console.log('✅ Reading validation passed - all 7 lines and 7 mounts present');
+    // Check critical fields that users expect
+    if (!parsedReading.futureInsights || parsedReading.futureInsights.trim().length < 10) {
+      console.error('❌ Missing or empty futureInsights:', parsedReading.futureInsights);
+      throw new Error('Incomplete reading: futureInsights must be meaningful content');
+    }
+    
+    if (!parsedReading.personalizedAdvice || parsedReading.personalizedAdvice.trim().length < 10) {
+      console.error('❌ Missing or empty personalizedAdvice:', parsedReading.personalizedAdvice);
+      throw new Error('Incomplete reading: personalizedAdvice must be meaningful content');
+    }
+    
+    if (!parsedReading.handComparison || parsedReading.handComparison.trim().length < 10) {
+      console.error('❌ Missing or empty handComparison:', parsedReading.handComparison);
+      throw new Error('Incomplete reading: handComparison must be meaningful content');
+    }
+    
+    console.log('✅ Reading validation passed - all required fields present and meaningful');
 
     return new Response(
       JSON.stringify({ 

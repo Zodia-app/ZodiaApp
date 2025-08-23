@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { PalmPositioningOverlay } from './PalmPositioningOverlay';
+import { MysticalCameraView } from './MysticalCameraView';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -24,6 +24,7 @@ export const HandPhotosStep: React.FC<HandPhotosStepProps> = ({ onNext, palmData
   const [currentHandType, setCurrentHandType] = useState<'left' | 'right'>('left');
   const [cameraRef, setCameraRef] = useState<CameraView | null>(null);
   const [permission, requestPermission] = useCameraPermissions();
+  const [isCapturing, setIsCapturing] = useState(false);
 
   const openCameraModal = async (hand: 'left' | 'right') => {
     try {
@@ -47,10 +48,12 @@ export const HandPhotosStep: React.FC<HandPhotosStepProps> = ({ onNext, palmData
   const takePicture = async () => {
     if (cameraRef) {
       try {
+        setIsCapturing(true);
         const photo = await cameraRef.takePictureAsync({
           quality: 0.8,
           base64: false,
         });
+        setIsCapturing(false);
 
         const imageUri = photo.uri;
         
@@ -265,38 +268,31 @@ export const HandPhotosStep: React.FC<HandPhotosStepProps> = ({ onNext, palmData
         presentationStyle="fullScreen"
       >
         <View style={styles.cameraContainer}>
-          <CameraView
-            style={styles.camera}
-            facing="back"
-            ref={setCameraRef}
-          >
-            <PalmPositioningOverlay handType={currentHandType} />
+          <MysticalCameraView
+            onCameraReady={setCameraRef}
+            currentHandType={currentHandType}
+            isCapturing={isCapturing}
+          />
+          
+          {/* Instagram-style Camera Controls */}
+          <View style={styles.cameraControls}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowCameraModal(false)}
+            >
+              <Ionicons name="close" size={30} color="white" />
+            </TouchableOpacity>
             
-            {/* Camera Controls */}
-            <View style={styles.cameraControls}>
+            <View style={styles.captureControls}>
               <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setShowCameraModal(false)}
+                style={[styles.captureButton, isCapturing && styles.captureButtonActive]}
+                onPress={takePicture}
+                disabled={isCapturing}
               >
-                <Ionicons name="close" size={30} color="white" />
+                <View style={[styles.captureButtonInner, isCapturing && styles.captureButtonInnerActive]} />
               </TouchableOpacity>
-              
-              <View style={styles.centerControls}>
-                <Text style={styles.handInstruction}>
-                  Position your {currentHandType} palm in the outline
-                </Text>
-              </View>
-              
-              <View style={styles.captureControls}>
-                <TouchableOpacity
-                  style={styles.captureButton}
-                  onPress={takePicture}
-                >
-                  <View style={styles.captureButtonInner} />
-                </TouchableOpacity>
-              </View>
             </View>
-          </CameraView>
+          </View>
         </View>
       </Modal>
     </>
@@ -496,5 +492,12 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     backgroundColor: 'white',
+  },
+  captureButtonActive: {
+    backgroundColor: 'rgba(139, 92, 246, 0.5)',
+    transform: [{ scale: 0.95 }],
+  },
+  captureButtonInnerActive: {
+    backgroundColor: '#8B5CF6',
   },
 });

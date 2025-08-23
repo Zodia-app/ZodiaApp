@@ -10,14 +10,18 @@ import { useScreenTracking, useAnalytics } from '../hooks';
 const PalmIntroScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const { userData } = route.params || {};
+  const { userData, nextAction, compatibilityCode } = route.params || {};
   useScreenTracking(); // Automatically track screen view
   const analytics = useAnalytics();
 
   const handleStartReading = () => {
     analytics.trackPalmReadingStarted();
     analytics.trackEvent('Palm Intro CTA Clicked');
-    navigation.navigate('PalmReadingForm', { userData });
+    navigation.navigate('PalmReadingForm', { 
+      userData, 
+      nextAction, 
+      compatibilityCode 
+    });
   };
 
 
