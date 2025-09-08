@@ -1,5 +1,5 @@
 // App.tsx
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
@@ -28,7 +28,45 @@ import { SocialCompatibilityResult } from './screens/Social/SocialCompatibilityR
 // Import ErrorBoundary
 import { ErrorBoundary } from './components/ErrorBoundary';
 
-const Stack = createStackNavigator();
+export type RootStackParamList = {
+  PalmIntro: undefined;
+  PalmReadingForm: undefined;
+  PalmReadingWaiting: { 
+    userData: any;
+    palmData: any;
+  };
+  PalmReadingResult: {
+    readingData: any;
+  };
+  OnboardingScreen: undefined;
+  Profile: undefined;
+  EditProfile: undefined;
+  CompatibilityIntro: undefined;
+  CreateProfile: undefined;
+  CompatibilityDashboard: undefined;
+  SocialCompatibilityIntro: undefined;
+  SocialCodeInput: { prefillCode?: string };
+  SocialModeScreen: undefined;
+  SocialMode: undefined;
+  FriendMode: undefined;
+  FriendModeScreen: { userReading: any };
+  FriendCompatibilityResult: { 
+    userReading: any; 
+    friendData: any;
+  };
+  CompatibilityResult: {
+    userReading: any;
+    partnerCode: string;
+  };
+  SocialCompatibilityResult: {
+    userReading: any;
+    partnerCode: string;
+  };
+  DatingMode: undefined;
+  DatingDashboard: undefined;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
 
 // Deep linking configuration
 const linking = {
@@ -43,8 +81,7 @@ const linking = {
 };
 
 export default function App() {
-  const navigationRef = useRef<any>();
-  const [initialURL, setInitialURL] = useState<string | null>(null);
+  const navigationRef = useRef<any>(null);
 
   useEffect(() => {
     // Handle deep links when app is already open
@@ -73,7 +110,6 @@ export default function App() {
     // Check if app was opened via deep link
     Linking.getInitialURL().then((url) => {
       if (url) {
-        setInitialURL(url);
         handleDeepLink(url);
       }
     });
@@ -112,7 +148,7 @@ export default function App() {
           />
 
           <Stack.Screen 
-            name="PalmReadingWaitingScreen" 
+            name="PalmReadingWaiting" 
             component={PalmReadingWaitingScreen}
             options={{ 
               gestureEnabled: false // Prevent back during analysis
@@ -224,6 +260,16 @@ export default function App() {
             name="EditProfile" 
             component={EditProfileScreen}
             options={{ title: 'Edit Profile' }}
+          />
+          
+          {/* Friend Mode Screen */}
+          <Stack.Screen 
+            name="FriendModeScreen" 
+            component={FriendModeScreen}
+            options={{ 
+              title: 'Friend Mode',
+              gestureEnabled: true
+            }}
           />
         </Stack.Navigator>
       </NavigationContainer>

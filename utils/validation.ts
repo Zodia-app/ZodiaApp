@@ -17,6 +17,6 @@ export const isValidAge = (birthDate: Date): boolean => {
     age--;
   }
   
-  // Must be at least 18 years old
-  return age >= 18;
+  // No age restrictions - all ages accepted
+  return age >= 0;
 };

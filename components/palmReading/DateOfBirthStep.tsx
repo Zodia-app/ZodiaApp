@@ -65,10 +65,6 @@ export const DateOfBirthStep: React.FC<DateOfBirthStepProps> = ({
     }
 
     const age = currentYear - yearNum;
-    if (age < 13) {
-      setError('You must be at least 13 years old');
-      return;
-    }
     if (age > 120) {
       setError('Please enter a valid birth date');
       return;

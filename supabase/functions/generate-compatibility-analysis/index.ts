@@ -26,40 +26,69 @@ serve(async (req) => {
 
     const { 
       userReading, 
+      partnerReading,
       partnerCode, 
-      matchType = 'social' 
+      matchType = 'social',
+      directMode = false
     } = await req.json();
 
     console.log('Generating compatibility analysis...');
+    console.log('Direct mode:', directMode);
     console.log('Partner code:', partnerCode);
     console.log('Match type:', matchType);
 
-    // 1. Look up the partner's data using the compatibility code
-    const { data: partnerData, error: lookupError } = await supabaseClient
-      .from('compatibility_codes')
-      .select('*')
-      .eq('code', partnerCode.toUpperCase())
-      .eq('is_active', true)
-      .gte('expires_at', new Date().toISOString())
-      .single();
+    let partnerData, userPalmData, partnerPalmData, partnerName;
 
-    if (lookupError || !partnerData) {
-      console.log('Partner code not found:', lookupError);
+    if (directMode && partnerReading) {
+      // Friend Mode - direct compatibility with both readings provided
+      console.log('Using direct mode with both readings');
+      userPalmData = userReading.readingResult || userReading.palmData;
+      partnerPalmData = partnerReading.readingResult || partnerReading.palmData;
+      partnerName = partnerReading.userData?.name || 'Friend';
+    } else if (partnerCode) {
+      // Social Mode - look up partner using compatibility code
+      console.log('Using partner code lookup mode');
+      
+      // 1. Look up the partner's data using the compatibility code
+      const { data: lookupData, error: lookupError } = await supabaseClient
+        .from('compatibility_codes')
+        .select('*')
+        .eq('code', partnerCode.toUpperCase())
+        .eq('is_active', true)
+        .gte('expires_at', new Date().toISOString())
+        .single();
+
+      if (lookupError || !lookupData) {
+        console.log('Partner code not found:', lookupError);
+        return new Response(
+          JSON.stringify({ 
+            error: 'Compatibility code not found or expired',
+            code: 'CODE_NOT_FOUND'
+          }),
+          {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 404,
+          }
+        );
+      }
+
+      partnerData = lookupData;
+      userPalmData = userReading.readingResult || userReading.palmData;
+      partnerPalmData = partnerData.user_reading_result || partnerData.user_palm_data;
+      partnerName = partnerData.user_name;
+    } else {
+      // Invalid request - need either directMode + partnerReading or partnerCode
       return new Response(
         JSON.stringify({ 
-          error: 'Compatibility code not found or expired',
-          code: 'CODE_NOT_FOUND'
+          error: 'Invalid request: either provide partnerCode for social mode or directMode=true with partnerReading for friend mode',
+          code: 'INVALID_REQUEST'
         }),
         {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 404,
+          status: 400,
         }
       );
     }
-
-    // 2. Extract compatibility analysis data
-    const userPalmData = userReading.readingResult || userReading.palmData;
-    const partnerPalmData = partnerData.user_reading_result || partnerData.user_palm_data;
 
     console.log('User data available:', !!userPalmData);
     console.log('Partner data available:', !!partnerPalmData);
@@ -67,17 +96,19 @@ serve(async (req) => {
     // 3. Generate AI-powered compatibility analysis
     const compatibilityAnalysis = await generateCompatibilityWithAI(
       userReading.userData?.name || 'You',
-      partnerData.user_name,
+      partnerName,
       userPalmData,
       partnerPalmData,
       matchType
     );
 
-    // 4. Update usage counter for the compatibility code
-    await supabaseClient
-      .from('compatibility_codes')
-      .update({ times_used: (partnerData.times_used || 0) + 1 })
-      .eq('id', partnerData.id);
+    // 4. Update usage counter for the compatibility code (only in social mode)
+    if (!directMode && partnerData) {
+      await supabaseClient
+        .from('compatibility_codes')
+        .update({ times_used: (partnerData.times_used || 0) + 1 })
+        .eq('id', partnerData.id);
+    }
 
     // 5. Store the compatibility match (optional - for analytics)
     try {
@@ -95,8 +126,8 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         compatibility: compatibilityAnalysis,
-        partnerName: partnerData.user_name,
-        partnerCode: partnerCode
+        partnerName: partnerName,
+        partnerCode: partnerCode || null
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

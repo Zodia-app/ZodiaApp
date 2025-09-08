@@ -39,7 +39,7 @@ export const PalmReadingFlow: React.FC<PalmReadingFlowProps> = ({ navigation, us
       }
       
       // Navigate to waiting screen with the correct data
-      navigation.navigate('PalmReadingWaitingScreen', { 
+      navigation.navigate('PalmReadingWaiting', { 
         readingData: { 
           userData: {
             ...userData,

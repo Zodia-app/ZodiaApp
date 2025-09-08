@@ -1,5 +1,6 @@
-// supabase/functions/generate-palm-reading/index.ts
-// Fixed uniqueness issue - Sept 7th v2 - BANNED main character energy phrase
+// supabase/functions/generate-palm-reading-v2/index.ts
+// Cache-busting version - Sept 7th v2 - BANNED main character energy phrase
+// This bypasses the persistent cache issue
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.0';

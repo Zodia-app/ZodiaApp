@@ -70,6 +70,25 @@ export async function analyzeWithAI(userData: any, palmData: any) {
     }
 
     console.log('Starting palm reading analysis...');
+    console.log('userData:', JSON.stringify(userData, null, 2));
+    console.log('palmData keys:', Object.keys(palmData || {}));
+    
+    // More detailed validation
+    if (!userData.name || userData.name.trim() === '') {
+      throw new Error('User name is required');
+    }
+    
+    if (!userData.dateOfBirth) {
+      throw new Error('Date of birth is required');
+    }
+    
+    if (!palmData.leftPalmImage) {
+      throw new Error('Left palm image is required');
+    }
+    
+    if (!palmData.rightPalmImage) {
+      throw new Error('Right palm image is required');
+    }
     
     // Ensure user is authenticated first
     const userId = await ensureAuth();

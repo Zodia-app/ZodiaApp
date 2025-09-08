@@ -43,6 +43,43 @@ export interface FriendConnection {
   location?: string;
 }
 
+// Direct compatibility analysis for Friend Mode (no codes needed)
+export const generateCompatibilityAnalysis = async (
+  userReading: any,
+  friendReading: any
+): Promise<CompatibilityAnalysis> => {
+  try {
+    console.log('=== GENERATING DIRECT COMPATIBILITY ANALYSIS ===');
+    console.log('User:', userReading.userData?.name);
+    console.log('Friend:', friendReading.userData?.name);
+
+    const { data, error } = await supabase.functions.invoke('generate-compatibility-analysis', {
+      body: {
+        userReading,
+        partnerReading: friendReading,
+        matchType: 'friend',
+        directMode: true // Flag to indicate we have both readings directly
+      }
+    });
+
+    if (error) {
+      console.error('Edge function error:', error);
+      throw new Error(error.message);
+    }
+
+    if (!data.success) {
+      console.log('Compatibility generation failed:', data.error);
+      throw new Error(data.error);
+    }
+
+    console.log('Direct compatibility analysis generated successfully');
+    return data.compatibility;
+  } catch (error) {
+    console.error('Exception generating direct compatibility:', error);
+    throw error;
+  }
+};
+
 export const compatibilityService = {
   // Generate compatibility analysis using AI
   async generateCompatibility(

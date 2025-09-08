@@ -42,6 +42,29 @@ interface PalmReadingAnalysis {
   };
 }
 
+// Client-side greeting enhancement to add uniqueness while cache clears
+const enhanceGreeting = (originalGreeting: string, name?: string, zodiacSign?: string) => {
+  // If it's the old cached template, replace with unique alternatives
+  if (originalGreeting.includes('MAIN CHARACTER ENERGY')) {
+    const uniqueGreetings = [
+      `${name}, bestie! 💅 Your palm reading just hit different and it's absolutely iconic! ✨`,
+      `${name}, gorgeous! 💅 Your reading is serving pure magic and I'm here for it! ✨`,
+      `${name}, queen/king! 💅 Your palm reading is giving legendary vibes and it's everything! ✨`,
+      `${name}, stunning! 💅 This reading is about to change your whole perspective! ✨`,
+      `${name}, beautiful soul! 💅 Your palm reading is pure fire and totally you! ✨`
+    ];
+    
+    // Use name length + zodiac to pick consistent but varied greeting
+    const nameLength = name?.length || 0;
+    const zodiacLength = zodiacSign?.length || 0;
+    const index = (nameLength + zodiacLength) % uniqueGreetings.length;
+    return uniqueGreetings[index];
+  }
+  
+  // Return original if it's already unique
+  return originalGreeting;
+};
+
 export const PalmReadingResult: React.FC<any> = ({ navigation, route }) => {
   const { readingResult, readingData } = route.params || {};
   const { userData, palmData, nextAction, compatibilityCode } = readingData || {};
@@ -153,10 +176,10 @@ const loadAnalysis = async () => {
       <ScrollView style={styles.content}>
         <Text style={styles.title}>Your Detailed Palm Analysis</Text>
         
-        {/* Display AI-generated greeting if available, otherwise use fallback */}
+        {/* Display AI-generated greeting with client-side uniqueness enhancement */}
         {analysis.greeting ? (
           <View style={styles.greetingCard}>
-            <Text style={styles.greetingText}>{analysis.greeting}</Text>
+            <Text style={styles.greetingText}>{enhanceGreeting(analysis.greeting, userData?.name, userData?.zodiacSign)}</Text>
           </View>
         ) : (
           <Text style={styles.greeting}>Hello {userData?.name},</Text>
@@ -285,7 +308,7 @@ const loadAnalysis = async () => {
           <View style={styles.compatibilityButtons}>
             <TouchableOpacity
               style={styles.friendModeButton}
-              onPress={() => navigation.navigate('FriendMode', { 
+              onPress={() => navigation.navigate('FriendModeScreen', { 
                 userReading: { userData, palmData, readingResult: analysis } 
               })}
             >

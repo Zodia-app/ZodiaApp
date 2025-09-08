@@ -12,6 +12,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { analyzeWithAI } from '../../services/palmReading/aiPalmAnalysisService';
+import { generateCompatibilityAnalysis } from '../../services/compatibilityService';
 
 interface FriendCompatibilityResultProps {
   navigation: any;
@@ -38,51 +40,77 @@ export const FriendCompatibilityResult: React.FC<FriendCompatibilityResultProps>
   }, []);
 
   const generateCompatibilityResults = async () => {
-    // Simulate AI processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      console.log('=== STARTING FRIEND COMPATIBILITY ANALYSIS ===');
+      console.log('User Reading:', JSON.stringify(userReading, null, 2));
+      console.log('Friend Data:', JSON.stringify(friendData, null, 2));
 
-    // Generate mock compatibility results based on palm reading data
-    const results = {
-      overallScore: Math.floor(Math.random() * 30) + 70, // 70-100 range for fun
-      userName: userReading?.userData?.name || 'You',
-      friendName: friendData?.name || 'Your Friend',
-      scores: [
-        {
-          category: 'Love & Romance',
-          score: Math.floor(Math.random() * 20) + 80,
-          description: 'Your romantic energies are totally aligned! 💕',
-          emoji: '💕'
-        },
-        {
-          category: 'Communication',
-          score: Math.floor(Math.random() * 25) + 75,
-          description: 'You two understand each other\'s vibes perfectly! 🗣️',
-          emoji: '💬'
-        },
-        {
-          category: 'Life Goals',
-          score: Math.floor(Math.random() * 30) + 70,
-          description: 'Your paths are destined to intertwine! ✨',
-          emoji: '🎯'
-        },
-        {
-          category: 'Energy Match',
-          score: Math.floor(Math.random() * 25) + 75,
-          description: 'Your auras complement each other beautifully! 🌟',
-          emoji: '⚡'
+      // First, get the friend's palm reading
+      let friendPalmReading;
+      try {
+        console.log('Generating friend palm reading...');
+        console.log('Friend userData:', JSON.stringify(friendData.userData, null, 2));
+        console.log('Friend palmData:', {
+          leftPalmImage: friendData.palmData?.leftPalmImage ? 'present' : 'missing',
+          rightPalmImage: friendData.palmData?.rightPalmImage ? 'present' : 'missing',
+        });
+        
+        // Validate required data
+        if (!friendData.userData || !friendData.palmData) {
+          throw new Error('Missing userData or palmData');
         }
-      ],
-      insights: [
-        'Your life lines suggest you\'ll support each other through major life changes!',
-        'Both of your heart lines show deep emotional intelligence - perfect match!',
-        'Your fate lines indicate you\'re meant to inspire each other\'s success!',
-        'The mounts on your palms suggest incredible creative collaboration!'
-      ],
-      advice: 'Keep nurturing this beautiful connection! The stars have aligned to bring you two together. Share adventures, support each other\'s dreams, and watch your bond grow even stronger! ✨'
-    };
+        
+        if (!friendData.palmData.leftPalmImage || !friendData.palmData.rightPalmImage) {
+          throw new Error('Missing palm images');
+        }
+        
+        friendPalmReading = await analyzeWithAI(
+          friendData.userData,
+          friendData.palmData
+        );
+        console.log('Friend palm reading generated successfully:', !!friendPalmReading);
+      } catch (error) {
+        console.error('Error generating friend palm reading:', error);
+        console.error('Error details:', {
+          name: error.name,
+          message: error.message,
+          stack: error.stack
+        });
+        Alert.alert(
+          'Analysis Error',
+          `Unable to analyze your friend's palm reading: ${error.message}. Please try again.`
+        );
+        navigation.goBack();
+        return;
+      }
 
-    setCompatibilityData(results);
-    setLoading(false);
+      // Now generate compatibility analysis
+      console.log('Generating compatibility analysis...');
+      const compatibilityResults = await generateCompatibilityAnalysis(
+        {
+          userData: userReading.userData,
+          palmData: userReading.palmData,
+          readingResult: userReading.readingResult
+        },
+        {
+          userData: friendData.userData,
+          palmData: friendData.palmData,
+          readingResult: friendPalmReading
+        }
+      );
+
+      console.log('Compatibility analysis completed');
+      setCompatibilityData(compatibilityResults);
+      setLoading(false);
+
+    } catch (error) {
+      console.error('Error in compatibility analysis:', error);
+      Alert.alert(
+        'Analysis Error',
+        'Something went wrong during the compatibility analysis. Please try again.'
+      );
+      setLoading(false);
+    }
   };
 
   const getScoreColor = (score: number) => {
@@ -123,8 +151,8 @@ export const FriendCompatibilityResult: React.FC<FriendCompatibilityResultProps>
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="white" />
-            <Text style={styles.loadingText}>✨ The universe is calculating your cosmic connection...</Text>
-            <Text style={styles.loadingSubtext}>Reading the energy between your palms! 🔮</Text>
+            <Text style={styles.loadingText}>✨ Analyzing {friendData?.userData?.name || 'your friend'}'s palm reading...</Text>
+            <Text style={styles.loadingSubtext}>Calculating your cosmic compatibility! 🔮</Text>
           </View>
         </SafeAreaView>
       </LinearGradient>

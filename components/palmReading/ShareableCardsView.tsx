@@ -245,7 +245,11 @@ export const ShareableCardsView: React.FC<ShareableCardsViewProps> = ({
         showsVerticalScrollIndicator={false}
       >
         <View
-          ref={(ref) => (cardRefs.current[currentCardIndex] = ref)}
+          ref={(ref: View) => {
+            if (ref) {
+              cardRefs.current[currentCardIndex] = ref;
+            }
+          }}
           style={styles.cardContainer}
         >
           <ShareableTarotCard
