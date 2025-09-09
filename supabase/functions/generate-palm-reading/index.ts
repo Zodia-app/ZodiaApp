@@ -16,7 +16,16 @@ interface RequestBody {
     name: string;
     age?: number;
     dateOfBirth?: string;
+    timeOfBirth?: string; // HH:MM format (24-hour) - OPTIONAL
     zodiacSign?: string;
+    placeOfBirth?: {
+      city?: string;
+      state?: string;
+      country?: string;
+      latitude?: number;
+      longitude?: number;
+      timezone?: string;
+    };
   };
 }
 
@@ -62,10 +71,46 @@ serve(async (req: Request) => {
 
     // Create the analysis prompt - more robust with explicit field requirements
     const timestamp = new Date().getTime();
+    
+    // Extract birth location info
+    const birthPlace = userData.placeOfBirth ? 
+      `${userData.placeOfBirth.city || ''}, ${userData.placeOfBirth.country || ''}`.replace(/^, |, $/, '') : 
+      'Unknown location';
+    
+    // Create birth time info
+    const birthTimeInfo = userData.timeOfBirth ? 
+      ` at ${userData.timeOfBirth} (${formatBirthTime(userData.timeOfBirth)})` : 
+      ' (birth time not provided)';
+    
+    // Calculate more detailed astrological context
+    const astrologicalContext = generateAstrologicalContext(userData);
+    
     const analysisPrompt = `Bestie, it's time to absolutely SERVE ${userData.name} the most iconic palm reading ever! 💅✨ This is pure entertainment - think viral TikTok content meets your favorite astrology account.
 
-Person Details: ${userData.name}, ${age} years old, ${userData.zodiacSign}
+🌟 ENHANCED PERSON DETAILS:
+Name: ${userData.name}
+Age: ${age} years old
+Birth Date: ${userData.dateOfBirth}${birthTimeInfo}
+Birth Place: ${birthPlace}
+Zodiac Sign: ${userData.zodiacSign}
+${astrologicalContext}
+
 Reading ID: ${timestamp} (make this reading unique!)
+
+🔮 MANDATORY BIRTH DATA INTEGRATION:
+You MUST explicitly reference and integrate their birth details throughout the reading:
+
+✅ REQUIRED MENTIONS:
+- EXPLICITLY mention their birth country/location "${birthPlace}" in personality analysis
+- DIRECTLY reference their ${userData.zodiacSign} zodiac traits in the reading
+- SPECIFICALLY mention their age (${age} years old) and life stage context
+${userData.timeOfBirth ? '- CLEARLY reference their birth time enhancing astrological precision' : '- Note that birth time would enhance accuracy if available'}
+
+🌟 HOW TO INTEGRATE:
+- In personality: "As someone born in ${userData.placeOfBirth?.country || 'your birthplace'}, your ${userData.zodiacSign} nature shows..."
+- In lines analysis: Reference how being ${age} years old affects their line development
+- In insights: Connect ${userData.zodiacSign} planetary influences to specific palm mounts
+- Throughout: Make cultural and regional personality connections to ${birthPlace}
 
 Channel your inner mystic influencer and create a reading that's giving iconic energy! Use Gen Z slang, trending references, and that unmatched confidence. Think less "ancient wisdom" and more "your coolest friend who's also psychic spilling tea about your life" ☕
 
@@ -403,5 +448,81 @@ function calculateAge(dateOfBirth?: string): number | null {
     age--;
   }
   return age;
+}
+
+/**
+ * Format birth time for display
+ */
+function formatBirthTime(timeString: string): string {
+  const [hours, minutes] = timeString.split(':').map(Number);
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+}
+
+/**
+ * Generate astrological context based on birth data
+ */
+function generateAstrologicalContext(userData: any): string {
+  let context = '';
+  
+  // Add zodiac element and modality
+  const zodiacData = getZodiacData(userData.zodiacSign);
+  if (zodiacData) {
+    context += `Element: ${zodiacData.element} | Modality: ${zodiacData.modality} | Ruling Planet: ${zodiacData.ruler}\n`;
+  }
+  
+  // Add birth location cultural context
+  if (userData.placeOfBirth?.country) {
+    context += `Cultural Influence: ${userData.placeOfBirth.country} heritage\n`;
+  }
+  
+  // Add life stage context based on age
+  const age = calculateAge(userData.dateOfBirth);
+  if (age) {
+    const lifeStage = getLifeStage(age);
+    context += `Life Stage: ${lifeStage} (${age} years)\n`;
+  }
+  
+  // Add birth time context
+  if (userData.timeOfBirth) {
+    context += `Birth Time Available: Enhanced astrological precision possible\n`;
+  }
+  
+  return context;
+}
+
+/**
+ * Get zodiac sign data
+ */
+function getZodiacData(zodiacSign?: string) {
+  const zodiacInfo: { [key: string]: { element: string; modality: string; ruler: string } } = {
+    'Aries': { element: 'Fire', modality: 'Cardinal', ruler: 'Mars' },
+    'Taurus': { element: 'Earth', modality: 'Fixed', ruler: 'Venus' },
+    'Gemini': { element: 'Air', modality: 'Mutable', ruler: 'Mercury' },
+    'Cancer': { element: 'Water', modality: 'Cardinal', ruler: 'Moon' },
+    'Leo': { element: 'Fire', modality: 'Fixed', ruler: 'Sun' },
+    'Virgo': { element: 'Earth', modality: 'Mutable', ruler: 'Mercury' },
+    'Libra': { element: 'Air', modality: 'Cardinal', ruler: 'Venus' },
+    'Scorpio': { element: 'Water', modality: 'Fixed', ruler: 'Pluto' },
+    'Sagittarius': { element: 'Fire', modality: 'Mutable', ruler: 'Jupiter' },
+    'Capricorn': { element: 'Earth', modality: 'Cardinal', ruler: 'Saturn' },
+    'Aquarius': { element: 'Air', modality: 'Fixed', ruler: 'Uranus' },
+    'Pisces': { element: 'Water', modality: 'Mutable', ruler: 'Neptune' }
+  };
+  
+  return zodiacSign ? zodiacInfo[zodiacSign] : null;
+}
+
+/**
+ * Get life stage description based on age
+ */
+function getLifeStage(age: number): string {
+  if (age < 18) return 'Youth/Formation';
+  if (age < 30) return 'Young Adult/Exploration';
+  if (age < 45) return 'Adult/Building';
+  if (age < 60) return 'Midlife/Mastery';
+  if (age < 75) return 'Mature/Wisdom';
+  return 'Elder/Legacy';
 }
 
