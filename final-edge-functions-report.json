@@ -1,0 +1,31 @@
+{
+  "timestamp": "2025-09-08T20:14:09.763Z",
+  "summary": {
+    "totalTests": 4,
+    "successfulTests": 0,
+    "failedTests": 4,
+    "successRate": 0,
+    "status": "🔴 CRITICAL! Major issues detected",
+    "totalTimeMs": 4599
+  },
+  "palmReading": {
+    "successCount": 0,
+    "totalTests": 2
+  },
+  "compatibility": {
+    "successCount": 0,
+    "totalTests": 2
+  },
+  "detailedResults": [
+    {
+      "test": "Palm reading for Alice",
+      "status": "FAILED",
+      "error": "HTTP 500: {\"error\":\"OpenAI API error: 400\",\"success\":false}"
+    },
+    {
+      "test": "Palm reading for Bob",
+      "status": "FAILED",
+      "error": "HTTP 500: {\"error\":\"OpenAI API error: 400\",\"success\":false}"
+    }
+  ]
+}

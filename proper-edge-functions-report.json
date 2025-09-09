@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-09-08T20:16:39.021Z",
+  "summary": {
+    "totalTests": 4,
+    "successfulTests": 3,
+    "successRate": 75,
+    "status": "🟡 GOOD! Basic functionality working",
+    "totalTimeMs": 12041
+  },
+  "breakdown": {
+    "palmReading": {
+      "successCount": 2,
+      "totalTests": 2
+    },
+    "compatibilityAnalysis": {
+      "successCount": 1,
+      "totalTests": 1
+    },
+    "compatibilityMatch": {
+      "successCount": 0,
+      "totalTests": 1
+    }
+  },
+  "results": [
+    {
+      "test": "Palm reading for Alice",
+      "status": "FAILED",
+      "responseTime": 300,
+      "httpStatus": 500
+    },
+    {
+      "test": "Palm reading for Bob",
+      "status": "FAILED",
+      "responseTime": 1680,
+      "httpStatus": 500
+    }
+  ]
+}

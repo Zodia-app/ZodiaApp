@@ -1,0 +1,130 @@
+{
+  "timestamp": "2025-09-08T20:09:57.277Z",
+  "summary": {
+    "totalTests": 11,
+    "passedTests": 1,
+    "successRate": 9,
+    "totalTimeMs": 15837,
+    "status": "🔴 CRITICAL! Major issues found"
+  },
+  "results": [
+    {
+      "testName": "Palm reading for Alice (Leo)",
+      "functionName": "generate-palm-reading",
+      "status": "FAILED",
+      "responseTime": 877,
+      "userData": {
+        "name": "Alice",
+        "age": 25,
+        "zodiacSign": "Leo",
+        "dateOfBirth": "1998-07-15"
+      },
+      "error": "HTTP 500: {\"error\":\"OpenAI API error: 400\",\"success\":false}"
+    },
+    {
+      "testName": "Palm reading for Bob (Scorpio)",
+      "functionName": "generate-palm-reading",
+      "status": "FAILED",
+      "responseTime": 935,
+      "userData": {
+        "name": "Bob",
+        "age": 30,
+        "zodiacSign": "Scorpio",
+        "dateOfBirth": "1993-10-25"
+      },
+      "error": "HTTP 500: {\"error\":\"OpenAI API error: 400\",\"success\":false}"
+    },
+    {
+      "testName": "Palm reading for Charlie (Gemini)",
+      "functionName": "generate-palm-reading",
+      "status": "FAILED",
+      "responseTime": 812,
+      "userData": {
+        "name": "Charlie",
+        "age": 28,
+        "zodiacSign": "Gemini",
+        "dateOfBirth": "1995-05-20"
+      },
+      "error": "HTTP 500: {\"error\":\"OpenAI API error: 400\",\"success\":false}"
+    },
+    {
+      "testName": "Palm reading for Diana (Pisces)",
+      "functionName": "generate-palm-reading",
+      "status": "FAILED",
+      "responseTime": 899,
+      "userData": {
+        "name": "Diana",
+        "age": 22,
+        "zodiacSign": "Pisces",
+        "dateOfBirth": "2001-03-10"
+      },
+      "error": "HTTP 500: {\"error\":\"OpenAI API error: 400\",\"success\":false}"
+    },
+    {
+      "testName": "Palm reading for Eve (Virgo)",
+      "functionName": "generate-palm-reading",
+      "status": "FAILED",
+      "responseTime": 480,
+      "userData": {
+        "name": "Eve",
+        "age": 35,
+        "zodiacSign": "Virgo",
+        "dateOfBirth": "1988-09-05"
+      },
+      "error": "HTTP 500: {\"error\":\"OpenAI API error: 400\",\"success\":false}"
+    },
+    {
+      "testName": "Uniqueness test 1 for Alice",
+      "functionName": "generate-palm-reading",
+      "status": "FAILED",
+      "responseTime": 562,
+      "userData": {
+        "name": "Alice",
+        "age": 25,
+        "zodiacSign": "Leo",
+        "dateOfBirth": "1998-07-15"
+      },
+      "error": "HTTP 500: {\"error\":\"OpenAI API error: 400\",\"success\":false}"
+    },
+    {
+      "testName": "Uniqueness test 2 for Alice",
+      "functionName": "generate-palm-reading",
+      "status": "FAILED",
+      "responseTime": 381,
+      "userData": {
+        "name": "Alice",
+        "age": 25,
+        "zodiacSign": "Leo",
+        "dateOfBirth": "1998-07-15"
+      },
+      "error": "HTTP 500: {\"error\":\"OpenAI API error: 400\",\"success\":false}"
+    },
+    {
+      "testName": "Uniqueness test 3 for Alice",
+      "functionName": "generate-palm-reading",
+      "status": "FAILED",
+      "responseTime": 794,
+      "userData": {
+        "name": "Alice",
+        "age": 25,
+        "zodiacSign": "Leo",
+        "dateOfBirth": "1998-07-15"
+      },
+      "error": "HTTP 500: {\"error\":\"OpenAI API error: 400\",\"success\":false}"
+    },
+    {
+      "testName": "Compatibility match for Alice",
+      "functionName": "generate-compatibility-match",
+      "status": "FAILED",
+      "responseTime": 32,
+      "error": "HTTP 500: {\"error\":\"Missing required reading or user data\",\"success\":false}"
+    },
+    {
+      "testName": "Compatibility match for Bob",
+      "functionName": "generate-compatibility-match",
+      "status": "FAILED",
+      "responseTime": 19,
+      "error": "HTTP 500: {\"error\":\"Missing required reading or user data\",\"success\":false}"
+    }
+  ]
+}

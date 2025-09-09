@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-09-08T20:03:42.563Z",
+  "summary": {
+    "totalTests": 1,
+    "passedTests": 0,
+    "failedTests": 1,
+    "successRate": 0,
+    "totalTimeMs": 8052,
+    "averageTimeMs": 8052,
+    "status": "🔴 CRITICAL! Major issues found"
+  },
+  "results": [
+    {
+      "testName": "Palm reading for Alice (Leo)",
+      "functionName": "generate-palm-reading",
+      "status": "FAILED",
+      "responseTime": 8051,
+      "error": "HTTP 500: {\"message\":\"An unexpected error occurred\"}"
+    }
+  ]
+}
