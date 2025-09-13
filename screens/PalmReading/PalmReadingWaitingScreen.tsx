@@ -5,7 +5,9 @@ import { palmReadingService } from '../../services/palmReading/palmReadingServic
 
 export const PalmReadingWaitingScreen: React.FC<any> = ({ navigation, route }) => {
   const { readingData } = route.params || {};
-  const [statusMessage, setStatusMessage] = useState('✨ Reading your palm vibes...');
+  const [statusMessage, setStatusMessage] = useState('🚀 Initializing ultra-optimized reading...');
+  const [queuePosition, setQueuePosition] = useState<number | null>(null);
+  const [fromCache, setFromCache] = useState(false);
 
   useEffect(() => {
     const performPalmReading = async () => {
@@ -26,7 +28,14 @@ export const PalmReadingWaitingScreen: React.FC<any> = ({ navigation, route }) =
           throw new Error('Palm images are missing');
         }
 
-        setStatusMessage('🔮 AI is decoding your future...');
+        // Check cache first for instant feedback
+        setStatusMessage('🔍 Checking intelligent cache...');
+        
+        // Get current cache stats
+        const cacheStats = await palmReadingService.getCacheStats();
+        if (cacheStats && cacheStats.totalEntries > 0) {
+          setStatusMessage(`💾 Cache ready (${cacheStats.totalEntries} readings, ${cacheStats.hitRate} avg hits)`);
+        }
         
         // Prepare the form data for the service
         const formData = {
@@ -43,10 +52,32 @@ export const PalmReadingWaitingScreen: React.FC<any> = ({ navigation, route }) =
           placeOfBirth: userData?.placeOfBirth || { city: '', state: '', country: '' }
         };
 
-        console.log('Starting palm reading analysis...');
-        setStatusMessage('🌟 Almost done, cooking up your destiny...');
+        console.log('🚀 Starting ULTRA-OPTIMIZED palm reading analysis...');
+        setStatusMessage('🗜️ Compressing images for optimal performance...');
         
-        const result = await palmReadingService.submitPalmReading(formData);
+        // Monitor queue status
+        const queueInterval = setInterval(() => {
+          const queueStatus = palmReadingService.getQueueStatus();
+          if (queueStatus.queueLength > 0) {
+            setQueuePosition(queueStatus.queueLength);
+            setStatusMessage(`⏳ In queue: ${queueStatus.currentProcessing}/${queueStatus.maxConcurrent} processing, ${queueStatus.queueLength} waiting`);
+          }
+        }, 1000);
+        
+        setStatusMessage('🔮 AI is decoding your future with ultra-optimization...');
+        
+        // Use the ULTRA-OPTIMIZED service
+        const result = await palmReadingService.submitPalmReadingUltraOptimized(formData, 'normal');
+        
+        clearInterval(queueInterval);
+        
+        // Check if result came from cache
+        if (result.performance?.source === 'cache') {
+          setFromCache(true);
+          setStatusMessage('⚡ Ultra-fast response from intelligent cache!');
+        } else {
+          setStatusMessage('✅ Analysis complete with full optimization!');
+        }
         
         console.log('Palm reading completed successfully:', result);
         
@@ -83,14 +114,30 @@ export const PalmReadingWaitingScreen: React.FC<any> = ({ navigation, route }) =
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <ActivityIndicator size="large" color="#6B46C1" />
-        <Text style={styles.title}>✨ AI Reading Your Palms ✨</Text>
+        <ActivityIndicator 
+          size="large" 
+          color={fromCache ? "#10B981" : "#6B46C1"} 
+        />
+        <Text style={styles.title}>
+          {fromCache ? "⚡ Ultra-Fast Cache Hit!" : "🚀 Ultra-Optimized Reading"}
+        </Text>
         <Text style={styles.subtitle}>
           {statusMessage}
         </Text>
-        <Text style={styles.waitTime}>
-          The universe is spilling the tea about your life... ☕️✨
-        </Text>
+        {queuePosition && (
+          <Text style={styles.queueInfo}>
+            📊 Position in queue: {queuePosition}
+          </Text>
+        )}
+        {fromCache ? (
+          <Text style={styles.cacheInfo}>
+            🎯 Instant response from intelligent caching system!
+          </Text>
+        ) : (
+          <Text style={styles.waitTime}>
+            🗜️ Compressed images + Smart queue + AI analysis = Optimized experience ✨
+          </Text>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -124,5 +171,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
     fontStyle: 'italic',
+  },
+  queueInfo: {
+    fontSize: 14,
+    color: '#F59E0B',
+    fontWeight: '500',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  cacheInfo: {
+    fontSize: 14,
+    color: '#10B981',
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });
