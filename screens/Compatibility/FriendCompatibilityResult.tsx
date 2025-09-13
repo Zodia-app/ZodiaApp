@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { analyzeWithAI } from '../../services/palmReading/aiPalmAnalysisService';
+import { palmReadingService } from '../../services/palmReading/palmReadingService';
 import { generateCompatibilityAnalysis } from '../../services/compatibilityService';
 
 interface FriendCompatibilityResultProps {
@@ -21,7 +21,8 @@ interface FriendCompatibilityResultProps {
 }
 
 interface CompatibilityScore {
-  category: string;
+  category?: string;  // For backward compatibility
+  name?: string;      // What the edge function returns
   score: number;
   description: string;
   emoji: string;
@@ -42,6 +43,7 @@ export const FriendCompatibilityResult: React.FC<FriendCompatibilityResultProps>
   const generateCompatibilityResults = async () => {
     try {
       console.log('=== STARTING FRIEND COMPATIBILITY ANALYSIS ===');
+      console.log('generateCompatibilityAnalysis function:', typeof generateCompatibilityAnalysis);
       console.log('User Reading:', JSON.stringify(userReading, null, 2));
       console.log('Friend Data:', JSON.stringify(friendData, null, 2));
 
@@ -64,10 +66,19 @@ export const FriendCompatibilityResult: React.FC<FriendCompatibilityResultProps>
           throw new Error('Missing palm images');
         }
         
-        friendPalmReading = await analyzeWithAI(
-          friendData.userData,
-          friendData.palmData
+        // Transform data to match PalmReadingFormData structure
+        const friendFormData = {
+          ...friendData.userData,
+          leftHandImage: friendData.palmData.leftPalmImage,
+          rightHandImage: friendData.palmData.rightPalmImage
+        };
+        
+        const friendPalmResult = await palmReadingService.submitPalmReadingUltraOptimized(
+          friendFormData
         );
+        
+        // Extract the reading from the ultra-optimized result
+        friendPalmReading = friendPalmResult.reading || friendPalmResult;
         console.log('Friend palm reading generated successfully:', !!friendPalmReading);
       } catch (error) {
         console.error('Error generating friend palm reading:', error);
@@ -86,28 +97,52 @@ export const FriendCompatibilityResult: React.FC<FriendCompatibilityResultProps>
 
       // Now generate compatibility analysis
       console.log('Generating compatibility analysis...');
+      console.log('About to call generateCompatibilityAnalysis with:');
+      console.log('- userReading keys:', Object.keys(userReading || {}));
+      console.log('- friendReading keys:', Object.keys({
+        userData: friendData.userData,
+        palmData: friendData.palmData,
+        readingResult: friendPalmReading
+      }));
+      
       const compatibilityResults = await generateCompatibilityAnalysis(
-        {
-          userData: userReading.userData,
-          palmData: userReading.palmData,
-          readingResult: userReading.readingResult
-        },
+        userReading, // Pass the complete userReading object
         {
           userData: friendData.userData,
           palmData: friendData.palmData,
           readingResult: friendPalmReading
         }
       );
+      
+      console.log('Compatibility analysis returned:', !!compatibilityResults);
+      console.log('Compatibility result type:', typeof compatibilityResults);
 
       console.log('Compatibility analysis completed');
-      setCompatibilityData(compatibilityResults);
+      console.log('Raw compatibility results:', JSON.stringify(compatibilityResults, null, 2));
+      
+      // Transform the data to match expected structure
+      const transformedData = {
+        userName: userReading.userData?.name || 'You',
+        friendName: friendData.userData?.name || 'Friend',
+        overallScore: compatibilityResults.overallScore,
+        overallLabel: compatibilityResults.overallLabel,
+        scores: compatibilityResults.categories || [], // Transform categories to scores
+        insights: compatibilityResults.insights || [],
+        advice: compatibilityResults.cosmicMessage || 'May your connection bring you joy and growth!'
+      };
+      
+      console.log('Transformed compatibility data:', JSON.stringify(transformedData, null, 2));
+      setCompatibilityData(transformedData);
       setLoading(false);
 
     } catch (error) {
       console.error('Error in compatibility analysis:', error);
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
       Alert.alert(
         'Analysis Error',
-        'Something went wrong during the compatibility analysis. Please try again.'
+        `Something went wrong during the compatibility analysis: ${error.message}. Please try again.`
       );
       setLoading(false);
     }
@@ -199,7 +234,7 @@ export const FriendCompatibilityResult: React.FC<FriendCompatibilityResultProps>
                 <View style={styles.categoryHeader}>
                   <Text style={styles.categoryEmoji}>{item.emoji}</Text>
                   <View style={styles.categoryContent}>
-                    <Text style={styles.categoryName}>{item.category}</Text>
+                    <Text style={styles.categoryName}>{item.category || item.name}</Text>
                     <Text style={styles.categoryDescription}>{item.description}</Text>
                   </View>
                   <View style={styles.categoryScore}>

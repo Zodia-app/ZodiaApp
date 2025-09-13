@@ -50,7 +50,7 @@ export const HandPhotosStep: React.FC<HandPhotosStepProps> = ({ onNext, palmData
       try {
         setIsCapturing(true);
         const photo = await cameraRef.takePictureAsync({
-          quality: 0.8,
+          quality: 0.6, // Reduced from 0.8 to 0.6 for better performance
           base64: false,
         });
         setIsCapturing(false);

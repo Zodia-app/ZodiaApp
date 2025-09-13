@@ -1,7 +1,35 @@
 import { supabase } from '../../supabase/supabaseService';
 import { PalmReadingFormData } from '../../types/palmReading';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { palmReadingQueue } from './palmReadingQueue';
+import { palmReadingCache } from './palmReadingCache';
 
 export const palmReadingService = {
+  // Compress image for better performance under load
+  async compressImage(uri: string): Promise<string> {
+    try {
+      console.log('🗜️ Compressing palm image for heavy load optimization...');
+      
+      const result = await ImageManipulator.manipulateAsync(
+        uri,
+        [
+          // Resize to max 800px width while maintaining aspect ratio
+          { resize: { width: 800 } }
+        ],
+        {
+          compress: 0.7, // 70% quality - good balance of quality vs size
+          format: ImageManipulator.SaveFormat.JPEG,
+        }
+      );
+      
+      console.log(`✅ Image compressed: Original -> ${result.uri} (width: ${result.width}px)`);
+      return result.uri;
+    } catch (error) {
+      console.warn('⚠️ Image compression failed, using original:', error);
+      return uri; // Fallback to original if compression fails
+    }
+  },
+
   // Ensure user is authenticated
   async ensureAuthenticated() {
     try {
@@ -27,14 +55,128 @@ export const palmReadingService = {
     }
   },
 
+  // Optimized submission for heavy load scenarios
+  async submitPalmReadingOptimized(data: PalmReadingFormData, priority: 'high' | 'normal' | 'low' = 'normal') {
+    try {
+      // Ensure user is authenticated first
+      const session = await this.ensureAuthenticated();
+      
+      // Compress images first for better performance under load
+      console.log('🗜️ Compressing palm images for heavy load optimization...');
+      const compressedLeftUri = await this.compressImage(data.leftHandImage!);
+      const compressedRightUri = await this.compressImage(data.rightHandImage!);
+      
+      // Convert compressed images to base64 for the edge function
+      const leftBase64 = await this.convertToBase64(compressedLeftUri);
+      const rightBase64 = await this.convertToBase64(compressedRightUri);
+
+      console.log(`📊 Compressed image sizes - Left: ${Math.round(leftBase64.length * 0.75 / 1024)}KB, Right: ${Math.round(rightBase64.length * 0.75 / 1024)}KB`);
+
+      // Add to priority queue for async processing
+      console.log(`🎯 Adding palm reading to queue with priority: ${priority}`);
+      const result = await palmReadingQueue.addToQueue(
+        data,
+        leftBase64,
+        rightBase64,
+        priority
+      );
+
+      console.log('✅ Palm reading completed via optimized queue system');
+      return result;
+      
+    } catch (error) {
+      console.error('❌ Optimized palm reading submission error:', error);
+      throw error;
+    }
+  },
+
+  // Get queue status for UI feedback
+  getQueueStatus() {
+    return palmReadingQueue.getQueueStatus();
+  },
+
+  // ULTRA-OPTIMIZED: Compression + Caching + Queue for maximum performance
+  async submitPalmReadingUltraOptimized(data: PalmReadingFormData, priority: 'high' | 'normal' | 'low' = 'normal') {
+    try {
+      console.log('🚀 ULTRA-OPTIMIZED palm reading starting...');
+      
+      // Ensure user is authenticated first
+      const session = await this.ensureAuthenticated();
+      
+      // Step 1: Compress images for better performance
+      const compressedLeftUri = await this.compressImage(data.leftHandImage!);
+      const compressedRightUri = await this.compressImage(data.rightHandImage!);
+      
+      // Step 2: Convert to base64
+      const leftBase64 = await this.convertToBase64(compressedLeftUri);
+      const rightBase64 = await this.convertToBase64(compressedRightUri);
+
+      // Step 3: Check cache first
+      console.log('🔍 Checking intelligent cache...');
+      const cachedReading = await palmReadingCache.getCachedReading(leftBase64, rightBase64, data);
+      
+      if (cachedReading) {
+        console.log('⚡ CACHE HIT! Returning cached palm reading - ultra-fast response');
+        return {
+          ...cachedReading,
+          performance: {
+            source: 'cache',
+            compressionUsed: true,
+            responseTime: '< 100ms'
+          }
+        };
+      }
+
+      console.log('📊 Cache miss - processing via optimized queue...');
+      console.log(`Image sizes after compression - Left: ${Math.round(leftBase64.length * 0.75 / 1024)}KB, Right: ${Math.round(rightBase64.length * 0.75 / 1024)}KB`);
+
+      // Step 4: Process via queue for load balancing
+      const result = await palmReadingQueue.addToQueue(
+        data,
+        leftBase64,
+        rightBase64,
+        priority
+      );
+
+      // Step 5: Cache the result for future requests
+      await palmReadingCache.cacheReading(leftBase64, rightBase64, data, result);
+
+      console.log('✅ ULTRA-OPTIMIZED palm reading completed with caching');
+      
+      return {
+        ...result,
+        performance: {
+          source: 'processed',
+          compressionUsed: true,
+          queueProcessed: true,
+          cached: true
+        }
+      };
+      
+    } catch (error) {
+      console.error('❌ Ultra-optimized palm reading error:', error);
+      throw error;
+    }
+  },
+
+  // Get cache statistics for monitoring
+  async getCacheStats() {
+    return await palmReadingCache.getCacheStats();
+  },
+
   async submitPalmReading(data: PalmReadingFormData) {
     try {
       // Ensure user is authenticated first
       const session = await this.ensureAuthenticated();
       
-      // Convert images to base64 for the edge function
-      const leftBase64 = await this.convertToBase64(data.leftHandImage!);
-      const rightBase64 = await this.convertToBase64(data.rightHandImage!);
+      // Compress images first for better performance under load
+      console.log('🗜️ Compressing palm images for heavy load optimization...');
+      const compressedLeftUri = await this.compressImage(data.leftHandImage!);
+      const compressedRightUri = await this.compressImage(data.rightHandImage!);
+      
+      // Convert compressed images to base64 for the edge function
+      const leftBase64 = await this.convertToBase64(compressedLeftUri);
+      const rightBase64 = await this.convertToBase64(compressedRightUri);
 
       console.log('Calling Supabase Edge Function for palm reading...');
       const payload = {
