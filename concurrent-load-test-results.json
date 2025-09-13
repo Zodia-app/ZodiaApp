@@ -1,0 +1,2136 @@
+{
+  "testType": "Concurrent Load Test",
+  "timestamp": "2025-09-10T03:11:34.041Z",
+  "testParameters": {
+    "palmReadingTests": 100,
+    "compatibilityTests": 100,
+    "totalTests": 200,
+    "concurrent": true
+  },
+  "summary": {
+    "totalTests": 200,
+    "totalSuccess": 99,
+    "overallSuccessRate": 50,
+    "totalTimeMinutes": 1,
+    "palmReading": {
+      "success": 1,
+      "failed": 99,
+      "successRate": 1,
+      "avgResponseTime": 40340
+    },
+    "compatibility": {
+      "success": 98,
+      "failed": 2,
+      "successRate": 98,
+      "avgResponseTime": 11852
+    }
+  },
+  "detailedResults": {
+    "palmReading": [
+      {
+        "testId": "palm_1",
+        "profile": "Alexandre1",
+        "status": "FAILED",
+        "responseTime": 41598,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:21.417Z"
+      },
+      {
+        "testId": "palm_2",
+        "profile": "Elena1",
+        "status": "SUCCESS",
+        "responseTime": 40587,
+        "httpStatus": 200,
+        "issues": [],
+        "timestamp": "2025-09-10T03:11:20.507Z"
+      },
+      {
+        "testId": "palm_3",
+        "profile": "Marcus1",
+        "status": "FAILED",
+        "responseTime": 45735,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:25.754Z"
+      },
+      {
+        "testId": "palm_4",
+        "profile": "Sofia1",
+        "status": "FAILED",
+        "responseTime": 24684,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:04.804Z"
+      },
+      {
+        "testId": "palm_5",
+        "profile": "David1",
+        "status": "FAILED",
+        "responseTime": 52310,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.528Z"
+      },
+      {
+        "testId": "palm_6",
+        "profile": "Luna1",
+        "status": "FAILED",
+        "responseTime": 29332,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:09.652Z"
+      },
+      {
+        "testId": "palm_7",
+        "profile": "Carlos1",
+        "status": "FAILED",
+        "responseTime": 49431,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:29.850Z"
+      },
+      {
+        "testId": "palm_8",
+        "profile": "Aria1",
+        "status": "FAILED",
+        "responseTime": 37883,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:18.403Z"
+      },
+      {
+        "testId": "palm_9",
+        "profile": "James1",
+        "status": "FAILED",
+        "responseTime": 48416,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:29.035Z"
+      },
+      {
+        "testId": "palm_10",
+        "profile": "Maya1",
+        "status": "FAILED",
+        "responseTime": 28283,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:09.003Z"
+      },
+      {
+        "testId": "palm_11",
+        "profile": "Alexandre2",
+        "status": "FAILED",
+        "responseTime": 51358,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.178Z"
+      },
+      {
+        "testId": "palm_12",
+        "profile": "Elena2",
+        "status": "FAILED",
+        "responseTime": 30787,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:11.705Z"
+      },
+      {
+        "testId": "palm_13",
+        "profile": "Marcus2",
+        "status": "FAILED",
+        "responseTime": 51146,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.167Z"
+      },
+      {
+        "testId": "palm_14",
+        "profile": "Sofia2",
+        "status": "FAILED",
+        "responseTime": 32484,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:13.603Z"
+      },
+      {
+        "testId": "palm_15",
+        "profile": "David2",
+        "status": "FAILED",
+        "responseTime": 51536,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.755Z"
+      },
+      {
+        "testId": "palm_16",
+        "profile": "Luna2",
+        "status": "FAILED",
+        "responseTime": 33992,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:15.310Z"
+      },
+      {
+        "testId": "palm_17",
+        "profile": "Carlos2",
+        "status": "FAILED",
+        "responseTime": 51383,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.803Z"
+      },
+      {
+        "testId": "palm_18",
+        "profile": "Aria2",
+        "status": "FAILED",
+        "responseTime": 32808,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:14.327Z"
+      },
+      {
+        "testId": "palm_19",
+        "profile": "James2",
+        "status": "FAILED",
+        "responseTime": 50281,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.899Z"
+      },
+      {
+        "testId": "palm_20",
+        "profile": "Maya2",
+        "status": "FAILED",
+        "responseTime": 34048,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:15.766Z"
+      },
+      {
+        "testId": "palm_21",
+        "profile": "Alexandre3",
+        "status": "FAILED",
+        "responseTime": 51512,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:33.330Z"
+      },
+      {
+        "testId": "palm_22",
+        "profile": "Elena3",
+        "status": "FAILED",
+        "responseTime": 30765,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:12.689Z"
+      },
+      {
+        "testId": "palm_23",
+        "profile": "Marcus3",
+        "status": "FAILED",
+        "responseTime": 49604,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.623Z"
+      },
+      {
+        "testId": "palm_24",
+        "profile": "Sofia3",
+        "status": "FAILED",
+        "responseTime": 31523,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:13.651Z"
+      },
+      {
+        "testId": "palm_25",
+        "profile": "David3",
+        "status": "FAILED",
+        "responseTime": 46195,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:28.414Z"
+      },
+      {
+        "testId": "palm_26",
+        "profile": "Luna3",
+        "status": "FAILED",
+        "responseTime": 35742,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:18.060Z"
+      },
+      {
+        "testId": "palm_27",
+        "profile": "Carlos3",
+        "status": "FAILED",
+        "responseTime": 48949,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.372Z"
+      },
+      {
+        "testId": "palm_28",
+        "profile": "Aria3",
+        "status": "FAILED",
+        "responseTime": 34622,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:17.151Z"
+      },
+      {
+        "testId": "palm_29",
+        "profile": "James3",
+        "status": "FAILED",
+        "responseTime": 46178,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:28.799Z"
+      },
+      {
+        "testId": "palm_30",
+        "profile": "Maya3",
+        "status": "FAILED",
+        "responseTime": 26101,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:08.819Z"
+      },
+      {
+        "testId": "palm_31",
+        "profile": "Alexandre4",
+        "status": "FAILED",
+        "responseTime": 48593,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.412Z"
+      },
+      {
+        "testId": "palm_32",
+        "profile": "Elena4",
+        "status": "FAILED",
+        "responseTime": 33344,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:16.274Z"
+      },
+      {
+        "testId": "palm_33",
+        "profile": "Marcus4",
+        "status": "FAILED",
+        "responseTime": 43376,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:26.395Z"
+      },
+      {
+        "testId": "palm_34",
+        "profile": "Sofia4",
+        "status": "FAILED",
+        "responseTime": 32883,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:16.001Z"
+      },
+      {
+        "testId": "palm_35",
+        "profile": "David4",
+        "status": "FAILED",
+        "responseTime": 49103,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.321Z"
+      },
+      {
+        "testId": "palm_36",
+        "profile": "Luna4",
+        "status": "FAILED",
+        "responseTime": 37883,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:21.202Z"
+      },
+      {
+        "testId": "palm_37",
+        "profile": "Carlos4",
+        "status": "FAILED",
+        "responseTime": 45287,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:28.705Z"
+      },
+      {
+        "testId": "palm_38",
+        "profile": "Aria4",
+        "status": "FAILED",
+        "responseTime": 29467,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:12.987Z"
+      },
+      {
+        "testId": "palm_39",
+        "profile": "James4",
+        "status": "FAILED",
+        "responseTime": 48542,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.167Z"
+      },
+      {
+        "testId": "palm_40",
+        "profile": "Maya4",
+        "status": "FAILED",
+        "responseTime": 30359,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:14.078Z"
+      },
+      {
+        "testId": "palm_41",
+        "profile": "Alexandre5",
+        "status": "FAILED",
+        "responseTime": 45128,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:28.947Z"
+      },
+      {
+        "testId": "palm_42",
+        "profile": "Elena5",
+        "status": "FAILED",
+        "responseTime": 27603,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:11.524Z"
+      },
+      {
+        "testId": "palm_43",
+        "profile": "Marcus5",
+        "status": "FAILED",
+        "responseTime": 49019,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:33.038Z"
+      },
+      {
+        "testId": "palm_44",
+        "profile": "Sofia5",
+        "status": "FAILED",
+        "responseTime": 34475,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:18.596Z"
+      },
+      {
+        "testId": "palm_45",
+        "profile": "David5",
+        "status": "FAILED",
+        "responseTime": 48496,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.716Z"
+      },
+      {
+        "testId": "palm_46",
+        "profile": "Luna5",
+        "status": "FAILED",
+        "responseTime": 29463,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:13.783Z"
+      },
+      {
+        "testId": "palm_47",
+        "profile": "Carlos5",
+        "status": "FAILED",
+        "responseTime": 47904,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.323Z"
+      },
+      {
+        "testId": "palm_48",
+        "profile": "Aria5",
+        "status": "FAILED",
+        "responseTime": 27970,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:12.492Z"
+      },
+      {
+        "testId": "palm_49",
+        "profile": "James5",
+        "status": "FAILED",
+        "responseTime": 45482,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:30.101Z"
+      },
+      {
+        "testId": "palm_50",
+        "profile": "Maya5",
+        "status": "FAILED",
+        "responseTime": 34111,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:18.830Z"
+      },
+      {
+        "testId": "palm_51",
+        "profile": "Alexandre6",
+        "status": "FAILED",
+        "responseTime": 52448,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.298Z"
+      },
+      {
+        "testId": "palm_52",
+        "profile": "Elena6",
+        "status": "FAILED",
+        "responseTime": 11729,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:10:51.651Z"
+      },
+      {
+        "testId": "palm_53",
+        "profile": "Marcus6",
+        "status": "FAILED",
+        "responseTime": 49118,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:29.141Z"
+      },
+      {
+        "testId": "palm_54",
+        "profile": "Sofia6",
+        "status": "FAILED",
+        "responseTime": 31354,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:11.475Z"
+      },
+      {
+        "testId": "palm_55",
+        "profile": "David6",
+        "status": "FAILED",
+        "responseTime": 47854,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:28.078Z"
+      },
+      {
+        "testId": "palm_56",
+        "profile": "Luna6",
+        "status": "FAILED",
+        "responseTime": 34309,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:14.631Z"
+      },
+      {
+        "testId": "palm_57",
+        "profile": "Carlos6",
+        "status": "FAILED",
+        "responseTime": 51103,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.528Z"
+      },
+      {
+        "testId": "palm_58",
+        "profile": "Aria6",
+        "status": "FAILED",
+        "responseTime": 31513,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:12.036Z"
+      },
+      {
+        "testId": "palm_59",
+        "profile": "James6",
+        "status": "FAILED",
+        "responseTime": 50104,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:30.726Z"
+      },
+      {
+        "testId": "palm_60",
+        "profile": "Maya6",
+        "status": "FAILED",
+        "responseTime": 34989,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:15.710Z"
+      },
+      {
+        "testId": "palm_61",
+        "profile": "Alexandre7",
+        "status": "FAILED",
+        "responseTime": 48272,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:29.094Z"
+      },
+      {
+        "testId": "palm_62",
+        "profile": "Elena7",
+        "status": "FAILED",
+        "responseTime": 30053,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:10.974Z"
+      },
+      {
+        "testId": "palm_63",
+        "profile": "Marcus7",
+        "status": "FAILED",
+        "responseTime": 49419,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:30.441Z"
+      },
+      {
+        "testId": "palm_64",
+        "profile": "Sofia7",
+        "status": "FAILED",
+        "responseTime": 29018,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:10.140Z"
+      },
+      {
+        "testId": "palm_65",
+        "profile": "David7",
+        "status": "FAILED",
+        "responseTime": 50226,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.449Z"
+      },
+      {
+        "testId": "palm_66",
+        "profile": "Luna7",
+        "status": "FAILED",
+        "responseTime": 35490,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:16.812Z"
+      },
+      {
+        "testId": "palm_67",
+        "profile": "Carlos7",
+        "status": "FAILED",
+        "responseTime": 50739,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.167Z"
+      },
+      {
+        "testId": "palm_68",
+        "profile": "Aria7",
+        "status": "FAILED",
+        "responseTime": 26800,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:08.323Z"
+      },
+      {
+        "testId": "palm_69",
+        "profile": "James7",
+        "status": "FAILED",
+        "responseTime": 47069,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:28.695Z"
+      },
+      {
+        "testId": "palm_70",
+        "profile": "Maya7",
+        "status": "FAILED",
+        "responseTime": 32735,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:14.457Z"
+      },
+      {
+        "testId": "palm_71",
+        "profile": "Alexandre8",
+        "status": "FAILED",
+        "responseTime": 49702,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.525Z"
+      },
+      {
+        "testId": "palm_72",
+        "profile": "Elena8",
+        "status": "FAILED",
+        "responseTime": 34193,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:16.121Z"
+      },
+      {
+        "testId": "palm_73",
+        "profile": "Marcus8",
+        "status": "FAILED",
+        "responseTime": 47455,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:29.480Z"
+      },
+      {
+        "testId": "palm_74",
+        "profile": "Sofia8",
+        "status": "FAILED",
+        "responseTime": 33874,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:16.006Z"
+      },
+      {
+        "testId": "palm_75",
+        "profile": "David8",
+        "status": "FAILED",
+        "responseTime": 49546,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.771Z"
+      },
+      {
+        "testId": "palm_76",
+        "profile": "Luna8",
+        "status": "FAILED",
+        "responseTime": 35207,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:17.528Z"
+      },
+      {
+        "testId": "palm_77",
+        "profile": "Carlos8",
+        "status": "FAILED",
+        "responseTime": 49203,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.632Z"
+      },
+      {
+        "testId": "palm_78",
+        "profile": "Aria8",
+        "status": "FAILED",
+        "responseTime": 31609,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:14.139Z"
+      },
+      {
+        "testId": "palm_79",
+        "profile": "James8",
+        "status": "FAILED",
+        "responseTime": 43311,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:25.935Z"
+      },
+      {
+        "testId": "palm_80",
+        "profile": "Maya8",
+        "status": "FAILED",
+        "responseTime": 31349,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:14.070Z"
+      },
+      {
+        "testId": "palm_81",
+        "profile": "Alexandre9",
+        "status": "FAILED",
+        "responseTime": 48365,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.189Z"
+      },
+      {
+        "testId": "palm_82",
+        "profile": "Elena9",
+        "status": "FAILED",
+        "responseTime": 40568,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:23.501Z"
+      },
+      {
+        "testId": "palm_83",
+        "profile": "Marcus9",
+        "status": "FAILED",
+        "responseTime": 48943,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.968Z"
+      },
+      {
+        "testId": "palm_84",
+        "profile": "Sofia9",
+        "status": "FAILED",
+        "responseTime": 29465,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:12.588Z"
+      },
+      {
+        "testId": "palm_85",
+        "profile": "David9",
+        "status": "FAILED",
+        "responseTime": 47870,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.093Z"
+      },
+      {
+        "testId": "palm_86",
+        "profile": "Luna9",
+        "status": "FAILED",
+        "responseTime": 38145,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:21.467Z"
+      },
+      {
+        "testId": "palm_87",
+        "profile": "Carlos9",
+        "status": "FAILED",
+        "responseTime": 46664,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:30.088Z"
+      },
+      {
+        "testId": "palm_88",
+        "profile": "Aria9",
+        "status": "FAILED",
+        "responseTime": 33851,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:17.374Z"
+      },
+      {
+        "testId": "palm_89",
+        "profile": "James9",
+        "status": "FAILED",
+        "responseTime": 49599,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:33.224Z"
+      },
+      {
+        "testId": "palm_90",
+        "profile": "Maya9",
+        "status": "FAILED",
+        "responseTime": 33574,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:17.296Z"
+      },
+      {
+        "testId": "palm_91",
+        "profile": "Alexandre10",
+        "status": "FAILED",
+        "responseTime": 48498,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:32.323Z"
+      },
+      {
+        "testId": "palm_92",
+        "profile": "Elena10",
+        "status": "FAILED",
+        "responseTime": 38439,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:22.362Z"
+      },
+      {
+        "testId": "palm_93",
+        "profile": "Marcus10",
+        "status": "FAILED",
+        "responseTime": 47155,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.179Z"
+      },
+      {
+        "testId": "palm_94",
+        "profile": "Sofia10",
+        "status": "FAILED",
+        "responseTime": 33990,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:18.113Z"
+      },
+      {
+        "testId": "palm_95",
+        "profile": "David10",
+        "status": "FAILED",
+        "responseTime": 49815,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:34.040Z"
+      },
+      {
+        "testId": "palm_96",
+        "profile": "Luna10",
+        "status": "FAILED",
+        "responseTime": 31940,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:16.261Z"
+      },
+      {
+        "testId": "palm_97",
+        "profile": "Carlos10",
+        "status": "FAILED",
+        "responseTime": 45128,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:29.554Z"
+      },
+      {
+        "testId": "palm_98",
+        "profile": "Aria10",
+        "status": "FAILED",
+        "responseTime": 34419,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:18.943Z"
+      },
+      {
+        "testId": "palm_99",
+        "profile": "James10",
+        "status": "FAILED",
+        "responseTime": 46429,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:31.053Z"
+      },
+      {
+        "testId": "palm_100",
+        "profile": "Maya10",
+        "status": "FAILED",
+        "responseTime": 33569,
+        "httpStatus": 500,
+        "issues": [
+          "HTTP 500"
+        ],
+        "timestamp": "2025-09-10T03:11:18.295Z"
+      }
+    ],
+    "compatibility": [
+      {
+        "testId": "compat_1",
+        "users": "Alexandre1 & Elena1",
+        "status": "FAILED",
+        "responseTime": 10278,
+        "httpStatus": 503,
+        "overallScore": 0,
+        "issues": [
+          "HTTP 503"
+        ],
+        "timestamp": "2025-09-10T03:10:50.131Z"
+      },
+      {
+        "testId": "compat_2",
+        "users": "Marcus1 & Sofia1",
+        "status": "SUCCESS",
+        "responseTime": 12476,
+        "httpStatus": 200,
+        "overallScore": 73,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.399Z"
+      },
+      {
+        "testId": "compat_3",
+        "users": "David1 & Luna1",
+        "status": "SUCCESS",
+        "responseTime": 12451,
+        "httpStatus": 200,
+        "overallScore": 90,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.478Z"
+      },
+      {
+        "testId": "compat_4",
+        "users": "Carlos1 & Aria1",
+        "status": "SUCCESS",
+        "responseTime": 12936,
+        "httpStatus": 200,
+        "overallScore": 89,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.061Z"
+      },
+      {
+        "testId": "compat_5",
+        "users": "James1 & Maya1",
+        "status": "SUCCESS",
+        "responseTime": 10477,
+        "httpStatus": 200,
+        "overallScore": 91,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.704Z"
+      },
+      {
+        "testId": "compat_6",
+        "users": "Alexandre2 & Elena2",
+        "status": "SUCCESS",
+        "responseTime": 14150,
+        "httpStatus": 200,
+        "overallScore": 89,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.474Z"
+      },
+      {
+        "testId": "compat_7",
+        "users": "Marcus2 & Sofia2",
+        "status": "SUCCESS",
+        "responseTime": 11196,
+        "httpStatus": 200,
+        "overallScore": 81,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.627Z"
+      },
+      {
+        "testId": "compat_8",
+        "users": "David2 & Luna2",
+        "status": "SUCCESS",
+        "responseTime": 12536,
+        "httpStatus": 200,
+        "overallScore": 81,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.061Z"
+      },
+      {
+        "testId": "compat_9",
+        "users": "Carlos2 & Aria2",
+        "status": "SUCCESS",
+        "responseTime": 9850,
+        "httpStatus": 200,
+        "overallScore": 82,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.476Z"
+      },
+      {
+        "testId": "compat_10",
+        "users": "James2 & Maya2",
+        "status": "SUCCESS",
+        "responseTime": 12906,
+        "httpStatus": 200,
+        "overallScore": 83,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.628Z"
+      },
+      {
+        "testId": "compat_11",
+        "users": "Alexandre3 & Elena3",
+        "status": "SUCCESS",
+        "responseTime": 19204,
+        "httpStatus": 200,
+        "overallScore": 82,
+        "issues": [],
+        "timestamp": "2025-09-10T03:11:00.030Z"
+      },
+      {
+        "testId": "compat_12",
+        "users": "Marcus3 & Sofia3",
+        "status": "SUCCESS",
+        "responseTime": 11457,
+        "httpStatus": 200,
+        "overallScore": 75,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.379Z"
+      },
+      {
+        "testId": "compat_13",
+        "users": "David3 & Luna3",
+        "status": "SUCCESS",
+        "responseTime": 13003,
+        "httpStatus": 200,
+        "overallScore": 81,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.028Z"
+      },
+      {
+        "testId": "compat_14",
+        "users": "Carlos3 & Aria3",
+        "status": "SUCCESS",
+        "responseTime": 11180,
+        "httpStatus": 200,
+        "overallScore": 81,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.303Z"
+      },
+      {
+        "testId": "compat_15",
+        "users": "James3 & Maya3",
+        "status": "SUCCESS",
+        "responseTime": 15354,
+        "httpStatus": 200,
+        "overallScore": 83,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:56.581Z"
+      },
+      {
+        "testId": "compat_16",
+        "users": "Alexandre4 & Elena4",
+        "status": "SUCCESS",
+        "responseTime": 9735,
+        "httpStatus": 200,
+        "overallScore": 89,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.057Z"
+      },
+      {
+        "testId": "compat_17",
+        "users": "Marcus4 & Sofia4",
+        "status": "SUCCESS",
+        "responseTime": 13722,
+        "httpStatus": 200,
+        "overallScore": 88,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:55.154Z"
+      },
+      {
+        "testId": "compat_18",
+        "users": "David4 & Luna4",
+        "status": "SUCCESS",
+        "responseTime": 11159,
+        "httpStatus": 200,
+        "overallScore": 82,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.697Z"
+      },
+      {
+        "testId": "compat_19",
+        "users": "Carlos4 & Aria4",
+        "status": "SUCCESS",
+        "responseTime": 11796,
+        "httpStatus": 200,
+        "overallScore": 87,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.429Z"
+      },
+      {
+        "testId": "compat_20",
+        "users": "James4 & Maya4",
+        "status": "SUCCESS",
+        "responseTime": 13457,
+        "httpStatus": 200,
+        "overallScore": 82,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:55.181Z"
+      },
+      {
+        "testId": "compat_21",
+        "users": "Alexandre5 & Elena5",
+        "status": "SUCCESS",
+        "responseTime": 10384,
+        "httpStatus": 200,
+        "overallScore": 85,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.210Z"
+      },
+      {
+        "testId": "compat_22",
+        "users": "Marcus5 & Sofia5",
+        "status": "SUCCESS",
+        "responseTime": 15574,
+        "httpStatus": 200,
+        "overallScore": 80,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:57.505Z"
+      },
+      {
+        "testId": "compat_23",
+        "users": "David5 & Luna5",
+        "status": "SUCCESS",
+        "responseTime": 12050,
+        "httpStatus": 200,
+        "overallScore": 85,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.081Z"
+      },
+      {
+        "testId": "compat_24",
+        "users": "Carlos5 & Aria5",
+        "status": "SUCCESS",
+        "responseTime": 15598,
+        "httpStatus": 200,
+        "overallScore": 84,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:57.733Z"
+      },
+      {
+        "testId": "compat_25",
+        "users": "James5 & Maya5",
+        "status": "SUCCESS",
+        "responseTime": 16519,
+        "httpStatus": 200,
+        "overallScore": 85,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:58.750Z"
+      },
+      {
+        "testId": "compat_26",
+        "users": "Alexandre6 & Elena6",
+        "status": "SUCCESS",
+        "responseTime": 12812,
+        "httpStatus": 200,
+        "overallScore": 92,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:55.138Z"
+      },
+      {
+        "testId": "compat_27",
+        "users": "Marcus6 & Sofia6",
+        "status": "SUCCESS",
+        "responseTime": 11245,
+        "httpStatus": 200,
+        "overallScore": 79,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.678Z"
+      },
+      {
+        "testId": "compat_28",
+        "users": "David6 & Luna6",
+        "status": "SUCCESS",
+        "responseTime": 12466,
+        "httpStatus": 200,
+        "overallScore": 83,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.999Z"
+      },
+      {
+        "testId": "compat_29",
+        "users": "Carlos6 & Aria6",
+        "status": "SUCCESS",
+        "responseTime": 14228,
+        "httpStatus": 200,
+        "overallScore": 79,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:56.857Z"
+      },
+      {
+        "testId": "compat_30",
+        "users": "James6 & Maya6",
+        "status": "SUCCESS",
+        "responseTime": 11815,
+        "httpStatus": 200,
+        "overallScore": 79,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.538Z"
+      },
+      {
+        "testId": "compat_31",
+        "users": "Alexandre7 & Elena7",
+        "status": "SUCCESS",
+        "responseTime": 13337,
+        "httpStatus": 200,
+        "overallScore": 86,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:56.165Z"
+      },
+      {
+        "testId": "compat_32",
+        "users": "Marcus7 & Sofia7",
+        "status": "SUCCESS",
+        "responseTime": 9246,
+        "httpStatus": 200,
+        "overallScore": 92,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.180Z"
+      },
+      {
+        "testId": "compat_33",
+        "users": "David7 & Luna7",
+        "status": "SUCCESS",
+        "responseTime": 14007,
+        "httpStatus": 200,
+        "overallScore": 84,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:57.037Z"
+      },
+      {
+        "testId": "compat_34",
+        "users": "Carlos7 & Aria7",
+        "status": "SUCCESS",
+        "responseTime": 11025,
+        "httpStatus": 200,
+        "overallScore": 73,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.151Z"
+      },
+      {
+        "testId": "compat_35",
+        "users": "James7 & Maya7",
+        "status": "SUCCESS",
+        "responseTime": 15513,
+        "httpStatus": 200,
+        "overallScore": 87,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:58.742Z"
+      },
+      {
+        "testId": "compat_36",
+        "users": "Alexandre8 & Elena8",
+        "status": "SUCCESS",
+        "responseTime": 11057,
+        "httpStatus": 200,
+        "overallScore": 80,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.381Z"
+      },
+      {
+        "testId": "compat_37",
+        "users": "Marcus8 & Sofia8",
+        "status": "SUCCESS",
+        "responseTime": 10450,
+        "httpStatus": 200,
+        "overallScore": 88,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.879Z"
+      },
+      {
+        "testId": "compat_38",
+        "users": "David8 & Luna8",
+        "status": "SUCCESS",
+        "responseTime": 13862,
+        "httpStatus": 200,
+        "overallScore": 85,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:57.387Z"
+      },
+      {
+        "testId": "compat_39",
+        "users": "Carlos8 & Aria8",
+        "status": "SUCCESS",
+        "responseTime": 11125,
+        "httpStatus": 200,
+        "overallScore": 91,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.756Z"
+      },
+      {
+        "testId": "compat_40",
+        "users": "James8 & Maya8",
+        "status": "SUCCESS",
+        "responseTime": 19059,
+        "httpStatus": 200,
+        "overallScore": 80,
+        "issues": [],
+        "timestamp": "2025-09-10T03:11:02.783Z"
+      },
+      {
+        "testId": "compat_41",
+        "users": "Alexandre9 & Elena9",
+        "status": "SUCCESS",
+        "responseTime": 6640,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.474Z"
+      },
+      {
+        "testId": "compat_42",
+        "users": "Marcus9 & Sofia9",
+        "status": "SUCCESS",
+        "responseTime": 6569,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.495Z"
+      },
+      {
+        "testId": "compat_43",
+        "users": "David9 & Luna9",
+        "status": "SUCCESS",
+        "responseTime": 6951,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.980Z"
+      },
+      {
+        "testId": "compat_44",
+        "users": "Carlos9 & Aria9",
+        "status": "SUCCESS",
+        "responseTime": 6619,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.745Z"
+      },
+      {
+        "testId": "compat_45",
+        "users": "James9 & Maya9",
+        "status": "SUCCESS",
+        "responseTime": 6436,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.665Z"
+      },
+      {
+        "testId": "compat_46",
+        "users": "Alexandre10 & Elena10",
+        "status": "SUCCESS",
+        "responseTime": 6843,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.167Z"
+      },
+      {
+        "testId": "compat_47",
+        "users": "Marcus10 & Sofia10",
+        "status": "SUCCESS",
+        "responseTime": 6661,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.090Z"
+      },
+      {
+        "testId": "compat_48",
+        "users": "David10 & Luna10",
+        "status": "SUCCESS",
+        "responseTime": 6608,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.135Z"
+      },
+      {
+        "testId": "compat_49",
+        "users": "Carlos10 & Aria10",
+        "status": "SUCCESS",
+        "responseTime": 6735,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.363Z"
+      },
+      {
+        "testId": "compat_50",
+        "users": "James10 & Maya10",
+        "status": "SUCCESS",
+        "responseTime": 6475,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.204Z"
+      },
+      {
+        "testId": "compat_51",
+        "users": "Alexandre11 & Elena11",
+        "status": "SUCCESS",
+        "responseTime": 14788,
+        "httpStatus": 200,
+        "overallScore": 75,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.642Z"
+      },
+      {
+        "testId": "compat_52",
+        "users": "Marcus11 & Sofia11",
+        "status": "SUCCESS",
+        "responseTime": 10135,
+        "httpStatus": 200,
+        "overallScore": 85,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.059Z"
+      },
+      {
+        "testId": "compat_53",
+        "users": "David11 & Luna11",
+        "status": "SUCCESS",
+        "responseTime": 10248,
+        "httpStatus": 200,
+        "overallScore": 85,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.277Z"
+      },
+      {
+        "testId": "compat_54",
+        "users": "Carlos11 & Aria11",
+        "status": "SUCCESS",
+        "responseTime": 13144,
+        "httpStatus": 200,
+        "overallScore": 83,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.268Z"
+      },
+      {
+        "testId": "compat_55",
+        "users": "James11 & Maya11",
+        "status": "SUCCESS",
+        "responseTime": 12505,
+        "httpStatus": 200,
+        "overallScore": 87,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.731Z"
+      },
+      {
+        "testId": "compat_56",
+        "users": "Alexandre12 & Elena12",
+        "status": "SUCCESS",
+        "responseTime": 11406,
+        "httpStatus": 200,
+        "overallScore": 85,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.730Z"
+      },
+      {
+        "testId": "compat_57",
+        "users": "Marcus12 & Sofia12",
+        "status": "SUCCESS",
+        "responseTime": 12797,
+        "httpStatus": 200,
+        "overallScore": 81,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.229Z"
+      },
+      {
+        "testId": "compat_58",
+        "users": "David12 & Luna12",
+        "status": "SUCCESS",
+        "responseTime": 10040,
+        "httpStatus": 200,
+        "overallScore": 84,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.567Z"
+      },
+      {
+        "testId": "compat_59",
+        "users": "Carlos12 & Aria12",
+        "status": "SUCCESS",
+        "responseTime": 14110,
+        "httpStatus": 200,
+        "overallScore": 82,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.738Z"
+      },
+      {
+        "testId": "compat_60",
+        "users": "James12 & Maya12",
+        "status": "FAILED",
+        "responseTime": 10301,
+        "httpStatus": 503,
+        "overallScore": 0,
+        "issues": [
+          "HTTP 503"
+        ],
+        "timestamp": "2025-09-10T03:10:51.023Z"
+      },
+      {
+        "testId": "compat_61",
+        "users": "Alexandre13 & Elena13",
+        "status": "SUCCESS",
+        "responseTime": 12706,
+        "httpStatus": 200,
+        "overallScore": 81,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.533Z"
+      },
+      {
+        "testId": "compat_62",
+        "users": "Marcus13 & Sofia13",
+        "status": "SUCCESS",
+        "responseTime": 18147,
+        "httpStatus": 200,
+        "overallScore": 89,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:59.068Z"
+      },
+      {
+        "testId": "compat_63",
+        "users": "David13 & Luna13",
+        "status": "SUCCESS",
+        "responseTime": 8498,
+        "httpStatus": 200,
+        "overallScore": 82,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:49.528Z"
+      },
+      {
+        "testId": "compat_64",
+        "users": "Carlos13 & Aria13",
+        "status": "SUCCESS",
+        "responseTime": 12371,
+        "httpStatus": 200,
+        "overallScore": 87,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.494Z"
+      },
+      {
+        "testId": "compat_65",
+        "users": "James13 & Maya13",
+        "status": "SUCCESS",
+        "responseTime": 8765,
+        "httpStatus": 200,
+        "overallScore": 83,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:49.995Z"
+      },
+      {
+        "testId": "compat_66",
+        "users": "Alexandre14 & Elena14",
+        "status": "SUCCESS",
+        "responseTime": 10614,
+        "httpStatus": 200,
+        "overallScore": 85,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.936Z"
+      },
+      {
+        "testId": "compat_67",
+        "users": "Marcus14 & Sofia14",
+        "status": "SUCCESS",
+        "responseTime": 10728,
+        "httpStatus": 200,
+        "overallScore": 89,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.160Z"
+      },
+      {
+        "testId": "compat_68",
+        "users": "David14 & Luna14",
+        "status": "SUCCESS",
+        "responseTime": 11164,
+        "httpStatus": 200,
+        "overallScore": 83,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.697Z"
+      },
+      {
+        "testId": "compat_69",
+        "users": "Carlos14 & Aria14",
+        "status": "SUCCESS",
+        "responseTime": 10436,
+        "httpStatus": 200,
+        "overallScore": 84,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.070Z"
+      },
+      {
+        "testId": "compat_70",
+        "users": "James14 & Maya14",
+        "status": "SUCCESS",
+        "responseTime": 19288,
+        "httpStatus": 200,
+        "overallScore": 93,
+        "issues": [],
+        "timestamp": "2025-09-10T03:11:01.013Z"
+      },
+      {
+        "testId": "compat_71",
+        "users": "Alexandre15 & Elena15",
+        "status": "SUCCESS",
+        "responseTime": 16890,
+        "httpStatus": 200,
+        "overallScore": 83,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:58.717Z"
+      },
+      {
+        "testId": "compat_72",
+        "users": "Marcus15 & Sofia15",
+        "status": "SUCCESS",
+        "responseTime": 11042,
+        "httpStatus": 200,
+        "overallScore": 87,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.972Z"
+      },
+      {
+        "testId": "compat_73",
+        "users": "David15 & Luna15",
+        "status": "SUCCESS",
+        "responseTime": 13376,
+        "httpStatus": 200,
+        "overallScore": 81,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:55.408Z"
+      },
+      {
+        "testId": "compat_74",
+        "users": "Carlos15 & Aria15",
+        "status": "SUCCESS",
+        "responseTime": 11642,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.777Z"
+      },
+      {
+        "testId": "compat_75",
+        "users": "James15 & Maya15",
+        "status": "SUCCESS",
+        "responseTime": 16416,
+        "httpStatus": 200,
+        "overallScore": 87,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:58.650Z"
+      },
+      {
+        "testId": "compat_76",
+        "users": "Alexandre16 & Elena16",
+        "status": "SUCCESS",
+        "responseTime": 9500,
+        "httpStatus": 200,
+        "overallScore": 81,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.825Z"
+      },
+      {
+        "testId": "compat_77",
+        "users": "Marcus16 & Sofia16",
+        "status": "SUCCESS",
+        "responseTime": 12452,
+        "httpStatus": 200,
+        "overallScore": 88,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:54.886Z"
+      },
+      {
+        "testId": "compat_78",
+        "users": "David16 & Luna16",
+        "status": "SUCCESS",
+        "responseTime": 9487,
+        "httpStatus": 200,
+        "overallScore": 87,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.020Z"
+      },
+      {
+        "testId": "compat_79",
+        "users": "Carlos16 & Aria16",
+        "status": "SUCCESS",
+        "responseTime": 10946,
+        "httpStatus": 200,
+        "overallScore": 87,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.575Z"
+      },
+      {
+        "testId": "compat_80",
+        "users": "James16 & Maya16",
+        "status": "SUCCESS",
+        "responseTime": 14816,
+        "httpStatus": 200,
+        "overallScore": 92,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:57.539Z"
+      },
+      {
+        "testId": "compat_81",
+        "users": "Alexandre17 & Elena17",
+        "status": "SUCCESS",
+        "responseTime": 16436,
+        "httpStatus": 200,
+        "overallScore": 90,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:59.266Z"
+      },
+      {
+        "testId": "compat_82",
+        "users": "Marcus17 & Sofia17",
+        "status": "SUCCESS",
+        "responseTime": 16547,
+        "httpStatus": 200,
+        "overallScore": 81,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:59.483Z"
+      },
+      {
+        "testId": "compat_83",
+        "users": "David17 & Luna17",
+        "status": "SUCCESS",
+        "responseTime": 18029,
+        "httpStatus": 200,
+        "overallScore": 85,
+        "issues": [],
+        "timestamp": "2025-09-10T03:11:01.057Z"
+      },
+      {
+        "testId": "compat_84",
+        "users": "Carlos17 & Aria17",
+        "status": "SUCCESS",
+        "responseTime": 16557,
+        "httpStatus": 200,
+        "overallScore": 87,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:59.682Z"
+      },
+      {
+        "testId": "compat_85",
+        "users": "James17 & Maya17",
+        "status": "SUCCESS",
+        "responseTime": 14739,
+        "httpStatus": 200,
+        "overallScore": 82,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:57.969Z"
+      },
+      {
+        "testId": "compat_86",
+        "users": "Alexandre18 & Elena18",
+        "status": "SUCCESS",
+        "responseTime": 10542,
+        "httpStatus": 200,
+        "overallScore": 88,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:53.867Z"
+      },
+      {
+        "testId": "compat_87",
+        "users": "Marcus18 & Sofia18",
+        "status": "SUCCESS",
+        "responseTime": 23865,
+        "httpStatus": 200,
+        "overallScore": 91,
+        "issues": [],
+        "timestamp": "2025-09-10T03:11:07.294Z"
+      },
+      {
+        "testId": "compat_88",
+        "users": "David18 & Luna18",
+        "status": "SUCCESS",
+        "responseTime": 12875,
+        "httpStatus": 200,
+        "overallScore": 91,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:56.400Z"
+      },
+      {
+        "testId": "compat_89",
+        "users": "Carlos18 & Aria18",
+        "status": "SUCCESS",
+        "responseTime": 14736,
+        "httpStatus": 200,
+        "overallScore": 76,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:58.367Z"
+      },
+      {
+        "testId": "compat_90",
+        "users": "James18 & Maya18",
+        "status": "SUCCESS",
+        "responseTime": 8367,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.092Z"
+      },
+      {
+        "testId": "compat_91",
+        "users": "Alexandre19 & Elena19",
+        "status": "SUCCESS",
+        "responseTime": 14772,
+        "httpStatus": 200,
+        "overallScore": 85,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:58.604Z"
+      },
+      {
+        "testId": "compat_92",
+        "users": "Marcus19 & Sofia19",
+        "status": "SUCCESS",
+        "responseTime": 11684,
+        "httpStatus": 200,
+        "overallScore": 84,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:55.612Z"
+      },
+      {
+        "testId": "compat_93",
+        "users": "David19 & Luna19",
+        "status": "SUCCESS",
+        "responseTime": 6895,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:50.924Z"
+      },
+      {
+        "testId": "compat_94",
+        "users": "Carlos19 & Aria19",
+        "status": "SUCCESS",
+        "responseTime": 7626,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.753Z"
+      },
+      {
+        "testId": "compat_95",
+        "users": "James19 & Maya19",
+        "status": "SUCCESS",
+        "responseTime": 7815,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:52.045Z"
+      },
+      {
+        "testId": "compat_96",
+        "users": "Alexandre20 & Elena20",
+        "status": "SUCCESS",
+        "responseTime": 10887,
+        "httpStatus": 200,
+        "overallScore": 92,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:55.212Z"
+      },
+      {
+        "testId": "compat_97",
+        "users": "Marcus20 & Sofia20",
+        "status": "SUCCESS",
+        "responseTime": 6598,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.028Z"
+      },
+      {
+        "testId": "compat_98",
+        "users": "David20 & Luna20",
+        "status": "SUCCESS",
+        "responseTime": 7217,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.744Z"
+      },
+      {
+        "testId": "compat_99",
+        "users": "Carlos20 & Aria20",
+        "status": "SUCCESS",
+        "responseTime": 6494,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.121Z"
+      },
+      {
+        "testId": "compat_100",
+        "users": "James20 & Maya20",
+        "status": "SUCCESS",
+        "responseTime": 6513,
+        "httpStatus": 200,
+        "overallScore": 78,
+        "issues": [],
+        "timestamp": "2025-09-10T03:10:51.242Z"
+      }
+    ]
+  }
+}

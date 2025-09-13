@@ -1,0 +1,129 @@
+{
+  "reading": {
+    "greeting": "Hello EnhancedTester! Embrace the wisdom of your palms as they reveal the unique paths and potentials that lie ahead for you.",
+    "overallPersonality": "As a Pisces born in Barcelona, you embody a harmonious blend of creativity and sensitivity. Your water sign reflects deep intuition and empathy, while the rich cultural backdrop of Spain gives you a vibrant and passionate approach to life. You have a mutable modality, suggesting flexibility and adaptability, with Neptune as your ruling planet amplifying your imaginative and dreamy nature.",
+    "lines": {
+      "lifeLine": {
+        "name": "Life Line 🌟",
+        "description": "Your life line is long and gracefully curved, indicating a life filled with vitality and zest. It suggests a robust physical constitution complemented by an adventurous spirit.",
+        "meaning": "Life energy and vitality patterns",
+        "personalizedInsight": "You have a strong life force, which supports your adventurous nature. Maintain balance through mindful practices such as yoga or meditation to sustain your vibrant energy throughout life's adventures."
+      },
+      "heartLine": {
+        "name": "Heart Line 💕",
+        "description": "The heart line reveals a deep emotional capacity and a tendency towards passionate relationships. Its gentle curve suggests warmth and generosity in love.",
+        "meaning": "Love nature and emotional expression",
+        "personalizedInsight": "Your emotional depth is profound, leading to fulfilling relationships. Embrace your open-heartedness, but set boundaries to protect your emotional well-being."
+      },
+      "headLine": {
+        "name": "Head Line 🧠",
+        "description": "This line reflects a clear and logical thinking process, balanced with intuition. It’s straight with subtle branches, indicating an analytical mind with occasional flashes of creativity.",
+        "meaning": "Mental approach and decision-making style",
+        "personalizedInsight": "Use your analytical skills to navigate complex situations, and trust your intuition when making important decisions. This balance will serve you well in both personal and professional realms."
+      },
+      "marriageLine": {
+        "name": "Marriage Line 💍",
+        "description": "The marriage line is well-defined, suggesting stable and meaningful relationships. Multiple small lines indicate rich interaction with significant others.",
+        "meaning": "Partnership potential and commitment style",
+        "personalizedInsight": "You are likely to experience deep connections with partners. Focus on communication and shared values to nurture lasting bonds."
+      },
+      "fateLine": {
+        "name": "Fate Line 🚀",
+        "description": "Your fate line is strong and prominent, signaling a well-defined career path with several opportunities for growth and advancement.",
+        "meaning": "Career path and professional destiny",
+        "personalizedInsight": "Stay open to new opportunities and be proactive in your career pursuits. Your dedication will lead to significant achievements and recognition in your field."
+      },
+      "successLine": {
+        "name": "Success Line 👑",
+        "description": "The success line is slightly curved, suggesting varied paths to achievement. It denotes innate charisma and the potential for public admiration.",
+        "meaning": "Recognition and accomplishment patterns",
+        "personalizedInsight": "Leverage your charisma to build networks and enhance your reputation. Seek out platforms where you can shine and share your talents with the world."
+      },
+      "travelLine": {
+        "name": "Travel Line ✈️",
+        "description": "Visible travel lines suggest a strong inclination towards exploration. Whether physical or metaphorical, these journeys will enrich your life profoundly.",
+        "meaning": "Adventure spirit and journey potential",
+        "personalizedInsight": "Pursue opportunities to travel and explore new cultures. These experiences will satisfy your wanderlust and broaden your perspective significantly."
+      }
+    },
+    "mounts": {
+      "mars": {
+        "name": "Mount of Mars ⚔️",
+        "prominence": "Well-developed with a slight bulge, indicating courage and resilience in overcoming obstacles.",
+        "meaning": "Courage, determination, and fighting spirit analysis for EnhancedTester"
+      },
+      "jupiter": {
+        "name": "Mount of Jupiter 👑",
+        "prominence": "This mount is prominent, reflecting strong leadership potential and ambition.",
+        "meaning": "Leadership potential and ambition levels specific to EnhancedTester"
+      },
+      "saturn": {
+        "name": "Mount of Saturn 📚",
+        "prominence": "Moderately developed, suggesting wisdom through experience and a disciplined approach to responsibilities.",
+        "meaning": "Wisdom, discipline, and life lessons patterns for EnhancedTester"
+      },
+      "sun": {
+        "name": "Mount of Sun 🎨",
+        "prominence": "High prominence with distinct lines, showing creativity and an inherent flair for the arts.",
+        "meaning": "Creativity, success, and public recognition potential for EnhancedTester"
+      },
+      "mercury": {
+        "name": "Mount of Mercury 💬",
+        "prominence": "Slightly elevated, indicating strong communication skills and business acumen.",
+        "meaning": "Business acumen and communication abilities specific to EnhancedTester"
+      },
+      "moon": {
+        "name": "Mount of Moon 🌙",
+        "prominence": "Highly pronounced, reflecting a rich imagination and intuitive capabilities.",
+        "meaning": "Psychic abilities, intuition, and imagination levels for EnhancedTester"
+      },
+      "venus": {
+        "name": "Mount of Venus 💖",
+        "prominence": "Full with clear lines, indicating a love for beauty, romance, and a charming demeanor.",
+        "meaning": "Romantic nature, artistic sense, and charm analysis for EnhancedTester"
+      }
+    },
+    "specialMarkings": [
+      "A unique cross marking on the Mount of Jupiter suggests potential for significant leadership roles.",
+      "A star marking on the Mount of Sun indicates unexpected recognition or fame in creative fields.",
+      "Triangle formation on the Mount of Mercury reflects exceptional problem-solving skills.",
+      "A square on the Life Line provides protection against setbacks, offering resilience."
+    ],
+    "handComparison": "The left hand reflects untapped potential from your past that includes nurturing creative talents early on. Meanwhile, the right hand demonstrates how current choices are shaping you into a dynamic leader who balances creativity with pragmatism. This suggests growth from idealistic roots towards strategic maturity. Focus on harmonizing both past insights and present actions for optimal personal development.",
+    "futureInsights": "In the next 2-3 years, expect significant personal growth as you explore new opportunities in both career and personal life. Enhanced creativity will lead to exciting projects that align with your passions. Relationships will deepen as you invest more emotionally in key partnerships. Professionally, prepare for advancement that brings recognition but requires balancing ambition with personal values. Maintain open communication in relationships to foster mutual understanding.",
+    "personalizedAdvice": "Embrace change as it comes—your adaptability is one of your greatest strengths. Lean into your intuitive nature but also apply lessons from past experiences to navigate challenges wisely. Focus on building relationships that support your growth while pursuing career paths that align with your core passions. Keep nurturing your creative side; it's vital for both personal satisfaction and professional success. Balance work with leisure to maintain holistic well-being.",
+    "luckyElements": {
+      "colors": [
+        "Aqua",
+        "Lavender",
+        "Coral"
+      ],
+      "numbers": [
+        7,
+        3,
+        11
+      ],
+      "days": [
+        "Thursday",
+        "Sunday"
+      ]
+    }
+  },
+  "model": "gpt-4o-2024-08-06",
+  "usage": {
+    "prompt_tokens": 1408,
+    "completion_tokens": 1548,
+    "total_tokens": 2956,
+    "prompt_tokens_details": {
+      "cached_tokens": 1280,
+      "audio_tokens": 0
+    },
+    "completion_tokens_details": {
+      "reasoning_tokens": 0,
+      "audio_tokens": 0,
+      "accepted_prediction_tokens": 0,
+      "rejected_prediction_tokens": 0
+    }
+  },
+  "basedOnActualImages": true
+}

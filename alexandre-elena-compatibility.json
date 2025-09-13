@@ -1,0 +1,126 @@
+{
+  "success": true,
+  "analysis": {
+    "overallScore": 91,
+    "overallLabel": "Beautiful Harmony",
+    "analysisBreakdown": {
+      "palmReadingInsights": {
+        "score": 91,
+        "keyFindings": [
+          "The heart lines of both Alexandre and Elena show deep emotional, intuitive connections typical of Cancer, indicating a strong capacity for nurturing love.",
+          "Their head lines reveal a shared intellectual curiosity and creativity, with Alexandre’s intuition blending beautifully with Elena’s precision.",
+          "Life lines suggest a harmonious energy flow, with both thriving when they're emotionally fulfilled and supporting each other's growth.",
+          "Mount prominence patterns highlight shared leadership and creative strengths, indicating potential for both personal and collaborative success."
+        ]
+      },
+      "astrologicalInsights": {
+        "score": 97,
+        "sunSignDynamic": "Cancer + Cancer relationship dynamics emphasize emotional depth, sensitivity, and a nurturing bond, creating a safe zone for both.",
+        "risingSignHarmony": "Both rising signs indicate a mutual appreciation for security and tradition in daily interactions, promoting a harmonious first impression.",
+        "moonSignConnection": "Their Moon signs align to promote emotional understanding and intuitive communication, enhancing nurturing styles and emotional needs.",
+        "venusCompatibility": "Both Venus placements suggest a shared love language that values tenderness, stability, and romantic gestures.",
+        "marsInteraction": "Mars placements show complementary passion dynamics where conflict is approached with empathy and resolved through deep emotional understanding.",
+        "communicationStyle": "Their Mercury-influenced interactions are characterized by a deep mental connection and shared values, ensuring seamless conversation and understanding."
+      },
+      "astropalmCorrelations": {
+        "score": 77,
+        "uniqueConnections": [
+          "Alexandre's heart line reflects his Cancer-influenced nurturing nature, aligning perfectly with Elena's emotional landscapes.",
+          "Elena's head line complements her Cancer characteristic of strategic thinking, resonating with Alexandre's imaginative approach.",
+          "Life line vitality patterns correlate with the water element energy in their charts, creating a foundation of mutual emotional support.",
+          "Career line synchrony with planetary indicators points to shared ambitions and professional goals."
+        ]
+      }
+    },
+    "enhancedCategories": [
+      {
+        "category": "Emotional Intimacy",
+        "score": 98,
+        "palmInsight": "Their heart lines reveal profoundly intuitive emotional connection.",
+        "astroInsight": "Their moon sign sync promotes deep, unspoken understanding and care.",
+        "synthesis": "Together, they create an emotionally secure and nurturing environment.",
+        "emoji": "💖"
+      },
+      {
+        "category": "Mental Connection",
+        "score": 95,
+        "palmInsight": "Head lines suggest mutual respect for each other's intellect.",
+        "astroInsight": "Mercury placements promote thoughtful discussions and shared intellectual pursuits.",
+        "synthesis": "Mental synergy is achieved through mutual curiosity and respect.",
+        "emoji": "🧠"
+      },
+      {
+        "category": "Life Direction Alignment",
+        "score": 92,
+        "palmInsight": "Their fate lines indicate harmonious career ambitions and opportunities.",
+        "astroInsight": "Midheaven placements align with shared life goals and ambitions.",
+        "synthesis": "A partnership that supports each other's life paths and dreams.",
+        "emoji": "🎯"
+      },
+      {
+        "category": "Passion & Energy",
+        "score": 90,
+        "palmInsight": "Life lines indicate passionate, vibrant life energy.",
+        "astroInsight": "Mars placements suggest strong physical attraction and chemistry.",
+        "synthesis": "Their passion fuels a dynamic and exciting relationship.",
+        "emoji": "🔥"
+      }
+    ],
+    "crossCorrelationHighlights": [
+      "Alexandre's heart line depth emphasizes his Cancer love traits, enhancing Elena's emotional receptivity.",
+      "Elena's head line precision aligns with Alexandres' imaginative thinking patterns, highlighting intellectual harmony.",
+      "Life line patterns resonate with their Cancerian nature, suggesting shared life rhythm and adaptability.",
+      "Career path energies align, reflecting planetary positions that support their professional dreams."
+    ],
+    "enhancedAdvice": {
+      "strengthBuilding": [
+        "Embrace their natural Cancerian empathy to deepen mutual understanding and affection.",
+        "Utilize their shared communication styles to foster deeper emotional connections.",
+        "Plan significant milestones when planetary transits favor their relationship."
+      ],
+      "challengeNavigation": [
+        "Recognize different conflict resolution styles highlighted by palm patterns to maintain harmony.",
+        "Use astrological insights to navigate emotional waters during tense periods.",
+        "Bridge rising sign differences by focusing on shared values and traditions."
+      ],
+      "practicalSteps": [
+        "Incorporate daily rituals that align with both astrological cycles and palm energy readings.",
+        "Hold monthly relationship check-ins under auspicious lunar phases to reinforce bonds.",
+        "Leverage combined insights for long-term planning, ensuring alignment in goals."
+      ]
+    },
+    "cosmicPalmMessage": "Alexandre and Elena, your stars and palms reveal a union that is both soul-stirring and mind-expanding. As twin Cancers, your journey is all about nurturing love in its most profound form. Together, you create a harmonious sanctuary where creativity thrives, emotions are honored, and dreams are nurtured. Embrace your shared path with open hearts and minds—it’s written in both the stars and your palms!",
+    "enhancementLevel": {
+      "level": "premium",
+      "percentage": 100,
+      "features": "Complete birth chart analysis + detailed palmistry correlation"
+    },
+    "dataQuality": {
+      "user1Completeness": "95%",
+      "user2Completeness": "95%",
+      "analysisDepth": "Full birth chart + detailed palmistry"
+    },
+    "generatedAt": "2025-09-09T02:21:46.957Z",
+    "model": "gpt-4o",
+    "analysisType": "enhanced_astro_palm_compatibility",
+    "users": {
+      "user1": {
+        "name": "Alexandre",
+        "zodiacSign": "Cancer",
+        "hasBirthTime": true
+      },
+      "user2": {
+        "name": "Elena",
+        "zodiacSign": "Cancer",
+        "hasBirthTime": true
+      }
+    }
+  },
+  "enhancementLevel": {
+    "level": "premium",
+    "percentage": 100,
+    "features": "Complete birth chart analysis + detailed palmistry correlation"
+  },
+  "partnerName": "Elena",
+  "analysisType": "enhanced_astro_palm_compatibility"
+}

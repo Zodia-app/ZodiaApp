@@ -1,0 +1,52 @@
+{
+  "timestamp": "2025-09-09T02:14:57.709Z",
+  "testType": "ENHANCED_BIRTH_DATA_INTEGRATION",
+  "testSubjects": {
+    "male": {
+      "name": "Alexandre",
+      "birthDate": "1984-07-11",
+      "birthPlace": "Paris, France",
+      "zodiac": "Cancer",
+      "hasBirthTime": true
+    },
+    "female": {
+      "name": "Elena",
+      "birthDate": "1991-07-01",
+      "birthPlace": "Bucharest, Romania",
+      "zodiac": "Cancer",
+      "hasBirthTime": true
+    }
+  },
+  "summary": {
+    "totalTests": 2,
+    "successfulTests": 2,
+    "successRate": 100,
+    "totalTimeMs": 101029
+  },
+  "results": [
+    {
+      "test": "Alexandre - French Cancer Male (July 11, 1984)",
+      "status": "SUCCESS",
+      "responseTime": 39318,
+      "birthDataIntegration": {
+        "birthPlace": true,
+        "zodiac": true,
+        "age": true
+      },
+      "greeting": "Bonjour Alexandre! Ready to dive into a palm reading that's as chic and iconic as Paris itself? Let'",
+      "tokens": 5406
+    },
+    {
+      "test": "Elena - Romanian Cancer Female (July 1, 1991)",
+      "status": "SUCCESS",
+      "responseTime": 35834,
+      "birthDataIntegration": {
+        "birthPlace": true,
+        "zodiac": true,
+        "age": true
+      },
+      "greeting": "Hey Elena! Ready for a cosmic journey? Let's spill some astro-tea straight from the heart of Buchare",
+      "tokens": 5122
+    }
+  ]
+}
