@@ -1,0 +1,462 @@
+{
+  "testType": "Palm Reading Optimization Validation",
+  "timestamp": "2025-09-10T09:53:49.009Z",
+  "testCount": 3,
+  "results": {
+    "original": {
+      "successRate": 100,
+      "successful": 3,
+      "avgResponseTime": 29535,
+      "avgPayloadSize": 2366994,
+      "httpErrors": 0,
+      "results": [
+        {
+          "success": true,
+          "responseTime": 29156,
+          "payloadSize": 2366994,
+          "httpStatus": 200,
+          "data": {
+            "reading": {
+              "greeting": "Hello TestUser! Your journey is as vibrant as the city of Paris.",
+              "overallPersonality": "As a Gemini born in Paris, you are curious, adaptable, and communicative. Your French heritage adds a flair of elegance and intellectualism to your personality.",
+              "lines": {
+                "lifeLine": {
+                  "name": "Life Line 🌟",
+                  "description": "Your life line shows a strong vitality, indicating a robust health and dynamic energy.",
+                  "meaning": "Life energy",
+                  "personalizedInsight": "Maintain your health focus for sustained vigor."
+                },
+                "heartLine": {
+                  "name": "Heart Line 💕",
+                  "description": "A deep heart line reflects your emotional depth and passion in relationships.",
+                  "meaning": "Love nature",
+                  "personalizedInsight": "Open communication will strengthen your bonds."
+                },
+                "headLine": {
+                  "name": "Head Line 🧠",
+                  "description": "Your head line suggests sharp intellect and quick thinking.",
+                  "meaning": "Mental approach",
+                  "personalizedInsight": "Use your wit to navigate complex challenges."
+                },
+                "marriageLine": {
+                  "name": "Marriage Line 💍",
+                  "description": "The line indicates potential for a harmonious partnership.",
+                  "meaning": "Partnership",
+                  "personalizedInsight": "Balance independence with togetherness."
+                },
+                "fateLine": {
+                  "name": "Fate Line 🚀",
+                  "description": "Your fate line reveals a career path filled with opportunities and growth.",
+                  "meaning": "Career path",
+                  "personalizedInsight": "Embrace changes; they lead to success."
+                },
+                "successLine": {
+                  "name": "Success Line 👑",
+                  "description": "A prominent success line indicates high achievement potential.",
+                  "meaning": "Achievement",
+                  "personalizedInsight": "Set clear goals and pursue them relentlessly."
+                },
+                "travelLine": {
+                  "name": "Travel Line ✈️",
+                  "description": "Your travel line suggests exciting adventures ahead.",
+                  "meaning": "Adventure",
+                  "personalizedInsight": "Explore new cultures to enrich your life experience."
+                }
+              },
+              "mounts": {
+                "mars": {
+                  "name": "Mount of Mars ⚔️",
+                  "prominence": "Well-developed",
+                  "meaning": "Courage nature"
+                },
+                "jupiter": {
+                  "name": "Mount of Jupiter 👑",
+                  "prominence": "Moderately developed",
+                  "meaning": "Leadership"
+                },
+                "saturn": {
+                  "name": "Mount of Saturn 📚",
+                  "prominence": "Developed",
+                  "meaning": "Discipline"
+                },
+                "sun": {
+                  "name": "Mount of Sun 🎨",
+                  "prominence": "Prominent",
+                  "meaning": "Creativity"
+                },
+                "mercury": {
+                  "name": "Mount of Mercury 💬",
+                  "prominence": "Very developed",
+                  "meaning": "Communication"
+                },
+                "moon": {
+                  "name": "Mount of Moon 🌙",
+                  "prominence": "Moderately developed",
+                  "meaning": "Intuition"
+                },
+                "venus": {
+                  "name": "Mount of Venus 💖",
+                  "prominence": "Well-developed",
+                  "meaning": "Love nature"
+                }
+              },
+              "specialMarkings": [
+                "Star marking",
+                "Cross marking",
+                "Square marking",
+                "Trident marking"
+              ],
+              "handComparison": "The right hand shows your current life path, dynamic and full of potential, while the left reflects your inherent qualities and past experiences.",
+              "futureInsights": "In your future, embrace changes with open arms, for they will bring you closer to your aspirations. Your adaptability will be key in navigating upcoming opportunities, especially in career and personal growth.",
+              "personalizedAdvice": "Stay connected to your roots while exploring new horizons. Your ability to communicate effectively will open doors to enriching relationships and professional collaborations. Prioritize balance in all aspects of life.",
+              "luckyElements": {
+                "colors": [
+                  "Blue",
+                  "Yellow",
+                  "Green"
+                ],
+                "numbers": [
+                  7,
+                  3,
+                  11
+                ],
+                "days": [
+                  "Wednesday",
+                  "Friday"
+                ]
+              }
+            },
+            "model": "gpt-4o-2024-08-06",
+            "usage": {
+              "prompt_tokens": 981,
+              "completion_tokens": 914,
+              "total_tokens": 1895,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "audio_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "audio_tokens": 0,
+                "accepted_prediction_tokens": 0,
+                "rejected_prediction_tokens": 0
+              }
+            },
+            "basedOnActualImages": true
+          },
+          "optimization": "none"
+        },
+        {
+          "success": true,
+          "responseTime": 25792,
+          "payloadSize": 2366994,
+          "httpStatus": 200,
+          "data": {
+            "reading": {
+              "greeting": "Hello TestUser! As a dynamic Gemini born in the vibrant heart of Paris, your journey is as intriguing as your celestial chart.",
+              "overallPersonality": "As a Gemini with French heritage, you embody a blend of intellectual curiosity and cultural sophistication. You thrive on communication and adaptability, often balancing multiple interests with ease.",
+              "lines": {
+                "lifeLine": {
+                  "name": "Life Line 🌟",
+                  "description": "Your life line shows vitality and resilience.",
+                  "meaning": "Life energy and overall health.",
+                  "personalizedInsight": "Stay active and embrace life's challenges to maintain your energy."
+                },
+                "heartLine": {
+                  "name": "Heart Line 💕",
+                  "description": "Your heart line suggests deep emotional capacity.",
+                  "meaning": "Love nature and emotional experiences.",
+                  "personalizedInsight": "Open your heart to new relationships, and they will flourish."
+                },
+                "headLine": {
+                  "name": "Head Line 🧠",
+                  "description": "The head line indicates strong analytical skills.",
+                  "meaning": "Mental approach and intelligence.",
+                  "personalizedInsight": "Channel your thoughts into creative projects for fulfillment."
+                },
+                "marriageLine": {
+                  "name": "Marriage Line 💍",
+                  "description": "Potential for meaningful partnerships.",
+                  "meaning": "Partnership and commitment.",
+                  "personalizedInsight": "Trust in your instincts when it comes to choosing partners."
+                },
+                "fateLine": {
+                  "name": "Fate Line 🚀",
+                  "description": "Your fate line hints at a dynamic career path.",
+                  "meaning": "Career path and professional journey.",
+                  "personalizedInsight": "Embrace changes in your career; they lead to growth."
+                },
+                "successLine": {
+                  "name": "Success Line 👑",
+                  "description": "A strong success line emphasizes potential achievements.",
+                  "meaning": "Achievement and recognition.",
+                  "personalizedInsight": "Stay focused on your goals, and success will follow."
+                },
+                "travelLine": {
+                  "name": "Travel Line ✈️",
+                  "description": "Travel lines indicate a love for adventure.",
+                  "meaning": "Adventure and exploration.",
+                  "personalizedInsight": "Explore new cultures; it will enrich your life experiences."
+                }
+              },
+              "mounts": {
+                "mars": {
+                  "name": "Mount of Mars ⚔️",
+                  "prominence": "Well-developed",
+                  "meaning": "Courage nature and assertiveness."
+                },
+                "jupiter": {
+                  "name": "Mount of Jupiter 👑",
+                  "prominence": "Moderately developed",
+                  "meaning": "Leadership and ambition."
+                },
+                "saturn": {
+                  "name": "Mount of Saturn 📚",
+                  "prominence": "Balanced",
+                  "meaning": "Discipline and responsibility."
+                },
+                "sun": {
+                  "name": "Mount of Sun 🎨",
+                  "prominence": "Prominent",
+                  "meaning": "Creativity and charisma."
+                },
+                "mercury": {
+                  "name": "Mount of Mercury 💬",
+                  "prominence": "Highly developed",
+                  "meaning": "Communication skills and wit."
+                },
+                "moon": {
+                  "name": "Mount of Moon 🌙",
+                  "prominence": "Developed",
+                  "meaning": "Intuition and imagination."
+                },
+                "venus": {
+                  "name": "Mount of Venus 💖",
+                  "prominence": "Well-defined",
+                  "meaning": "Love nature and sensuality."
+                }
+              },
+              "specialMarkings": [
+                "Cross on Jupiter mount",
+                "Star on Sun mount",
+                "Grille on Venus mount",
+                "Circle on Mercury mount"
+              ],
+              "handComparison": "Your right hand shows active choices, while the left reveals inherent potentials. This balance highlights a journey shaped by both destiny and personal decisions.",
+              "futureInsights": "The coming years promise growth in personal relationships and career advancements. Remain open to new ideas and collaborations, as they will be pivotal in shaping your future success.",
+              "personalizedAdvice": "Utilize your communication skills to forge stronger connections both personally and professionally. Embrace change as it comes, and trust that your adaptability will guide you through any challenges.",
+              "luckyElements": {
+                "colors": [
+                  "Yellow",
+                  "Blue",
+                  "Green"
+                ],
+                "numbers": [
+                  7,
+                  3,
+                  11
+                ],
+                "days": [
+                  "Wednesday",
+                  "Friday"
+                ]
+              }
+            },
+            "model": "gpt-4o-2024-08-06",
+            "usage": {
+              "prompt_tokens": 981,
+              "completion_tokens": 959,
+              "total_tokens": 1940,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "audio_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "audio_tokens": 0,
+                "accepted_prediction_tokens": 0,
+                "rejected_prediction_tokens": 0
+              }
+            },
+            "basedOnActualImages": true
+          },
+          "optimization": "none"
+        },
+        {
+          "success": true,
+          "responseTime": 33656,
+          "payloadSize": 2366994,
+          "httpStatus": 200,
+          "data": {
+            "reading": {
+              "greeting": "Bonjour TestUser! Discover the secrets your palm reveals.",
+              "overallPersonality": "As a Gemini born in Paris, you possess a vibrant and adaptable personality. Your curiosity and communication skills are enhanced by Mercury's influence, making you a natural socialite.",
+              "lines": {
+                "lifeLine": {
+                  "name": "Life Line 🌟",
+                  "description": "Your life line is deep and gently curved, indicating robust health and vitality.",
+                  "meaning": "Life energy",
+                  "personalizedInsight": "Maintain your energetic lifestyle by balancing work and play."
+                },
+                "heartLine": {
+                  "name": "Heart Line 💕",
+                  "description": "The heart line is long and clear, reflecting deep emotional connections.",
+                  "meaning": "Love nature",
+                  "personalizedInsight": "Embrace your open-hearted nature, but remember to protect your emotional well-being."
+                },
+                "headLine": {
+                  "name": "Head Line 🧠",
+                  "description": "Your head line shows a balance of creativity and logic, indicative of a versatile thinker.",
+                  "meaning": "Mental approach",
+                  "personalizedInsight": "Channel your dual-thinking ability into problem-solving and innovation."
+                },
+                "marriageLine": {
+                  "name": "Marriage Line 💍",
+                  "description": "The marriage line suggests stable relationships with potential for lasting partnerships.",
+                  "meaning": "Partnership",
+                  "personalizedInsight": "Focus on communication to nurture your relationship's growth."
+                },
+                "fateLine": {
+                  "name": "Fate Line 🚀",
+                  "description": "Your fate line is distinct, indicating a clear career path and strong sense of purpose.",
+                  "meaning": "Career path",
+                  "personalizedInsight": "Stay open to new opportunities that align with your goals."
+                },
+                "successLine": {
+                  "name": "Success Line 👑",
+                  "description": "A prominent success line highlights your potential for significant achievements.",
+                  "meaning": "Achievement",
+                  "personalizedInsight": "Leverage your talents to reach your highest potential."
+                },
+                "travelLine": {
+                  "name": "Travel Line ✈️",
+                  "description": "The travel line indicates a love for adventure and exploration.",
+                  "meaning": "Adventure",
+                  "personalizedInsight": "Pursue travel to gain new perspectives and experiences."
+                }
+              },
+              "mounts": {
+                "mars": {
+                  "name": "Mount of Mars ⚔️",
+                  "prominence": "Moderately developed",
+                  "meaning": "Courage nature"
+                },
+                "jupiter": {
+                  "name": "Mount of Jupiter 👑",
+                  "prominence": "Well developed",
+                  "meaning": "Leadership"
+                },
+                "saturn": {
+                  "name": "Mount of Saturn 📚",
+                  "prominence": "Balanced",
+                  "meaning": "Discipline"
+                },
+                "sun": {
+                  "name": "Mount of Sun 🎨",
+                  "prominence": "Prominent",
+                  "meaning": "Creativity"
+                },
+                "mercury": {
+                  "name": "Mount of Mercury 💬",
+                  "prominence": "Highly developed",
+                  "meaning": "Communication"
+                },
+                "moon": {
+                  "name": "Mount of Moon 🌙",
+                  "prominence": "Strongly developed",
+                  "meaning": "Intuition"
+                },
+                "venus": {
+                  "name": "Mount of Venus 💖",
+                  "prominence": "Richly developed",
+                  "meaning": "Love nature"
+                }
+              },
+              "specialMarkings": [
+                "Star marking",
+                "Cross at heart line",
+                "Square on life line",
+                "Trident on sun line"
+              ],
+              "handComparison": "Your right hand shows more development, indicating your future potential and choices will shape your destiny.",
+              "futureInsights": "Your future holds exciting opportunities for growth in both personal and professional realms. Embrace changes with confidence, as they will lead to fulfilling experiences. Your adaptability will be key in navigating life's challenges.",
+              "personalizedAdvice": "Stay true to your values and keep nurturing your relationships. Balancing your social life with personal reflection will help you maintain inner harmony. Trust your intuition when making important decisions.",
+              "luckyElements": {
+                "colors": [
+                  "Yellow",
+                  "Blue",
+                  "Green"
+                ],
+                "numbers": [
+                  7,
+                  3,
+                  11
+                ],
+                "days": [
+                  "Wednesday",
+                  "Friday"
+                ]
+              }
+            },
+            "model": "gpt-4o-2024-08-06",
+            "usage": {
+              "prompt_tokens": 981,
+              "completion_tokens": 953,
+              "total_tokens": 1934,
+              "prompt_tokens_details": {
+                "cached_tokens": 0,
+                "audio_tokens": 0
+              },
+              "completion_tokens_details": {
+                "reasoning_tokens": 0,
+                "audio_tokens": 0,
+                "accepted_prediction_tokens": 0,
+                "rejected_prediction_tokens": 0
+              }
+            },
+            "basedOnActualImages": true
+          },
+          "optimization": "none"
+        }
+      ]
+    },
+    "optimized": {
+      "successRate": 0,
+      "successful": 0,
+      "avgResponseTime": 33009,
+      "avgPayloadSize": 946956,
+      "httpErrors": 3,
+      "results": [
+        {
+          "success": false,
+          "responseTime": 32973,
+          "payloadSize": 946956,
+          "httpStatus": 500,
+          "data": "Internal Server Error",
+          "optimization": "none"
+        },
+        {
+          "success": false,
+          "responseTime": 33684,
+          "payloadSize": 946956,
+          "httpStatus": 500,
+          "data": "Internal Server Error",
+          "optimization": "none"
+        },
+        {
+          "success": false,
+          "responseTime": 32369,
+          "payloadSize": 946956,
+          "httpStatus": 500,
+          "data": "Internal Server Error",
+          "optimization": "none"
+        }
+      ]
+    }
+  },
+  "improvements": {
+    "payloadReduction": "60.0%",
+    "responseTimeImprovement": "-11.8%",
+    "successRateChange": "-100.0%"
+  }
+}
