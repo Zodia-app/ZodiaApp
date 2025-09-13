@@ -1,0 +1,126 @@
+{
+  "success": true,
+  "analysis": {
+    "overallScore": 87,
+    "overallLabel": "Beautiful Harmony",
+    "analysisBreakdown": {
+      "palmReadingInsights": {
+        "score": 96,
+        "keyFindings": [
+          "Heart line compatibility specific to Alexandre & Elena reveals a deep emotional connection influenced by their Cancer nature.",
+          "Head line intellectual harmony analysis shows synchronized thought processes and shared values.",
+          "Life line energy synchronization speaks to a robust and vibrant connection, enriched by cultural depth.",
+          "Mount prominence compatibility patterns highlight shared strengths in courage, leadership, and communication."
+        ]
+      },
+      "astrologicalInsights": {
+        "score": 79,
+        "sunSignDynamic": "Cancer + Cancer relationship dynamics emphasize nurturing, empathy, and mutual understanding.",
+        "risingSignHarmony": "First impression and daily interaction compatibility reflect a seamless blend of personalities.",
+        "moonSignConnection": "Emotional needs and nurturing style alignment enhance their intuitive bond.",
+        "venusCompatibility": "Love language and romantic expression harmony foster deep affection and mutual appreciation.",
+        "marsInteraction": "Passion dynamics and conflict resolution styles are balanced and harmonious.",
+        "communicationStyle": "Mercury-influenced conversation and mental compatibility encourage open dialogue."
+      },
+      "astropalmCorrelations": {
+        "score": 86,
+        "uniqueConnections": [
+          "How Alexandre's heart line reflects their Cancer love nature is mirrored in astrological indicators.",
+          "How Elena's head line aligns with Cancer mental approach enhances their intellectual connection.",
+          "Life line vitality patterns matching astrological element energy depict a shared zest for life.",
+          "Career line synchronization with planetary career indicators points to aligned ambition and goals."
+        ]
+      }
+    },
+    "enhancedCategories": [
+      {
+        "category": "Emotional Intimacy",
+        "score": 95,
+        "palmInsight": "Heart line analysis for Alexandre & Elena shows profound emotional depth.",
+        "astroInsight": "Moon sign emotional compatibility is strong, fostering a nurturing relationship.",
+        "synthesis": "Combined emotional compatibility assessment confirms a soul-deep connection.",
+        "emoji": "💖"
+      },
+      {
+        "category": "Mental Connection",
+        "score": 92,
+        "palmInsight": "Head line intellectual compatibility patterns reveal shared insights.",
+        "astroInsight": "Mercury communication and air sign mental harmony promote thoughtful exchanges.",
+        "synthesis": "Thought process and communication alignment ensure understanding.",
+        "emoji": "🧠"
+      },
+      {
+        "category": "Life Direction Alignment",
+        "score": 88,
+        "palmInsight": "Fate line and career mount compatibility suggest joint ambitions.",
+        "astroInsight": "Midheaven and 10th house career alignment indicate supportive paths.",
+        "synthesis": "Shared life path and mutual support potential make them unstoppable duo.",
+        "emoji": "🎯"
+      },
+      {
+        "category": "Passion & Energy",
+        "score": 90,
+        "palmInsight": "Life line vitality and Mars mount intensity highlight dynamic energy levels.",
+        "astroInsight": "Mars placement passion compatibility and fire element energy ignite their bond.",
+        "synthesis": "Physical chemistry and energy matching keep the spark alive.",
+        "emoji": "🔥"
+      }
+    ],
+    "crossCorrelationHighlights": [
+      "Specific palm-astro correlation unique to Alexandre & Elena enhances their natural rapport.",
+      "How their zodiac traits enhance palm-indicated strengths like empathy and creativity.",
+      "Palm patterns that confirm astrological compatibility indicators add depth to their connection.",
+      "Birth time precision reveals hidden compatibility layers, ensuring a comprehensive match."
+    ],
+    "enhancedAdvice": {
+      "strengthBuilding": [
+        "Leverage Cancer-Cancer natural harmony in creative projects and home life.",
+        "Use palm-indicated communication styles for deeper connection through active listening.",
+        "Timing relationship milestones with astrological influences ensures harmonious growth."
+      ],
+      "challengeNavigation": [
+        "How to balance different palm-indicated approaches to conflict using patience and diplomacy.",
+        "Using zodiac understanding to navigate relationship tensions fosters empathy.",
+        "Rising sign differences and how to bridge them by celebrating unique perspectives."
+      ],
+      "practicalSteps": [
+        "Daily relationship practices based on both palm and astro insights strengthen the bond.",
+        "Monthly check-ins aligned with lunar cycles and palm energy patterns keep emotional health in check.",
+        "Long-term relationship growth leveraging both analysis systems facilitates enduring companionship."
+      ]
+    },
+    "cosmicPalmMessage": "Alexandre & Elena, your union blends the nurturing essence of Cancer with an intuitive harmony blessed by the cosmos. Your hands reveal a love story written in the stars, enriched by shared dreams and unwavering support.",
+    "enhancementLevel": {
+      "level": "premium",
+      "percentage": 100,
+      "features": "Complete birth chart analysis + detailed palmistry correlation"
+    },
+    "dataQuality": {
+      "user1Completeness": "95%",
+      "user2Completeness": "95%",
+      "analysisDepth": "Full birth chart + detailed palmistry"
+    },
+    "generatedAt": "2025-09-09T02:43:17.116Z",
+    "model": "gpt-4o",
+    "analysisType": "enhanced_astro_palm_compatibility",
+    "users": {
+      "user1": {
+        "name": "Alexandre",
+        "zodiacSign": "Cancer",
+        "hasBirthTime": true
+      },
+      "user2": {
+        "name": "Elena",
+        "zodiacSign": "Cancer",
+        "hasBirthTime": true
+      }
+    }
+  },
+  "enhancementLevel": {
+    "level": "premium",
+    "percentage": 100,
+    "features": "Complete birth chart analysis + detailed palmistry correlation"
+  },
+  "partnerName": "Elena",
+  "analysisType": "enhanced_astro_palm_compatibility"
+}
