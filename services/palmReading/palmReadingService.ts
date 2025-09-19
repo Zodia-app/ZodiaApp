@@ -4,7 +4,39 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import { palmReadingQueue } from './palmReadingQueue';
 import { palmReadingCache } from './palmReadingCache';
 
+import { enterpriseService } from '../enterpriseService';
+
 export const palmReadingService = {
+  // 🚀 ENTERPRISE INTEGRATION - Auto-scaling based on load
+  async submitPalmReadingEnterprise(data: PalmReadingFormData, priority: 'critical' | 'high' | 'normal' | 'low' = 'normal') {
+    try {
+      console.log('🚀 Enterprise Palm Reading Request');
+      
+      // Convert images to base64
+      const leftBase64 = await this.convertToBase64(data.leftHandImage!);
+      const rightBase64 = await this.convertToBase64(data.rightHandImage!);
+      
+      // Use enterprise service with intelligent routing
+      const result = await enterpriseService.generatePalmReading(
+        {
+          name: data.name,
+          dateOfBirth: data.dateOfBirth,
+          zodiacSign: data.zodiacSign || this.calculateZodiacSign(data.dateOfBirth)
+        },
+        leftBase64,
+        rightBase64,
+        priority
+      );
+      
+      console.log('✅ Enterprise Palm Reading Completed');
+      return result;
+      
+    } catch (error) {
+      console.error('❌ Enterprise Palm Reading Error:', error);
+      throw error;
+    }
+  },
+
   // Compress image for better performance under load
   async compressImage(uri: string): Promise<string> {
     try {
